@@ -1,0 +1,91 @@
+body{
+    background-color: whitesmoke;
+}
+
+
+#Geotable{
+    border-width: auto;
+    display:inline-block;
+    width: 100%;
+    height: auto;
+}
+
+th{
+    font-size: 30px;
+    font-weight: bold;
+}
+
+td{
+    width: 30em;
+    height: 10em;
+    text-align: center;
+    font-size: 25px;
+    border: 2px solid black ;
+}
+
+.submitbutton1, .submitbutton2, .submitbutton3{
+    background-color: lightgray;
+    color:purple;
+    border: solid;
+    display: inline;
+    font-size: 35px;
+}
+#recentearthquakes{
+    text-align: center;
+    border: 2px solid black;
+    width: 27.7%;
+    height: auto;
+    display: inline-block;
+
+}
+
+#recentearthquakes td{
+    height: 40px;
+    border: none;
+    text-align: left;
+    width: auto;
+}
+#recentearthquakes th{
+    font-style: italic;
+}
+
+#weather{
+    text-align: center;
+    border: 2px solid black;
+    width: 27.5%;
+    height: 22em;
+    display: inline-block;    
+}
+
+#weather td{
+    height: 40px;
+    border: none;
+    text-align: left;
+    width: auto;
+    height:auto;
+}
+#weather th{
+    font-style: italic;
+}
+#elevationresults{
+    text-align: center;
+    border: 2px solid black;
+    width: 27.5%;
+    display: inline-block;
+    height: 22em;
+}
+
+#elevationresults td{
+    height: 40px;
+    border: none;
+    text-align: left;
+    width: auto;
+    height:auto;
+}
+
+#elevationresults th{
+    font-style: italic;
+}
+
+
+

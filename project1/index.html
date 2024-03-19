@@ -20,21 +20,29 @@
 <body>
 
 <nav class="searchbar box">
-    <div class="container input-group input-group-lg mb-3 rounded">
+    <div class="container input-group input-group-lg mb-3 rounded fixed-top">
         <input type="search" class="form-control" placeholder="Search country data" aria-label="Search"/>
-        <span class="input-group-text border-0">
-        <div class="input-group-append">
-            <button class="btn btn-outline-secondary" type="button">Search</button>
-        </div>
+
+        <button class="btn btn-light btn-outline-secondary" type="button">Search</button>
         </span>    
     </div>
 
 </nav>
 
 <div id="map"></div>
+<!--current location modal-->
+<div class="leaflet-control control-locate">
+    <a class="control-button control-button-last" href="#" role="button" aria-label="Show My Location" data-bs-original-title="Show My Location">
+        <span class="icon geolocate"></span>
+    </a>
 
 
-
+</div>
+<!--weather modal-->
+<!--exchange rates (new and old modal-->
+<!--timezone modal-->
+<!--wiki modal-->
+<!--capital city modal-->
 
 <script src="/project1/libs/vendors/leaflet/leaflet.js"></script>
 <script src="/project1/libs/js/scripts.js"></script>

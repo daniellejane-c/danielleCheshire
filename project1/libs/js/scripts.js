@@ -24,40 +24,64 @@ var map = L.map("map", {
 
 var layerControl = L.control.layers(basemaps).addTo(map);
 
-L.easyButton("fa-info", function (btn, map) {
-  $("#exampleModal").modal("show");
-}).addTo(map);
+//testing map markers
+var marker = L.marker([51.5, -0.09]).addTo(map);
+marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
+
+//when map opens, popup shows
+var popup = L.popup()
+    .setLatLng([51.513, -0.09])
+    .setContent("I am a standalone popup.")
+    .openOn(map);
+
+    var popup = L.popup();
+
+//get coordinates where clicked on map
+function onMapClick(e) {
+    popup
+        .setLatLng(e.latlng)
+        .setContent("You clicked the map at " + e.latlng.toString())
+        .openOn(map);
+}
+map.on('click', onMapClick);
+//geolocation
 
 
+map.locate({setView: true, maxZoom: 16});
 
+function onLocationFound(e) {
+  var radius = e.accuracy;
 
-var map = L.map('map').setView([54.5, -4], 6);
+  L.marker(e.latlng).addTo(map)
+      .bindPopup("You are within " + radius + " meters from this point").openPopup();
 
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-
-}).addTo(map);
-/* add geolocaton for device.
-function onAccuratePositionProgress (e) {
-    console.log(e.accuracy);
-    console.log(e.latlng);
+  L.circle(e.latlng, radius).addTo(map);
 }
 
-function onAccuratePositionFound (e) {
-    console.log(e.accuracy);
-    console.log(e.latlng);
+map.on('locationfound', onLocationFound);
+
+function onLocationError(e) {
+  alert(e.message);
 }
 
-function onAccuratePositionError (e) {
-    console.log(e.message)
-}
+map.on('locationerror', onLocationError);
 
-map.on('accuratepositionprogress', onAccuratePositionProgress);
-map.on('accuratepositionfound', onAccuratePositionFound);
-map.on('accuratepositionerror', onAccuratePositionError);
+//test markercluster
 
-map.findAccuratePosition({
-    maxWait: 15000, // defaults to 10000
-    desiredAccuracy: 30 // defaults to 20
-});*/
+
+
+//wikipedia layer
+
+
+
+L.layerGroup.wikipediaLayer().addTo(map);
+
+
+
+
+
+
+
+
+
+//submit data

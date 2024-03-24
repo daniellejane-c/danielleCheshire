@@ -19,11 +19,16 @@
 
 	$decode = json_decode($result,true);	
 
+	$key = key($array);
+
+	$value = $array[$key];
+
+
 	$output['status']['code'] = "200";
 	$output['status']['name'] = "ok";
 	$output['status']['description'] = "success";
 	$output['status']['returnedIn'] = intval((microtime(true) - $executionStartTime) * 1000) . " ms";
-	$output['data'] = $decode['earthquakes'];
+	$output['data'] = $decode['type'];
 
 	header('Content-Type: application/json; charset=UTF-8');
 

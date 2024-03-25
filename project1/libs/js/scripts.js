@@ -24,6 +24,8 @@ var map = L.map("map", {
 
 var layerControl = L.control.layers(basemaps).addTo(map);
 
+
+
 //testing map markers
 var marker = L.marker([51.5, -0.09]).addTo(map);
 marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
@@ -44,6 +46,7 @@ function onMapClick(e) {
         .openOn(map);
 }
 map.on('click', onMapClick);
+
 //geolocation
 
 
@@ -66,22 +69,25 @@ function onLocationError(e) {
 
 map.on('locationerror', onLocationError);
 
-//test markercluster
-
-
-
-//wikipedia layer
-
-
-
-L.layerGroup.wikipediaLayer().addTo(map);
 
 
 
 
+//ajax call countryform.php to fill select form
 
+$('.form-select').on("click", function() {
 
+  $.ajax({
+      url: "/project1/libs/php/countryform.php",
+      type: 'post',
 
+      success: function(result) {
+        $(".form-select").append(result);
 
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+   console.log(textStatus, errorThrown);
+      }
+  })
 
-//submit data
+});

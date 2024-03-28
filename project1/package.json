@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "bootstrap": "^5.0.0",
-    "leaflet": "^1.9.4",
-    "leaflet-providers": "^2.0.0"
-  }
-}

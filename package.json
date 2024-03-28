@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "bootstrap": "^5.0.0",
+    "leaflet": "^1.9.4",
+    "leaflet-easybutton": "^2.4.0",
+    "leaflet-geojson-selector": "^0.5.5",
+    "leaflet-providers": "^2.0.0"
+  }
+}

@@ -1,27 +1,23 @@
 
 <?php
 
-   $str = file_get_contents('countryBorders.geo.json');
-   $decoded_json = json_decode($str, true);
+$geojson_data = file_get_contents('countryBorders.geo.json');
+$data = json_decode($geojson_data, true);
 
-   $features = $decoded_json['features'];
+// Extract coordinates
+$coordinates = [];
 
-   $selectlist=array();
-   foreach($features as $feature) {
-      foreach($feature as  $key => $value) {
-         if (!empty($key)) {
-            if ($key == "properties") {
-              #echo $value['name'] . "|" . $value['iso_a3'] . "\n";
-	      array_push($selectlist,$value['name']);
+foreach ($data['features'] as $feature) {
+    $geometry = $feature['geometry'];
+    if ($geometry['type'] == 'MultiPolygon') {
+        foreach ($geometry['coordinates'] as $polygon) {
+            foreach ($polygon as $ring) {
+                $coordinates = array_merge($coordinates, $ring);
             }
-         }
-      }
-     }
-// Sort the selectlist alphabetically
-   sort($selectlist);
+        }
+    }
+}
 
-     foreach( $selectlist as $country ) {
-        echo "<option value='" . $country . "'>" . $country . "</option>\n";
-      }
+print_r($coordinates);
 
 ?>

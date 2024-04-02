@@ -108,41 +108,55 @@ function populateDropdown(){
 
 
 
+    function flipCoordinates(coordinates) {
+      // Iterate through each coordinate pair
+      for (var i = 0; i < coordinates.length; i++) {
+          // If it's a single coordinate pair
+          if (Array.isArray(coordinates[i]) && typeof coordinates[i][0] === 'number' && typeof coordinates[i][1] === 'number') {
+              // Swap latitude and longitude
+              var temp = coordinates[i][0];
+              coordinates[i][0] = coordinates[i][1];
+              coordinates[i][1] = temp;
+          } else {
+              // If it's an array of coordinates, recursively call flipCoordinates
+              coordinates[i] = flipCoordinates(coordinates[i]);
+          }
+      }
+      return coordinates;
+  };
 
-  function showBorder() {
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
-
+function showBorder() {
     // Use jQuery's $.ajax() to fetch multipolygon coordinates from PHP file
     $.ajax({
-      dataType: "json",
-      url: "/clone/libs/php/countryBorders.geo.json",
-      success: function(data) {
-          //an array to hold coordinates for JavaScript
-          var coordinatesArray = [];
+        dataType: "json",
+        url: "/clone/libs/php/countryBorders.geo.json",
+        success: function(data) {
+            //an array to hold coordinates for JavaScript
+            var coordinatesArray = [];
 
-          // Iterate through features
-          $.each(data.features, function(index, feature) {
-              // Extract coordinates
-              var coordinates = feature.geometry.coordinates;
+            // Iterate through features
+            $.each(data.features, function(index, feature) {
+                  var coordinates = feature.geometry.coordinates;
+  
+                  // Flip the coordinates
+                  coordinates = flipCoordinates(coordinates);
+  
+                  // Push coordinates to the array
+                  coordinatesArray.push(coordinates);
 
-              // Push coordinates to the array
-              coordinatesArray.push(coordinates);
+                // Output country name, ISO_A3 code, and coordinates
+                console.log("Country: " + feature.properties.name);
+                console.log("ISO_A3: " + feature.properties.iso_a3);
+                console.log("Coordinates: " + JSON.stringify(coordinates) + "\n");
+            });
 
-              // Output country name, ISO_A3 code, and coordinates
-              console.log("Country: " + feature.properties.name);
-              console.log("ISO_A3: " + feature.properties.iso_a3);
-              console.log("Coordinates: " + JSON.stringify(coordinates) + "/n");
-          });
-
-          // Iterate through coordinates array and draw polygons
-          $.each(coordinatesArray, function(index, coordinates) {
-              var polygon = L.polygon(coordinates, {color: 'blue'}).addTo(map);
-          });
-      },
-      error: function(xhr, status, error) {
-          console.error("Error fetching GeoJSON data:", error);
-      }
-  });
-    };
-    
+            // Iterate through coordinates array and draw polygons
+            $.each(coordinatesArray, function(index, coordinates) {
+                var polygon = L.polygon(coordinates, {color: 'blue'}).addTo(map);
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error("Error fetching GeoJSON data:", error);
+        }
+    });
+};

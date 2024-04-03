@@ -27,56 +27,56 @@ $(document).ready(function () {
     layerControl = L.control.layers(basemaps).addTo(map);
     //additionalmarkers set to false for each button call
 
-    var additionalMarkersShown = {
-        info: {},
-        cloud: {},
-        book: {},
-        newspaper: {},
-        marker: {}
-    };
+    // var additionalMarkersShown = {
+    //     info: {},
+    //     cloud: {},
+    //     book: {},
+    //     newspaper: {},
+    //     marker: {}
+    // };
       
 //buttons - each declare whether there is additional markers shown the selected country. if not, onclick puts them on the map
     L.easyButton(" fa fa-info", function (btn, map) {
-    //   $("#countryModal").modal("show");
-    if (!additionalMarkersShown.info[countryMarker.getLatLng()]) {
-        showAdditionalMarkers();
-        additionalMarkersShown.info[countryMarker.getLatLng()] = true; 
-    }
+      $("#countryModal").modal("show");
+    // if (!additionalMarkersShown.info[countryMarker.getLatLng()]) {
+    //     showAdditionalMarkers();
+    //     additionalMarkersShown.info[countryMarker.getLatLng()] = true; 
+    //}
   }).addTo(map);
 
   L.easyButton("fa fa-cloud", function (btn, map) {
-    //   $("#weatherModal").modal("show");
-    if (!additionalMarkersShown.cloud[countryMarker.getLatLng()]) {
-        showAdditionalMarkers('green');
-        additionalMarkersShown.cloud[countryMarker.getLatLng()] = true; 
-    }
+      $("#weatherModal").modal("show");
+    // if (!additionalMarkersShown.cloud[countryMarker.getLatLng()]) {
+    //     showAdditionalMarkers('green');
+    //     additionalMarkersShown.cloud[countryMarker.getLatLng()] = true; 
+    // }
     
   }).addTo(map);
 
   L.easyButton("fa fa-book", function (btn, map) {
-    //   $("#wikiModal").modal("show");
-    if (!additionalMarkersShown.book[countryMarker.getLatLng()]) {
-        showAdditionalMarkers('purple');
-        additionalMarkersShown.book[countryMarker.getLatLng()] = true; 
-    }
+      $("#wikiModal").modal("show");
+    // if (!additionalMarkersShown.book[countryMarker.getLatLng()]) {
+    //     showAdditionalMarkers('purple');
+    //     additionalMarkersShown.book[countryMarker.getLatLng()] = true; 
+    // }
     
   }).addTo(map);
 
   L.easyButton("fa fa-newspaper", function (btn, map) {
-    //   $("#newsModal").modal("show");
-    if (!additionalMarkersShown.newspaper[countryMarker.getLatLng()]) {
-        showAdditionalMarkers('orange');
-        additionalMarkersShown.newspaper[countryMarker.getLatLng()] = true; 
-    }
+      $("#newsModal").modal("show");
+    // if (!additionalMarkersShown.newspaper[countryMarker.getLatLng()]) {
+    //     showAdditionalMarkers('orange');
+    //     additionalMarkersShown.newspaper[countryMarker.getLatLng()] = true; 
+    // }
     
   }).addTo(map);
 
   L.easyButton("fa fa-map-marker", function (btn, map) {
-    //   $("#geolocationModal").modal("show");
-    if (!additionalMarkersShown.marker[countryMarker.getLatLng()]) {
-        showAdditionalMarkers('pink');
-        additionalMarkersShown.marker[countryMarker.getLatLng()] = true; 
-    }
+      $("#geolocationModal").modal("show");
+    // if (!additionalMarkersShown.marker[countryMarker.getLatLng()]) {
+    //     showAdditionalMarkers('pink');
+    //     additionalMarkersShown.marker[countryMarker.getLatLng()] = true; 
+    // }
     
   }).addTo(map);
 
@@ -202,31 +202,31 @@ function updateMapView(coordinates, countryName) {
 
 
 }
-//generate colored markers
-function coloredIcon(color) {
-    return L.ExtraMarkers.icon({
-        icon: 'fa-number',
-        number: '',
-        shape: 'circle',
-        markerColor: color,
-        prefix: 'fa'
-    });
-}
-//function to allow for random placement of 3 markers.
-     function showAdditionalMarkers(markerColor) {
-        if (countryMarker) {
-            var countryLatLng = countryMarker.getLatLng();
+// //generate colored markers
+// function coloredIcon(color) {
+//     return L.ExtraMarkers.icon({
+//         icon: 'fa-number',
+//         number: '',
+//         shape: 'circle',
+//         markerColor: color,
+//         prefix: 'fa'
+//     });
+// }
+// //function to allow for random placement of 3 markers.
+//      function showAdditionalMarkers(markerColor) {
+//         if (countryMarker) {
+//             var countryLatLng = countryMarker.getLatLng();
 
-            // Generate additional markers within the proximity radius
-            for (var i = 0; i < 3; i++) {
-                var randomLat = countryLatLng.lat + (Math.random() - 0.5) * proximityRadius;
-                var randomLng = countryLatLng.lng + (Math.random() - 0.5) * proximityRadius;
-                L.marker([randomLat, randomLng], { icon: coloredIcon(markerColor) }).addTo(map);
-            }
-        } else {
-            alert('Please select a country first.');
-        }
-    }
+//             // Generate additional markers within the proximity radius
+//             for (var i = 0; i < 3; i++) {
+//                 var randomLat = countryLatLng.lat + (Math.random() - 0.5) * proximityRadius;
+//                 var randomLng = countryLatLng.lng + (Math.random() - 0.5) * proximityRadius;
+//                 L.marker([randomLat, randomLng], { icon: coloredIcon(markerColor) }).addTo(map);
+//             }
+//         } else {
+//             alert('Please select a country first.');
+//         }
+//     }
     
 //flip coordinates for correct alignment
 function flipCoordinates(coordinates) {

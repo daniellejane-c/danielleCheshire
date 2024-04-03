@@ -2,51 +2,89 @@
 
 var map;
 var layerControl;
+var countryMarker;
+var proximityRadius = 2;
+
+//create map layers
 var streets = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
     attribution: "Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012"
 });
 var satellite = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
     attribution: "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
 });
+
+
 var basemaps = {
     "Streets": streets,
-    "Satellite": satellite
+    "Satellite": satellite,
 };
-
-// EVENT HANDLERS
-
+//on ready function
 $(document).ready(function () {
     map = L.map("map", {
         layers: [streets]
     }).setView([51.505, -0.09], 6);
 
     layerControl = L.control.layers(basemaps).addTo(map);
-    
+    //additionalmarkers set to false for each button call
+
+    var additionalMarkersShown = {
+        info: {},
+        cloud: {},
+        book: {},
+        newspaper: {},
+        marker: {}
+    };
+      
+//buttons - each declare whether there is additional markers shown the selected country. if not, onclick puts them on the map
     L.easyButton(" fa fa-info", function (btn, map) {
-      $("#countryModal").modal("show");
+    //   $("#countryModal").modal("show");
+    if (!additionalMarkersShown.info[countryMarker.getLatLng()]) {
+        showAdditionalMarkers();
+        additionalMarkersShown.info[countryMarker.getLatLng()] = true; 
+    }
   }).addTo(map);
 
   L.easyButton("fa fa-cloud", function (btn, map) {
-      $("#weatherModal").modal("show");
+    //   $("#weatherModal").modal("show");
+    if (!additionalMarkersShown.cloud[countryMarker.getLatLng()]) {
+        showAdditionalMarkers('green');
+        additionalMarkersShown.cloud[countryMarker.getLatLng()] = true; 
+    }
+    
   }).addTo(map);
 
   L.easyButton("fa fa-book", function (btn, map) {
-      $("#wikiModal").modal("show");
+    //   $("#wikiModal").modal("show");
+    if (!additionalMarkersShown.book[countryMarker.getLatLng()]) {
+        showAdditionalMarkers('purple');
+        additionalMarkersShown.book[countryMarker.getLatLng()] = true; 
+    }
+    
   }).addTo(map);
 
   L.easyButton("fa fa-newspaper", function (btn, map) {
-      $("#newsModal").modal("show");
+    //   $("#newsModal").modal("show");
+    if (!additionalMarkersShown.newspaper[countryMarker.getLatLng()]) {
+        showAdditionalMarkers('orange');
+        additionalMarkersShown.newspaper[countryMarker.getLatLng()] = true; 
+    }
+    
   }).addTo(map);
 
   L.easyButton("fa fa-map-marker", function (btn, map) {
-      $("#geolocationModal").modal("show");
+    //   $("#geolocationModal").modal("show");
+    if (!additionalMarkersShown.marker[countryMarker.getLatLng()]) {
+        showAdditionalMarkers('pink');
+        additionalMarkersShown.marker[countryMarker.getLatLng()] = true; 
+    }
+    
   }).addTo(map);
 
     populateDropdown();
 
     //geolocation
 
-
+//geolocation - on load
 map.locate({setView: true, maxZoom: 16});
 
 function onLocationFound(e) {
@@ -67,10 +105,11 @@ function onLocationError(e) {
 map.on('locationerror', onLocationError);
 });
 
+//when selecting country.
 $('#countrySelect').change(function () {
   var selectedCountry = $(this).val();
   getCountryInfo(selectedCountry);
-
+//creates polygon from geojson file and plots it on the map in blue.  
   function showBorder() {
       // Clear existing polygons from the map
       map.eachLayer(function (layer) {
@@ -79,7 +118,9 @@ $('#countrySelect').change(function () {
           }
       });
 
-      // Use jQuery's $.ajax() to fetch multipolygon coordinates from PHP file
+
+
+      // fetch multipolygon coordinates from PHP file
       $.ajax({
           dataType: "json",
           url: "/clone/libs/php/countryBorders.geo.json",
@@ -114,8 +155,9 @@ $('#countrySelect').change(function () {
   }
 
   showBorder();
+
 });
-// FUNCTIONS
+//populate the select/dropdown list
 
 function populateDropdown() {
     $.ajax({
@@ -129,7 +171,7 @@ function populateDropdown() {
         }
     });
 }
-//change to php rather than api
+//may need to change to php rather than api
 function getCountryInfo(countryName) {
     $.ajax({
         url: "https://api.opencagedata.com/geocode/v1/json",
@@ -150,23 +192,53 @@ function getCountryInfo(countryName) {
         }
     });
 }
-
+//update the maps view based on selected country
 function updateMapView(coordinates, countryName) {
-    map.setView(coordinates, 5);
-    L.marker(coordinates).addTo(map).bindPopup(countryName);
-}
+    map.setView(coordinates, 6);
+    if (countryMarker) {
+        map.removeLayer(countryMarker);
+    }
+    countryMarker = L.marker(coordinates).addTo(map).bindPopup(countryName);
 
+
+}
+//generate colored markers
+function coloredIcon(color) {
+    return L.ExtraMarkers.icon({
+        icon: 'fa-number',
+        number: '',
+        shape: 'circle',
+        markerColor: color,
+        prefix: 'fa'
+    });
+}
+//function to allow for random placement of 3 markers.
+     function showAdditionalMarkers(markerColor) {
+        if (countryMarker) {
+            var countryLatLng = countryMarker.getLatLng();
+
+            // Generate additional markers within the proximity radius
+            for (var i = 0; i < 3; i++) {
+                var randomLat = countryLatLng.lat + (Math.random() - 0.5) * proximityRadius;
+                var randomLng = countryLatLng.lng + (Math.random() - 0.5) * proximityRadius;
+                L.marker([randomLat, randomLng], { icon: coloredIcon(markerColor) }).addTo(map);
+            }
+        } else {
+            alert('Please select a country first.');
+        }
+    }
+    
+//flip coordinates for correct alignment
 function flipCoordinates(coordinates) {
-  // Iterate through each coordinate pair
   for (var i = 0; i < coordinates.length; i++) {
-    // If it's a single coordinate pair
+    //single coordinate pair
     if (Array.isArray(coordinates[i]) && typeof coordinates[i][0] === 'number' && typeof coordinates[i][1] === 'number') {
       // Swap latitude and longitude
       var temp = coordinates[i][0];
       coordinates[i][0] = coordinates[i][1];
       coordinates[i][1] = temp;
     } else {
-      // If it's an array of coordinates, recursively call flipCoordinates
+      //array of coordinates, recursively call flipCoordinates
       coordinates[i] = flipCoordinates(coordinates[i]);
     }
   }

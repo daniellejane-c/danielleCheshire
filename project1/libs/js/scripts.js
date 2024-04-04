@@ -25,62 +25,58 @@ $(document).ready(function () {
     }).setView([51.505, -0.09], 6);
 
     layerControl = L.control.layers(basemaps).addTo(map);
-    //additionalmarkers set to false for each button call
 
-    // var additionalMarkersShown = {
-    //     info: {},
-    //     cloud: {},
-    //     book: {},
-    //     newspaper: {},
-    //     marker: {}
-    // };
       
-//buttons - each declare whether there is additional markers shown the selected country. if not, onclick puts them on the map
-    L.easyButton(" fa fa-info", function (btn, map) {
-      $("#countryModal").modal("show");
-    // if (!additionalMarkersShown.info[countryMarker.getLatLng()]) {
-    //     showAdditionalMarkers();
-    //     additionalMarkersShown.info[countryMarker.getLatLng()] = true; 
-    //}
-  }).addTo(map);
+    //buttons - each declare whether there is additional markers shown the selected country. if not, onclick puts them on the map
+L.easyButton("fa fa-info", function(btn, map) {
+    $("#countryModal").modal("show");
+ // Call function to fetch data when modal is shown
+}).addTo(map);
+
+
+
+
 
   L.easyButton("fa fa-cloud", function (btn, map) {
       $("#weatherModal").modal("show");
-    // if (!additionalMarkersShown.cloud[countryMarker.getLatLng()]) {
-    //     showAdditionalMarkers('green');
-    //     additionalMarkersShown.cloud[countryMarker.getLatLng()] = true; 
-    // }
+
     
   }).addTo(map);
 
   L.easyButton("fa fa-book", function (btn, map) {
       $("#wikiModal").modal("show");
-    // if (!additionalMarkersShown.book[countryMarker.getLatLng()]) {
-    //     showAdditionalMarkers('purple');
-    //     additionalMarkersShown.book[countryMarker.getLatLng()] = true; 
-    // }
-    
+
   }).addTo(map);
 
   L.easyButton("fa fa-newspaper", function (btn, map) {
       $("#newsModal").modal("show");
-    // if (!additionalMarkersShown.newspaper[countryMarker.getLatLng()]) {
-    //     showAdditionalMarkers('orange');
-    //     additionalMarkersShown.newspaper[countryMarker.getLatLng()] = true; 
-    // }
+
     
   }).addTo(map);
 
   L.easyButton("fa fa-map-marker", function (btn, map) {
       $("#geolocationModal").modal("show");
-    // if (!additionalMarkersShown.marker[countryMarker.getLatLng()]) {
-    //     showAdditionalMarkers('pink');
-    //     additionalMarkersShown.marker[countryMarker.getLatLng()] = true; 
-    // }
-    
+
   }).addTo(map);
 
+
     populateDropdown();
+  
+function populateDropdown() {
+    var selectedCountry = $("#countrySelect").val(); // Retrieve selected country
+    $.ajax({
+        url: "/clone/libs/php/countryform.php",
+        type: 'post',
+        data: { countrySelect: selectedCountry }, // Send selected country to server
+        success: function (result) {
+            $(".form-select").append(result);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log(textStatus, errorThrown);
+        }
+    });
+}
+
 
     //geolocation
 
@@ -103,131 +99,134 @@ function onLocationError(e) {
 }
 
 map.on('locationerror', onLocationError);
+
 });
 
 //when selecting country.
 $('#countrySelect').change(function () {
-  var selectedCountry = $(this).val();
+    var selectedCountry = $(this).val();
+    console.log(selectedCountry);
   getCountryInfo(selectedCountry);
-//creates polygon from geojson file and plots it on the map in blue.  
-  function showBorder() {
-      // Clear existing polygons from the map
-      map.eachLayer(function (layer) {
-          if (layer instanceof L.Polygon) {
-              map.removeLayer(layer);
-          }
-      });
-
-
-
-      // fetch multipolygon coordinates from PHP file
-      $.ajax({
-          dataType: "json",
-          url: "/clone/libs/php/countryBorders.geo.json",
-          success: function (data) {
-              // Iterate through features to find the selected country
-              var selectedFeature = data.features.find(function (feature) {
-                  return feature.properties.name === selectedCountry || feature.properties.name === selectedCountry;
-              });
-
-              if (!selectedFeature) {
-                  console.error("Selected country not found.");
-                  return;
-              }
-
-              var coordinates = selectedFeature.geometry.coordinates;
-
-              // Flip the coordinates
-              coordinates = flipCoordinates(coordinates);
-
-              // Output country name, ISO_A3 code, and coordinates
-              // console.log("Country: " + selectedFeature.properties.name);
-              // console.log("ISO_A3: " + selectedFeature.properties.iso_a3);
-              // console.log("Coordinates: " + JSON.stringify(coordinates) + "\n");
-
-              // Draw the polygon for the selected country
-              var polygon = L.polygon(coordinates, { color: 'blue' }).addTo(map);
-          },
-          error: function (xhr, status, error) {
-              console.error("Error fetching GeoJSON data:", error);
-          }
-      });
+  showBorder(selectedCountry);
   }
+);
 
-  showBorder();
-
-});
-//populate the select/dropdown list
-
-function populateDropdown() {
+function getCountryInfo(countryName) {
+var cleanedCountryName = encodeURIComponent(countryName);
     $.ajax({
-        url: "/clone/libs/php/countryform.php",
-        type: 'post',
-        success: function (result) {
-            $(".form-select").append(result);
+        url: '/clone/libs/php/countryInfo.php',
+        type: 'GET',
+        dataType: 'json',
+        data: {
+            countryName: cleanedCountryName
+        },
+        success: function(result) {
+
+            // console.log(JSON.stringify(result));
+
+            if (result.status.name == "ok") {
+
+
+            $('#placeName').html(result["data"]["results"][0]["components"]["country"]);
+            $('#isoCode').html(result["data"]["results"][0]["components"]["ISO_3166-1_alpha-3"]);
+            $('#flagImg').html(result["data"]["results"][0]["annotations"]["flag"]);
+            $('#continentInfo').html(result["data"]["results"][0]["components"]["continent"]);
+            $('#callingCode').html(result["data"]["results"][0]["annotations"]["callingcode"]);
+            var currencyName = result["data"]["results"][0]["annotations"]["currency"]["name"];
+            var currencyCode = result["data"]["results"][0]["annotations"]["currency"]["iso_code"];
+            var currencySymbol = result["data"]["results"][0]["annotations"]["currency"]["symbol"];
+            var combinedCurrency = currencyName + ' | ' + currencyCode + ' | ' + currencySymbol;
+            $('#currencyInfo').html(combinedCurrency);
+            var sideOfRoad = result["data"]["results"][0]["annotations"]["roadinfo"]["drive_on"];
+            var speedMeasure = result["data"]["results"][0]["annotations"]["roadinfo"]["speed_in"];
+            var roadInfo = 'Drive on ' + sideOfRoad + ' hand side' + ' | ' + 'Speed = ' + speedMeasure;
+            $('#roadInfo').html(roadInfo);
+            var timezone_name = result["data"]["results"][0]["annotations"]["timezone"]["name"];
+            var timezone_short = result["data"]["results"][0]["annotations"]["timezone"]["short_name"];
+            var timezoneInfo = timezone_name + ' | ' + timezone_short;
+            $('#timezoneInfo').html(timezoneInfo);
+            $('#locationInfo').html(result["data"]["results"][0]["annotations"]["what3words"]["words"]);
+            var latitudeNo = result["data"]["results"][0]["geometry"]["lat"];
+            var longitudeNo = result["data"]["results"][0]["geometry"]["lng"];
+            var geometry = latitudeNo + ', ' + longitudeNo;
+            $('#geometryInfo').html(geometry);
+
+
+
+
+            }
+
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            console.log(textStatus, errorThrown);
+	   console.log(jqXHR, textStatus, errorThrown);
+        }
+    })
+
+};
+function showBorder(selectedCountry) {
+    // Clear existing polygons from the map
+    map.eachLayer(function (layer) {
+        if (layer instanceof L.Polygon) {
+            map.removeLayer(layer);
+        }
+    });
+
+    if (countryMarker) {
+        map.removeLayer(countryMarker);
+    }
+
+    // Fetch border data for the selected country
+    $.ajax({
+        dataType: "json",
+        url: "/clone/libs/php/countryBorders.geo.json",
+        success: function (data) {
+            // Find the selected country in the border data
+            var selectedFeature = data.features.find(function (feature) {
+                return feature.properties.name === selectedCountry || feature.properties.name === selectedCountry;
+            });
+
+            if (!selectedFeature) {
+                console.error("Selected country not found.");
+                return;
+            }
+
+            var coordinates = selectedFeature.geometry.coordinates;
+
+            // Flip the coordinates
+            coordinates = flipCoordinates(coordinates);
+
+            // Draw the polygon for the selected country
+            var polygon = L.polygon(coordinates, { color: 'blue' }).addTo(map);
+
+            // Calculate bounding box for the polygon
+            var bounds = polygon.getBounds();
+
+            // Update map view with the bounding box
+            updateMapView(bounds);
+
+            var countryName = selectedFeature.properties.name;
+
+            // Add marker at the center of the country
+            countryMarker = L.marker(polygon.getBounds().getCenter())
+                            .addTo(map)
+                            .bindPopup(countryName)
+                            .openPopup();
+            
+        },
+        error: function (xhr, status, error) {
+            console.error("Error fetching GeoJSON data:", error);
         }
     });
 }
 //may need to change to php rather than api
-function getCountryInfo(countryName) {
-    $.ajax({
-        url: "https://api.opencagedata.com/geocode/v1/json",
-        data: {
-            key: "48a78b864d4b4e85a485b585c3d6fdb0",
-            q: countryName
-        },
-        success: function (response) {
-            if (response.results.length > 0) {
-                var coordinates = [response.results[0].geometry.lat, response.results[0].geometry.lng];
-                updateMapView(coordinates, countryName);
-            } else {
-                console.error("No results found for the country: " + countryName);
-            }
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            console.error("Error fetching country information:", textStatus, errorThrown);
-        }
-    });
-}
+
 //update the maps view based on selected country
-function updateMapView(coordinates, countryName) {
-    map.setView(coordinates, 6);
-    if (countryMarker) {
-        map.removeLayer(countryMarker);
-    }
-    countryMarker = L.marker(coordinates).addTo(map).bindPopup(countryName);
-
-
+function updateMapView(bounds) {
+    // Fit the map view to the provided bounding box
+    map.fitBounds(bounds);
 }
-// //generate colored markers
-// function coloredIcon(color) {
-//     return L.ExtraMarkers.icon({
-//         icon: 'fa-number',
-//         number: '',
-//         shape: 'circle',
-//         markerColor: color,
-//         prefix: 'fa'
-//     });
-// }
-// //function to allow for random placement of 3 markers.
-//      function showAdditionalMarkers(markerColor) {
-//         if (countryMarker) {
-//             var countryLatLng = countryMarker.getLatLng();
 
-//             // Generate additional markers within the proximity radius
-//             for (var i = 0; i < 3; i++) {
-//                 var randomLat = countryLatLng.lat + (Math.random() - 0.5) * proximityRadius;
-//                 var randomLng = countryLatLng.lng + (Math.random() - 0.5) * proximityRadius;
-//                 L.marker([randomLat, randomLng], { icon: coloredIcon(markerColor) }).addTo(map);
-//             }
-//         } else {
-//             alert('Please select a country first.');
-//         }
-//     }
-    
+
 //flip coordinates for correct alignment
 function flipCoordinates(coordinates) {
   for (var i = 0; i < coordinates.length; i++) {

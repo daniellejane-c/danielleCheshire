@@ -22,3 +22,8 @@ html, body {
     width: 200px;
     margin: 0 auto;
   }
+
+img {
+  max-width: 5em;
+  max-height: 5em;
+}

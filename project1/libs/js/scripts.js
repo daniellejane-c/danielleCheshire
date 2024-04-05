@@ -33,10 +33,6 @@ L.easyButton("fa fa-info", function(btn, map) {
  // Call function to fetch data when modal is shown
 }).addTo(map);
 
-
-
-
-
   L.easyButton("fa fa-cloud", function (btn, map) {
       $("#weatherModal").modal("show");
 
@@ -107,6 +103,7 @@ $('#countrySelect').change(function () {
     var selectedCountry = $(this).val();
     console.log(selectedCountry);
   getCountryInfo(selectedCountry);
+  moreCountryInfo(selectedCountry);
   showBorder(selectedCountry);
   }
 );
@@ -163,6 +160,43 @@ var cleanedCountryName = encodeURIComponent(countryName);
     })
 
 };
+
+function moreCountryInfo(countryName){
+    var cleanedCountryName = encodeURIComponent(countryName);
+    $.ajax({
+        url: '/clone/libs/php/moreCountryInfo.php',
+        type: 'GET',
+        dataType: 'json',
+        data: {
+            countryName: cleanedCountryName
+        },
+        success: function(result) {
+
+             //console.log(JSON.stringify(result));
+
+            if (result.status.name == "ok") {
+
+                var languages = Object.values(result['data'][0]['languages']).join(", ");
+                $('#languageInfo').html(languages);
+                $('#populationInfo').html(result['data'][0]['population']);
+                $('#areaInfo').html(result['data'][0]['area']);
+                $('#weekStart').html(result['data'][0]['startOfWeek']);
+                var coatOfArmsUrl = result['data'][0]['coatOfArms']['png'];
+                $('#coatOfArms').html('<img src="' + coatOfArmsUrl + '">');
+
+
+
+            }
+
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+	   console.log(jqXHR, textStatus, errorThrown);
+        }
+    })
+};
+
+
+
 function showBorder(selectedCountry) {
     // Clear existing polygons from the map
     map.eachLayer(function (layer) {

@@ -5,7 +5,7 @@
 
 
 	$executionStartTime = microtime(true);
-    $URL = 'https://restcountries.com/v3.1/name/' . $_REQUEST['countryName'] . '?fullText=true';
+    $URL = 'https://restcountries.com/v3.1/name/' . $_REQUEST['countryName'];
 
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);

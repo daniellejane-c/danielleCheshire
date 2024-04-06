@@ -26,75 +26,75 @@ $(document).ready(function () {
 
     layerControl = L.control.layers(basemaps).addTo(map);
 
-      
+
     //buttons - each declare whether there is additional markers shown the selected country. if not, onclick puts them on the map
-L.easyButton("fa fa-info", function(btn, map) {
-    $("#countryModal").modal("show");
- // Call function to fetch data when modal is shown
-}).addTo(map);
+    L.easyButton("fa fa-info", function (btn, map) {
+        $("#countryModal").modal("show");
+        // Call function to fetch data when modal is shown
+    }).addTo(map);
 
-  L.easyButton("fa fa-cloud", function (btn, map) {
-      $("#weatherModal").modal("show");
+    L.easyButton("fa fa-cloud", function (btn, map) {
+        $("#weatherModal").modal("show");
 
-    
-  }).addTo(map);
 
-  L.easyButton("fa fa-book", function (btn, map) {
-      $("#wikiModal").modal("show");
+    }).addTo(map);
 
-  }).addTo(map);
+    L.easyButton("fa fa-book", function (btn, map) {
+        $("#wikiModal").modal("show");
 
-  L.easyButton("fa fa-newspaper", function (btn, map) {
-      $("#newsModal").modal("show");
+    }).addTo(map);
 
-    
-  }).addTo(map);
+    L.easyButton("fa fa-newspaper", function (btn, map) {
+        $("#newsModal").modal("show");
 
-  L.easyButton("fa fa-map-marker", function (btn, map) {
-      $("#geolocationModal").modal("show");
 
-  }).addTo(map);
+    }).addTo(map);
+
+    L.easyButton("fa fa-map-marker", function (btn, map) {
+        $("#geolocationModal").modal("show");
+
+    }).addTo(map);
 
 
     populateDropdown();
-  
-function populateDropdown() {
-    var selectedCountry = $("#countrySelect").val(); // Retrieve selected country
-    $.ajax({
-        url: "/clone/libs/php/countryform.php",
-        type: 'post',
-        data: { countrySelect: selectedCountry }, // Send selected country to server
-        success: function (result) {
-            $(".form-select").append(result);
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            console.log(textStatus, errorThrown);
-        }
-    });
-}
+
+    function populateDropdown() {
+        var selectedCountry = $("#countrySelect").val(); // Retrieve selected country
+        $.ajax({
+            url: "/clone/libs/php/countryform.php",
+            type: 'post',
+            data: { countrySelect: selectedCountry }, // Send selected country to server
+            success: function (result) {
+                $(".form-select").append(result);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(textStatus, errorThrown);
+            }
+        });
+    }
 
 
     //geolocation
 
-//geolocation - on load
-map.locate({setView: true, maxZoom: 16});
+    //geolocation - on load
+    map.locate({ setView: true, maxZoom: 16 });
 
-function onLocationFound(e) {
-  var radius = e.accuracy;
+    function onLocationFound(e) {
+        var radius = e.accuracy;
 
-  L.marker(e.latlng).addTo(map)
-      .bindPopup("You are within " + radius + " meters from this point").openPopup();
+        L.marker(e.latlng).addTo(map)
+            .bindPopup("You are within " + radius + " meters from this point").openPopup();
 
-  L.circle(e.latlng, radius).addTo(map);
-}
+        L.circle(e.latlng, radius).addTo(map);
+    }
 
-map.on('locationfound', onLocationFound);
+    map.on('locationfound', onLocationFound);
 
-function onLocationError(e) {
-  alert(e.message);
-}
+    function onLocationError(e) {
+        alert(e.message);
+    }
 
-map.on('locationerror', onLocationError);
+    map.on('locationerror', onLocationError);
 
 });
 
@@ -102,14 +102,15 @@ map.on('locationerror', onLocationError);
 $('#countrySelect').change(function () {
     var selectedCountry = $(this).val();
     console.log(selectedCountry);
-  getCountryInfo(selectedCountry);
-  moreCountryInfo(selectedCountry);
-  showBorder(selectedCountry);
-  }
+    getCountryInfo(selectedCountry);
+    moreCountryInfo(selectedCountry);
+    showBorder(selectedCountry);
+    
+}
 );
 
 function getCountryInfo(countryName) {
-var cleanedCountryName = encodeURIComponent(countryName);
+    var cleanedCountryName = encodeURIComponent(countryName);
     $.ajax({
         url: '/clone/libs/php/countryInfo.php',
         type: 'GET',
@@ -117,51 +118,52 @@ var cleanedCountryName = encodeURIComponent(countryName);
         data: {
             countryName: cleanedCountryName
         },
-        success: function(result) {
+        success: function (result) {
 
             // console.log(JSON.stringify(result));
 
             if (result.status.name == "ok") {
 
 
-            $('#placeName').html(result["data"]["results"][0]["components"]["country"]);
-            $('#isoCode').html(result["data"]["results"][0]["components"]["ISO_3166-1_alpha-3"]);
-            $('#flagImg').html(result["data"]["results"][0]["annotations"]["flag"]);
-            $('#continentInfo').html(result["data"]["results"][0]["components"]["continent"]);
-            $('#callingCode').html(result["data"]["results"][0]["annotations"]["callingcode"]);
-            var currencyName = result["data"]["results"][0]["annotations"]["currency"]["name"];
-            var currencyCode = result["data"]["results"][0]["annotations"]["currency"]["iso_code"];
-            var currencySymbol = result["data"]["results"][0]["annotations"]["currency"]["symbol"];
-            var combinedCurrency = currencyName + ' | ' + currencyCode + ' | ' + currencySymbol;
-            $('#currencyInfo').html(combinedCurrency);
-            var sideOfRoad = result["data"]["results"][0]["annotations"]["roadinfo"]["drive_on"];
-            var speedMeasure = result["data"]["results"][0]["annotations"]["roadinfo"]["speed_in"];
-            var roadInfo = 'Drive on ' + sideOfRoad + ' hand side' + ' | ' + 'Speed = ' + speedMeasure;
-            $('#roadInfo').html(roadInfo);
-            var timezone_name = result["data"]["results"][0]["annotations"]["timezone"]["name"];
-            var timezone_short = result["data"]["results"][0]["annotations"]["timezone"]["short_name"];
-            var timezoneInfo = timezone_name + ' | ' + timezone_short;
-            $('#timezoneInfo').html(timezoneInfo);
-            $('#locationInfo').html(result["data"]["results"][0]["annotations"]["what3words"]["words"]);
-            var latitudeNo = result["data"]["results"][0]["geometry"]["lat"];
-            var longitudeNo = result["data"]["results"][0]["geometry"]["lng"];
-            var geometry = latitudeNo + ', ' + longitudeNo;
-            $('#geometryInfo').html(geometry);
+                $('#placeName').html(result["data"]["results"][0]["components"]["country"]);
+                $('#isoCode').html(result["data"]["results"][0]["components"]["ISO_3166-1_alpha-3"]);
+                $('#flagImg').html(result["data"]["results"][0]["annotations"]["flag"]);
+                $('#continentInfo').html(result["data"]["results"][0]["components"]["continent"]);
+                $('#callingCode').html(result["data"]["results"][0]["annotations"]["callingcode"]);
+                var currencyName = result["data"]["results"][0]["annotations"]["currency"]["name"];
+                var currencyCode = result["data"]["results"][0]["annotations"]["currency"]["iso_code"];
+                var currencySymbol = result["data"]["results"][0]["annotations"]["currency"]["symbol"];
+                var combinedCurrency = currencyName + ' | ' + currencyCode + ' | ' + currencySymbol;
+                $('#currencyInfo').html(combinedCurrency);
+                var sideOfRoad = result["data"]["results"][0]["annotations"]["roadinfo"]["drive_on"];
+                var speedMeasure = result["data"]["results"][0]["annotations"]["roadinfo"]["speed_in"];
+                var roadInfo = 'Drive on ' + sideOfRoad + ' hand side' + ' | ' + 'Speed = ' + speedMeasure;
+                $('#roadInfo').html(roadInfo);
+                var timezone_name = result["data"]["results"][0]["annotations"]["timezone"]["name"];
+                var timezone_short = result["data"]["results"][0]["annotations"]["timezone"]["short_name"];
+                var timezoneInfo = timezone_name + ' | ' + timezone_short;
+                $('#timezoneInfo').html(timezoneInfo);
+                $('#locationInfo').html(result["data"]["results"][0]["annotations"]["what3words"]["words"]);
+                var latitudeNo = result["data"]["results"][0]["geometry"]["lat"];
+                var longitudeNo = result["data"]["results"][0]["geometry"]["lng"];
+                var geometry = latitudeNo + ', ' + longitudeNo;
+                $('#geometryInfo').html(geometry);
 
 
+                weatherInfo(latitudeNo, longitudeNo);
 
 
             }
 
         },
         error: function (jqXHR, textStatus, errorThrown) {
-	   console.log(jqXHR, textStatus, errorThrown);
+            console.log(jqXHR, textStatus, errorThrown);
         }
     })
 
 };
 
-function moreCountryInfo(countryName){
+function moreCountryInfo(countryName) {
     var cleanedCountryName = encodeURIComponent(countryName);
     $.ajax({
         url: '/clone/libs/php/moreCountryInfo.php',
@@ -170,30 +172,98 @@ function moreCountryInfo(countryName){
         data: {
             countryName: cleanedCountryName
         },
-        success: function(result) {
-
-             //console.log(JSON.stringify(result));
+        success: function (result) {
+            $('#languageInfo').empty();
+            $('#populationInfo').empty();
+            $('#areaInfo').empty();
+            $('#weekStart').empty();
+            $('#coatOfArms').empty();
+            //console.log(JSON.stringify(result));
 
             if (result.status.name == "ok") {
 
                 var languages = Object.values(result['data'][0]['languages']).join(", ");
                 $('#languageInfo').html(languages);
-                $('#populationInfo').html(result['data'][0]['population']);
+                $('#populationInfo').html(result['data'][0]['population'].toLocaleString());
                 $('#areaInfo').html(result['data'][0]['area']);
-                $('#weekStart').html(result['data'][0]['startOfWeek']);
+                $('#weekStart').html(capitalizeFirstLetter(result['data'][0]['startOfWeek']));
                 var coatOfArmsUrl = result['data'][0]['coatOfArms']['png'];
                 $('#coatOfArms').html('<img src="' + coatOfArmsUrl + '">');
 
 
 
             }
-
+            function capitalizeFirstLetter(string) {
+                return string.charAt(0).toUpperCase() + string.slice(1);
+            }
         },
         error: function (jqXHR, textStatus, errorThrown) {
-	   console.log(jqXHR, textStatus, errorThrown);
+            console.log(jqXHR, textStatus, errorThrown);
         }
     })
 };
+
+function weatherInfo(lat, lon) {
+
+    $.ajax({
+        url: '/clone/libs/php/weather.php',
+        type: 'GET',
+        dataType: 'json',
+        data: {
+            lat: lat,
+            lon: lon
+        },
+        success: function (result) {
+
+            //  console.log(JSON.stringify(result));
+
+            if (result.status.name == "ok") {
+
+                var tomorrowTimestamp = result['data']["daily"][1]["dt"];
+                var furtherTimestamp = result['data']["daily"][2]["dt"];
+                
+                function formatTimestamp(timestamp) {
+                    var daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                    var date = new Date(timestamp * 1000);
+                    var dayOfWeek = daysOfWeek[date.getDay()];
+                    var day = date.getDate();
+                    var month = date.getMonth() + 1;
+                    return dayOfWeek + ' ' + (day < 10 ? '0' : '') + day + '/' + (month < 10 ? '0' : '') + month;
+                }
+                
+                var tomorrowDate = formatTimestamp(tomorrowTimestamp);
+                var furtherDate = formatTimestamp(furtherTimestamp);
+                
+                console.log("Tomorrow's date: " + tomorrowDate);
+                console.log("Further date: " + furtherDate);
+
+                $("#tomorrowDate").html(tomorrowDate);
+                $("#furtherDate").html(furtherDate);
+
+
+                $('#weatherSummary1').html(result['data']["daily"][0]["weather"][0]['description']);
+                $('#weatherSummary2').html(result['data']["daily"][1]["weather"][0]['description']);
+                $('#weatherSummary3').html(result['data']["daily"][2]["weather"][0]['description']);
+
+                $('#maxTemp1').html(Math.round(result['data']["daily"][0]['temp']['max']) + '°C');
+                $('#minTemp1').html(Math.round(result['data']["daily"][0]['temp']['min']) + '°C');
+                $('#maxTemp2').html(Math.round(result['data']["daily"][1]['temp']['max']) + '°C');
+                $('#minTemp2').html(Math.round(result['data']["daily"][1]['temp']['min']) + '°C');
+                $('#maxTemp3').html(Math.round(result['data']["daily"][2]['temp']['max']) + '°C');
+                $('#minTemp3').html(Math.round(result['data']["daily"][2]['temp']['min']) + '°C');
+                $('#weatherImage1').html('<img src="https://openweathermap.org/img/wn/' + result['data']["daily"][0]["weather"][0]['icon'] + '@2x.png" alt="Weather Icon">');
+                $('#weatherImage2').html('<img src="https://openweathermap.org/img/wn/' + result['data']["daily"][1]["weather"][0]['icon'] + '@2x.png" alt="Weather Icon">');
+                $('#weatherImage3').html('<img src="https://openweathermap.org/img/wn/' + result['data']["daily"][2]["weather"][0]['icon'] + '@2x.png" alt="Weather Icon">');
+
+            }
+        },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR, textStatus, errorThrown);
+            }
+
+
+    })
+}
 
 
 
@@ -242,10 +312,10 @@ function showBorder(selectedCountry) {
 
             // Add marker at the center of the country
             countryMarker = L.marker(polygon.getBounds().getCenter())
-                            .addTo(map)
-                            .bindPopup(countryName)
-                            .openPopup();
-            
+                .addTo(map)
+                .bindPopup(countryName)
+                .openPopup();
+
         },
         error: function (xhr, status, error) {
             console.error("Error fetching GeoJSON data:", error);
@@ -263,18 +333,18 @@ function updateMapView(bounds) {
 
 //flip coordinates for correct alignment
 function flipCoordinates(coordinates) {
-  for (var i = 0; i < coordinates.length; i++) {
-    //single coordinate pair
-    if (Array.isArray(coordinates[i]) && typeof coordinates[i][0] === 'number' && typeof coordinates[i][1] === 'number') {
-      // Swap latitude and longitude
-      var temp = coordinates[i][0];
-      coordinates[i][0] = coordinates[i][1];
-      coordinates[i][1] = temp;
-    } else {
-      //array of coordinates, recursively call flipCoordinates
-      coordinates[i] = flipCoordinates(coordinates[i]);
+    for (var i = 0; i < coordinates.length; i++) {
+        //single coordinate pair
+        if (Array.isArray(coordinates[i]) && typeof coordinates[i][0] === 'number' && typeof coordinates[i][1] === 'number') {
+            // Swap latitude and longitude
+            var temp = coordinates[i][0];
+            coordinates[i][0] = coordinates[i][1];
+            coordinates[i][1] = temp;
+        } else {
+            //array of coordinates, recursively call flipCoordinates
+            coordinates[i] = flipCoordinates(coordinates[i]);
+        }
     }
-  }
-  return coordinates;
+    return coordinates;
 };
 

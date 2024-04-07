@@ -275,25 +275,35 @@ function getWiki(countryName) {
         data: {
             countryName: cleanedCountryName
         },
-        success: function (result) {
-
+        success: function(result) {
             if (result.status.name == "ok") {
+                $('#nameOfCountry').empty();
+                $('#summaryWiki').empty();
+               
+                var mobileLinkHTML = $('#mobileLink').html();
+                var desktopLinkHTML = $('#desktopLink').html();
 
-        console.log(result);
+                $('#desktopLink').removeAttr('href').empty();
+                $('#mobileLink').removeAttr('href').empty();
 
-        $('#nameOfCountry').html(result['data']['title']);
-        $('#summaryWiki').html(result['data']['extract']);
-        $('#desktopLink').attr('href', result['data']['content_urls']['desktop']['page']);
-        $('#mobileLink').attr('href', result['data']['content_urls']['mobile']['page']);
-        $('#thumbnailImg').attr('src', result['data']['thumbnail']['source']);
+                $('#nameOfCountry').html(result['data']['title']);
+                $('#summaryWiki').html(result['data']['extract']);
+                
+                $('#desktopLink').html(desktopLinkHTML);
+                $('#mobileLink').html(mobileLinkHTML);
+
+                $('#desktopLink').attr('href', result['data']['content_urls']['desktop']['page']);
+                $('#mobileLink').attr('href', result['data']['content_urls']['mobile']['page']);
+                
+                $('#thumbnailImg').attr('src', result['data']['thumbnail']['source']);
             }
         },
-
-        error: function (jqXHR, textStatus, errorThrown) {
+        error: function(jqXHR, textStatus, errorThrown) {
             console.log(jqXHR, textStatus, errorThrown);
         }
-    })
-};
+    });
+}
+
 
 
 

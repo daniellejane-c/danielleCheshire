@@ -28,29 +28,29 @@ $(document).ready(function () {
 
 
     //buttons - each declare whether there is additional markers shown the selected country. if not, onclick puts them on the map
-    L.easyButton("fa fa-info", function (btn, map) {
+    L.easyButton("fa fa-info", function () {
         $("#countryModal").modal("show");
         // Call function to fetch data when modal is shown
     }).addTo(map);
 
-    L.easyButton("fa fa-cloud", function (btn, map) {
+    L.easyButton("fa fa-cloud-sun", function () {
         $("#weatherModal").modal("show");
 
 
     }).addTo(map);
 
-    L.easyButton("fa fa-book", function (btn, map) {
+    L.easyButton("fa-brands fa-wikipedia-w", function () {
         $("#wikiModal").modal("show");
 
     }).addTo(map);
 
-    L.easyButton("fa fa-newspaper", function (btn, map) {
+    L.easyButton("fa-regular fa-newspaper", function () {
         $("#newsModal").modal("show");
 
 
     }).addTo(map);
 
-    L.easyButton("fa fa-map-marker", function (btn, map) {
+    L.easyButton("fa-solid fa-location-crosshairs", function () {
         $("#geolocationModal").modal("show");
 
     }).addTo(map);
@@ -105,6 +105,7 @@ $('#countrySelect').change(function () {
     getCountryInfo(selectedCountry);
     moreCountryInfo(selectedCountry);
     showBorder(selectedCountry);
+    getWiki(selectedCountry);
     
 }
 );
@@ -126,6 +127,9 @@ function getCountryInfo(countryName) {
 
 
                 $('#placeName').html(result["data"]["results"][0]["components"]["country"]);
+                if (countryName === 'Western Sahara'){
+                    $('#placeName').html(result["data"]["results"][0]["components"]["place"]);
+                };
                 $('#isoCode').html(result["data"]["results"][0]["components"]["ISO_3166-1_alpha-3"]);
                 $('#flagImg').html(result["data"]["results"][0]["annotations"]["flag"]);
                 $('#continentInfo').html(result["data"]["results"][0]["components"]["continent"]);
@@ -164,7 +168,7 @@ function getCountryInfo(countryName) {
 };
 
 function moreCountryInfo(countryName) {
-    var cleanedCountryName = encodeURIComponent(countryName);
+    var cleanedCountryName = encodeURI(countryName);
     $.ajax({
         url: '/clone/libs/php/moreCountryInfo.php',
         type: 'GET',
@@ -172,7 +176,7 @@ function moreCountryInfo(countryName) {
         data: {
             countryName: cleanedCountryName
         },
-        success: function (result) {
+        success: function(result) {
             $('#languageInfo').empty();
             $('#populationInfo').empty();
             $('#areaInfo').empty();
@@ -234,9 +238,6 @@ function weatherInfo(lat, lon) {
                 var tomorrowDate = formatTimestamp(tomorrowTimestamp);
                 var furtherDate = formatTimestamp(furtherTimestamp);
                 
-                console.log("Tomorrow's date: " + tomorrowDate);
-                console.log("Further date: " + furtherDate);
-
                 $("#tomorrowDate").html(tomorrowDate);
                 $("#furtherDate").html(furtherDate);
 
@@ -264,6 +265,36 @@ function weatherInfo(lat, lon) {
 
     })
 }
+
+function getWiki(countryName) {
+    var cleanedCountryName = encodeURIComponent(countryName);
+    $.ajax({
+        url: '/clone/libs/php/wiki.php',
+        type: 'GET',
+        dataType: 'json',
+        data: {
+            countryName: cleanedCountryName
+        },
+        success: function (result) {
+
+            if (result.status.name == "ok") {
+
+        console.log(result);
+
+        $('#nameOfCountry').html(result['data']['title']);
+        $('#summaryWiki').html(result['data']['extract']);
+        $('#desktopLink').attr('href', result['data']['content_urls']['desktop']['page']);
+        $('#mobileLink').attr('href', result['data']['content_urls']['mobile']['page']);
+        $('#thumbnailImg').attr('src', result['data']['thumbnail']['source']);
+            }
+        },
+
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR, textStatus, errorThrown);
+        }
+    })
+};
+
 
 
 
@@ -315,7 +346,7 @@ function showBorder(selectedCountry) {
                 .addTo(map)
                 .bindPopup(countryName)
                 .openPopup();
-
+    
         },
         error: function (xhr, status, error) {
             console.error("Error fetching GeoJSON data:", error);

@@ -42,6 +42,22 @@
             <tr>
 
               <td class="text-center">
+                <i class="fa-solid fa-shield sfa-xl text-success"></i>
+              </td>
+
+              <td>
+                Coat Of Arms:
+              </td>
+
+              <td id="coatOfArms" class="text-end">
+
+              </td>
+
+            </tr>
+
+            <tr>
+
+              <td class="text-center">
                 <i class="fa-solid fa-flag fa-xl text-success"></i>
               </td>
 
@@ -253,22 +269,7 @@
               </td>
 
             </tr>
-            <tr>
-
-              <td class="text-center">
-                <i class="fa-solid fa-shield sfa-xl text-success"></i>
-              </td>
-
-              <td>
-                Coat Of Arms:
-              </td>
-
-              <td id="coatOfArms" class="text-end">
-
-              </td>
-
-            </tr>
-
+            
           </table>
         </div>
         <div class="modal-footer">
@@ -402,20 +403,44 @@
   <!--wikipedia modal-->
   <div id="wikiModal" class="modal" data-bs-backdrop="false" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-      <div class="modal-content shadow">
-        <div class="modal-header bg-success bg-gradient text-white">
-          <h5 class="modal-title">Wikipedia</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content shadow">
+            <div class="modal-header bg-success bg-gradient text-white">
+                <h5 class="modal-title">Wikipedia</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="card" style="width: 29rem;">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-auto">
+                                <img id="thumbnailImg">
+                            </div>
+                            <div class="col">
+                                <h5 id="nameOfCountry" class="card-title">Card title</h5>
+                                <p id="summaryWiki" class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                <a id="desktopLink" class="btn btn-primary" style="margin-right: 10px;" target="_blank">Desktop Link</a>
+                                <a id="mobileLink" class="btn btn-primary" target="_blank">Mobile Link</a>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-success btn-sm" data-bs-dismiss="modal">Close</button>
+            </div>
         </div>
-        <div class="modal-body">
-          <p>This will be wiki</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-success btn-sm" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
     </div>
-  </div>
+</div>
+
+
+
+
+
+
+
+
+
   <!--newsmodal-->
   <div id="newsModal" class="modal" data-bs-backdrop="false" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">

@@ -22,6 +22,7 @@
 <body>
   <span id="selectContainer">
     <select id="countrySelect" class="form-select shadow-sm">
+      <option selected>Select a country...</option>
       <!-- populate from an AJAX CALL to a PHP routine that returns a JSON object that is an array of just ISO codes and names from countryBorders.geo.json -->
     </select>
   </span>
@@ -395,11 +396,6 @@
     </div>
   </div>
 
-
-
-
-
-
   <!--wikipedia modal-->
   <div id="wikiModal" class="modal" data-bs-backdrop="false" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
@@ -434,14 +430,6 @@
       </div>
     </div>
   </div>
-
-
-
-
-
-
-
-
 
   <!--newsmodal-->
   <div id="newsModal" class="modal" data-bs-backdrop="false" tabindex="-1">
@@ -529,19 +517,74 @@
           <h6 class="text-muted">Source: The Guardian</h6>
           <button type="button" class="btn btn-outline-success btn-sm" data-bs-dismiss="modal">Close</button>
         </div>
-        
+
+      </div>
+    </div>
+  </div>
+
+
+<!--currency-->
+  <div id="currencyModal" class="modal" data-bs-backdrop="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg container-fluid">
+      <div class="modal-content shadow">
+        <div class="modal-header bg-success bg-gradient text-white">
+          <h5 class="modal-title">Currency converter</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="container">
+            <!-- First Card -->
+            <div class="row">
+              <div class="col-md-6">
+                <input type="number" class="form-control" id="number" placeholder="00000">
+              </div>
+              <div class="col-md-6">
+                <div class="input-group">
+                  <i name="currency1" class="text-muted">USD - United States Dollar</i>
+
+                </div>
+              </div>
+            </div>
+            <!-- Second Card -->
+            <div class="row mt-3">
+              <div class="col-md-6">
+                <input type="text" class="form-control" id="output" placeholder="00000" disabled>
+              </div>
+              <div class="col-md-6">
+                <div class="input-group">
+                  <select name="currency2" class="currency-select"></select>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
   
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.8.0/leaflet.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.2/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.6.1/toastify.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-extra-markers/1.2.1/js/leaflet.extra-markers.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.EasyButton/2.4.0/easy-button.min.js"></script>
-  <script src="/clone/libs/js/scripts.js"></script>
+            
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.8.0/leaflet.js"></script>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.2/jquery.min.js"></script>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.6.1/toastify.min.js"></script>
+          <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
+          <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-extra-markers/1.2.1/js/leaflet.extra-markers.js"></script>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.min.js"></script>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.EasyButton/2.4.0/easy-button.min.js"></script>
+          <script src="/clone/libs/js/scripts.js"></script>
 </body>
 
 </html>

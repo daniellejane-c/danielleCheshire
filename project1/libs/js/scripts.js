@@ -29,23 +29,32 @@ $(document).ready(function () {
 
     //buttons - each declare whether there is additional markers shown the selected country. if not, onclick puts them on the map
     L.easyButton("fa fa-info", function () {
+
         $("#countryModal").modal("show");
         // Call function to fetch data when modal is shown
     }).addTo(map);
 
     L.easyButton("fa fa-cloud-sun", function () {
+
         $("#weatherModal").modal("show");
-
-
     }).addTo(map);
 
     L.easyButton("fa-brands fa-wikipedia-w", function () {
+
         $("#wikiModal").modal("show");
 
     }).addTo(map);
 
     L.easyButton("fa-regular fa-newspaper", function () {
+
         $("#newsModal").modal("show");
+
+
+    }).addTo(map);
+
+    L.easyButton("fa-solid fa-coins", function () {
+
+        $("#currencyModal").modal("show");
 
 
     }).addTo(map);
@@ -59,6 +68,7 @@ $(document).ready(function () {
 
     populateDropdown();
     getLocation();
+    getCurrencies();
     function populateDropdown() {
         var selectedCountry = $("#countrySelect").val(); // Retrieve selected country
         $.ajax({
@@ -67,6 +77,7 @@ $(document).ready(function () {
             data: { countrySelect: selectedCountry }, // Send selected country to server
             success: function (result) {
                 $(".form-select").append(result);
+
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(textStatus, errorThrown);
@@ -86,25 +97,94 @@ $(document).ready(function () {
             timeout: 10000, // Set timeout to 10 seconds
             maximumAge: 60000 // Accept cached location data up to 1 minute old
         });
-    
+
         function onLocationFound(e) {
             var radius = e.accuracy.toFixed(0);
-    
+
             L.marker(e.latlng).addTo(map)
                 .bindPopup("You are within " + radius + " meters from this point").openPopup();
-    
+
             L.circle(e.latlng, radius).addTo(map);
         }
-    
+
         map.on('locationfound', onLocationFound);
-    
+
         function onLocationError(e) {
             alert("Error getting location: " + e.message);
         }
-    
+
         map.on('locationerror', onLocationError);
     }
+
+    getCurrencies();
+    
+
+    function getCurrencies() {
+        $.ajax({
+            url: '/clone/libs/php/currencies.php',
+            type: 'get',
+            dataType: 'json',
+            success: function(result) {
+                // Populate currency select
+                if (result.status.name == "ok") {
+                    // Get select element
+                    var select = $('#currencyModal .currency-select');
+    
+                    // Clear existing options
+                    select.empty();
+    
+                    // Iterate over result and append options with keys
+                    $.each(result.data, function(code, name) {
+                        // Append option with both code and name
+                        var option = $('<option>').val(code).text(code + " - " + name);
+                        select.append(option);
+                    });
+    
+                    // Trigger change event to update exchange rate when a currency is selected
+                    select.change(function() {
+                        var selectedCurrency = $(this).val(); // Get the selected currency code
+                        currencyExchange(selectedCurrency); // Call currencyConvert with the selected currency code
+                    });
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR, textStatus, errorThrown);
+            }
+        });
+    }
+    
+
+// Function to convert currency
+    // Function to fetch exchange rates and perform currency conversion
+    function currencyExchange() {
+        var amount = $('#number').val(); // Get the amount to convert
+        var baseCurrency = $('[name="currency1"]').attr('name'); // Get the base currency
+        var targetCurrency = $('[name="currency2"]').val(); // Get the target currency
+
+        // Make AJAX request to fetch latest exchange rates
+        $.ajax({
+            url: 'https://openexchangerates.org/api/latest.json?app_id=67dfb5b618574153adb56e19b8955114',
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                // Calculate the converted amount
+                var exchangeRate = response.rates[targetCurrency];
+                var convertedAmount = (amount * exchangeRate);
+
+                // Display the converted amount in the output field
+                $('#output').val(convertedAmount);
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching exchange rates:', error);
+            }
+        });
+    }
+
+    // Call currencyExchange function when the input value changes
+    $('#number').on('input', currencyExchange);
 });
+
+    
 
 //when selecting country.
 $('#countrySelect').change(function () {
@@ -277,41 +357,41 @@ function weatherInfo(lat, lon) {
 
 function getWiki(countryName) {
     var cleanedCountryName = countryName.replace(/\s+/g, '_');
-     $.ajax({
-         url: '/clone/libs/php/wiki.php',
-         type: 'GET',
-         dataType: 'json',
-         data: {
-             countryName: cleanedCountryName
-         },
-         success: function (result) {
-             if (result.status.name == "ok") {
-                 $('#nameOfCountry').empty();
-                 $('#summaryWiki').empty();
- 
-                 var mobileLinkHTML = $('#mobileLink').html();
-                 var desktopLinkHTML = $('#desktopLink').html();
- 
-                 $('#desktopLink').removeAttr('href').empty();
-                 $('#mobileLink').removeAttr('href').empty();
- 
-                 $('#nameOfCountry').html(result['data']['title']);
-                 $('#summaryWiki').html(result['data']['extract']);
- 
-                 $('#desktopLink').html(desktopLinkHTML);
-                 $('#mobileLink').html(mobileLinkHTML);
- 
-                 $('#desktopLink').attr('href', result['data']['content_urls']['desktop']['page']);
-                 $('#mobileLink').attr('href', result['data']['content_urls']['mobile']['page']);
- 
-                 $('#thumbnailImg').attr('src', result['data']['thumbnail']['source']);
-             }
-         },
-         error: function (jqXHR, textStatus, errorThrown) {
-             console.log(jqXHR, textStatus, errorThrown);
-         }
-     });
- }
+    $.ajax({
+        url: '/clone/libs/php/wiki.php',
+        type: 'GET',
+        dataType: 'json',
+        data: {
+            countryName: cleanedCountryName
+        },
+        success: function (result) {
+            if (result.status.name == "ok") {
+                $('#nameOfCountry').empty();
+                $('#summaryWiki').empty();
+
+                var mobileLinkHTML = $('#mobileLink').html();
+                var desktopLinkHTML = $('#desktopLink').html();
+
+                $('#desktopLink').removeAttr('href').empty();
+                $('#mobileLink').removeAttr('href').empty();
+
+                $('#nameOfCountry').html(result['data']['title']);
+                $('#summaryWiki').html(result['data']['extract']);
+
+                $('#desktopLink').html(desktopLinkHTML);
+                $('#mobileLink').html(mobileLinkHTML);
+
+                $('#desktopLink').attr('href', result['data']['content_urls']['desktop']['page']);
+                $('#mobileLink').attr('href', result['data']['content_urls']['mobile']['page']);
+
+                $('#thumbnailImg').attr('src', result['data']['thumbnail']['source']);
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR, textStatus, errorThrown);
+        }
+    });
+}
 function getNews(countryName) {
     var cleanedCountryName = encodeURIComponent(countryName);
     $.ajax({
@@ -323,31 +403,31 @@ function getNews(countryName) {
         },
         success: function (result) {
             if (result.status.name == "ok") {
-$('#headline1').html(result['data']['response']['results'][0]['fields']['headline']);
-$('#headline2').html(result['data']['response']['results'][1]['fields']['headline']);
-$('#headline3').html(result['data']['response']['results'][2]['fields']['headline']);
-$('#headline4').html(result['data']['response']['results'][3]['fields']['headline']);
-$('#headline5').html(result['data']['response']['results'][4]['fields']['headline']);
-$('#trailText1').html(result['data']['response']['results'][0]['fields']['trailText']);
-$('#trailText2').html(result['data']['response']['results'][1]['fields']['trailText']);
-$('#trailText3').html(result['data']['response']['results'][2]['fields']['trailText']);
-$('#trailText4').html(result['data']['response']['results'][3]['fields']['trailText']);
-$('#trailText5').html(result['data']['response']['results'][4]['fields']['trailText']);
-$('#thumbnail1').attr('src', result['data']['response']['results'][0]['fields']['thumbnail']);
-$('#thumbnail2').attr('src', result['data']['response']['results'][1]['fields']['thumbnail']);
-$('#thumbnail3').attr('src', result['data']['response']['results'][2]['fields']['thumbnail']);
-$('#thumbnail4').attr('src', result['data']['response']['results'][3]['fields']['thumbnail']);
-$('#thumbnail5').attr('src', result['data']['response']['results'][4]['fields']['thumbnail']);
-$('#newsLink1').attr('href', result['data']['response']['results'][0]['fields']['shortUrl']);
-$('#newsLink2').attr('href', result['data']['response']['results'][1]['fields']['shortUrl']);
-$('#newsLink3').attr('href', result['data']['response']['results'][2]['fields']['shortUrl']);
-$('#newsLink4').attr('href', result['data']['response']['results'][3]['fields']['shortUrl']);
-$('#newsLink5').attr('href', result['data']['response']['results'][4]['fields']['shortUrl']);
+                $('#headline1').html(result['data']['response']['results'][0]['fields']['headline']);
+                $('#headline2').html(result['data']['response']['results'][1]['fields']['headline']);
+                $('#headline3').html(result['data']['response']['results'][2]['fields']['headline']);
+                $('#headline4').html(result['data']['response']['results'][3]['fields']['headline']);
+                $('#headline5').html(result['data']['response']['results'][4]['fields']['headline']);
+                $('#trailText1').html(result['data']['response']['results'][0]['fields']['trailText']);
+                $('#trailText2').html(result['data']['response']['results'][1]['fields']['trailText']);
+                $('#trailText3').html(result['data']['response']['results'][2]['fields']['trailText']);
+                $('#trailText4').html(result['data']['response']['results'][3]['fields']['trailText']);
+                $('#trailText5').html(result['data']['response']['results'][4]['fields']['trailText']);
+                $('#thumbnail1').attr('src', result['data']['response']['results'][0]['fields']['thumbnail']);
+                $('#thumbnail2').attr('src', result['data']['response']['results'][1]['fields']['thumbnail']);
+                $('#thumbnail3').attr('src', result['data']['response']['results'][2]['fields']['thumbnail']);
+                $('#thumbnail4').attr('src', result['data']['response']['results'][3]['fields']['thumbnail']);
+                $('#thumbnail5').attr('src', result['data']['response']['results'][4]['fields']['thumbnail']);
+                $('#newsLink1').attr('href', result['data']['response']['results'][0]['fields']['shortUrl']);
+                $('#newsLink2').attr('href', result['data']['response']['results'][1]['fields']['shortUrl']);
+                $('#newsLink3').attr('href', result['data']['response']['results'][2]['fields']['shortUrl']);
+                $('#newsLink4').attr('href', result['data']['response']['results'][3]['fields']['shortUrl']);
+                $('#newsLink5').attr('href', result['data']['response']['results'][4]['fields']['shortUrl']);
 
 
 
 
-                console.log(result);
+                // console.log(result);
             }
         },
         error: function (jqXHR, textStatus, errorThrown) {
@@ -355,7 +435,6 @@ $('#newsLink5').attr('href', result['data']['response']['results'][4]['fields'][
         }
     });
 }
-
 
 
 

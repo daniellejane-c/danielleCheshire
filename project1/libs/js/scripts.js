@@ -51,12 +51,50 @@ $(document).ready(function () {
     }).addTo(map);
 
     L.easyButton("fa-solid fa-location-crosshairs", function () {
-        $("#geolocationModal").modal("show");
+        getLocation();
 
     }).addTo(map);
 
 
+
+var isMapCenteredOnLocation = false;
+
+function checkMapCenteredOnLocation() {
+    return map.distance(map.getCenter(), map.getBounds().getNorthEast()) < 50;
+}
+
+function getLocation() {
+    if (!isMapCenteredOnLocation) {
+        map.locate({ setView: true, maxZoom: 16 });
+    }
+}
+map.on('locationfound', function(e) {
+    isMapCenteredOnLocation = true;
+    onLocationFound(e);
+});
+map.on('locationerror', onLocationError);
+map.on('moveend', function() {
+    isMapCenteredOnLocation = checkMapCenteredOnLocation();
+});
+
+function onLocationFound(e) {
+    var radius = e.accuracy.toFixed(0);
+
+    L.marker(e.latlng).addTo(map)
+        .bindPopup("You are within " + radius + " meters from this point").openPopup();
+
+    L.circle(e.latlng, radius).addTo(map);
+}
+
+// Function to handle location error
+function onLocationError(e) {
+    alert(e.message);
+}
+
+
+
     populateDropdown();
+    getLocation();
 
     function populateDropdown() {
         var selectedCountry = $("#countrySelect").val(); // Retrieve selected country
@@ -77,24 +115,7 @@ $(document).ready(function () {
     //geolocation
 
     //geolocation - on load
-    map.locate({ setView: true, maxZoom: 16 });
 
-    function onLocationFound(e) {
-        var radius = e.accuracy;
-
-        L.marker(e.latlng).addTo(map)
-            .bindPopup("You are within " + radius + " meters from this point").openPopup();
-
-        L.circle(e.latlng, radius).addTo(map);
-    }
-
-    map.on('locationfound', onLocationFound);
-
-    function onLocationError(e) {
-        alert(e.message);
-    }
-
-    map.on('locationerror', onLocationError);
 
 });
 
@@ -106,7 +127,8 @@ $('#countrySelect').change(function () {
     moreCountryInfo(selectedCountry);
     showBorder(selectedCountry);
     getWiki(selectedCountry);
-    
+    getNews(selectedCountry);
+
 }
 );
 
@@ -127,7 +149,7 @@ function getCountryInfo(countryName) {
 
 
                 $('#placeName').html(result["data"]["results"][0]["components"]["country"]);
-                if (countryName === 'Western Sahara'){
+                if (countryName === 'Western Sahara') {
                     $('#placeName').html(result["data"]["results"][0]["components"]["place"]);
                 };
                 $('#isoCode').html(result["data"]["results"][0]["components"]["ISO_3166-1_alpha-3"]);
@@ -176,7 +198,7 @@ function moreCountryInfo(countryName) {
         data: {
             countryName: cleanedCountryName
         },
-        success: function(result) {
+        success: function (result) {
             $('#languageInfo').empty();
             $('#populationInfo').empty();
             $('#areaInfo').empty();
@@ -225,7 +247,7 @@ function weatherInfo(lat, lon) {
 
                 var tomorrowTimestamp = result['data']["daily"][1]["dt"];
                 var furtherTimestamp = result['data']["daily"][2]["dt"];
-                
+
                 function formatTimestamp(timestamp) {
                     var daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
                     var date = new Date(timestamp * 1000);
@@ -234,10 +256,10 @@ function weatherInfo(lat, lon) {
                     var month = date.getMonth() + 1;
                     return dayOfWeek + ' ' + (day < 10 ? '0' : '') + day + '/' + (month < 10 ? '0' : '') + month;
                 }
-                
+
                 var tomorrowDate = formatTimestamp(tomorrowTimestamp);
                 var furtherDate = formatTimestamp(furtherTimestamp);
-                
+
                 $("#tomorrowDate").html(tomorrowDate);
                 $("#furtherDate").html(furtherDate);
 
@@ -258,9 +280,9 @@ function weatherInfo(lat, lon) {
 
             }
         },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.log(jqXHR, textStatus, errorThrown);
-            }
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR, textStatus, errorThrown);
+        }
 
 
     })
@@ -275,11 +297,11 @@ function getWiki(countryName) {
         data: {
             countryName: cleanedCountryName
         },
-        success: function(result) {
+        success: function (result) {
             if (result.status.name == "ok") {
                 $('#nameOfCountry').empty();
                 $('#summaryWiki').empty();
-               
+
                 var mobileLinkHTML = $('#mobileLink').html();
                 var desktopLinkHTML = $('#desktopLink').html();
 
@@ -288,23 +310,87 @@ function getWiki(countryName) {
 
                 $('#nameOfCountry').html(result['data']['title']);
                 $('#summaryWiki').html(result['data']['extract']);
-                
+
                 $('#desktopLink').html(desktopLinkHTML);
                 $('#mobileLink').html(mobileLinkHTML);
 
                 $('#desktopLink').attr('href', result['data']['content_urls']['desktop']['page']);
                 $('#mobileLink').attr('href', result['data']['content_urls']['mobile']['page']);
-                
+
                 $('#thumbnailImg').attr('src', result['data']['thumbnail']['source']);
             }
         },
-        error: function(jqXHR, textStatus, errorThrown) {
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR, textStatus, errorThrown);
+        }
+    });
+}
+function getNews(countryName) {
+    var cleanedCountryName = encodeURIComponent(countryName);
+    $.ajax({
+        url: '/clone/libs/php/news.php',
+        type: 'GET',
+        dataType: 'json',
+        data: {
+            countryName: cleanedCountryName
+        },
+        success: function (result) {
+            if (result.status.name == "ok") {
+$('#headline1').html(result['data']['response']['results'][0]['fields']['headline']);
+$('#headline2').html(result['data']['response']['results'][1]['fields']['headline']);
+$('#headline3').html(result['data']['response']['results'][2]['fields']['headline']);
+$('#headline4').html(result['data']['response']['results'][3]['fields']['headline']);
+$('#headline5').html(result['data']['response']['results'][4]['fields']['headline']);
+$('#trailText1').html(result['data']['response']['results'][0]['fields']['trailText']);
+$('#trailText2').html(result['data']['response']['results'][1]['fields']['trailText']);
+$('#trailText3').html(result['data']['response']['results'][2]['fields']['trailText']);
+$('#trailText4').html(result['data']['response']['results'][3]['fields']['trailText']);
+$('#trailText5').html(result['data']['response']['results'][4]['fields']['trailText']);
+$('#thumbnail1').attr('src', result['data']['response']['results'][0]['fields']['thumbnail']);
+$('#thumbnail2').attr('src', result['data']['response']['results'][1]['fields']['thumbnail']);
+$('#thumbnail3').attr('src', result['data']['response']['results'][2]['fields']['thumbnail']);
+$('#thumbnail4').attr('src', result['data']['response']['results'][3]['fields']['thumbnail']);
+$('#thumbnail5').attr('src', result['data']['response']['results'][4]['fields']['thumbnail']);
+$('#newsLink1').attr('href', result['data']['response']['results'][0]['fields']['shortUrl']);
+$('#newsLink2').attr('href', result['data']['response']['results'][1]['fields']['shortUrl']);
+$('#newsLink3').attr('href', result['data']['response']['results'][2]['fields']['shortUrl']);
+$('#newsLink4').attr('href', result['data']['response']['results'][3]['fields']['shortUrl']);
+$('#newsLink5').attr('href', result['data']['response']['results'][4]['fields']['shortUrl']);
+
+
+
+
+                console.log(result);
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
             console.log(jqXHR, textStatus, errorThrown);
         }
     });
 }
 
+function getLocation() {
+    map.locate({ setView: true, maxZoom: 16 });
+}
 
+function onLocationFound(e) {
+    var radius = e.accuracy;
+
+    L.marker(e.latlng).addTo(map)
+        .bindPopup("You are within " + radius + " meters from this point").openPopup();
+
+    L.circle(e.latlng, radius).addTo(map);
+
+    located = true; // Set located to true since user is now located
+}
+
+map.on('locationfound', onLocationFound);
+
+function onLocationError(e) {
+    alert(e.message);
+}
+
+map.on('locationerror', onLocationError);
 
 
 
@@ -356,7 +442,7 @@ function showBorder(selectedCountry) {
                 .addTo(map)
                 .bindPopup(countryName)
                 .openPopup();
-    
+
         },
         error: function (xhr, status, error) {
             console.error("Error fetching GeoJSON data:", error);

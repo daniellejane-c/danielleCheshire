@@ -269,7 +269,7 @@
               </td>
 
             </tr>
-            
+
           </table>
         </div>
         <div class="modal-footer">
@@ -307,13 +307,13 @@
                       <h6 class="display-4 mb-0 font-weight-bold" style="color: #1C2331;">
                         <i class="fas fa-arrow-up fa-fw" style="color: #868B94;"></i>
                         <span id="maxTemp1" class="ms-1">
-                          
+
                         </span>
                       </h6>
                       <h6 class="display-4 mb-0 font-weight-bold" style="color: #1C2331;">
                         <i class="fas fa-arrow-down fa-fw" style="color: #868B94;"></i>
                         <span id="minTemp1" class="ms-1">
-                          
+
                         </span>
                       </h6>
                       <span id="weatherSummary1" class="small" style="color: #868B94"></span>
@@ -394,7 +394,7 @@
       </div>
     </div>
   </div>
- 
+
 
 
 
@@ -403,36 +403,37 @@
   <!--wikipedia modal-->
   <div id="wikiModal" class="modal" data-bs-backdrop="false" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content shadow">
-            <div class="modal-header bg-success bg-gradient text-white">
-                <h5 class="modal-title">Wikipedia</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="card" style="width: 29rem;">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-auto">
-                                <img id="thumbnailImg">
-                            </div>
-                            <div class="col">
-                                <h5 id="nameOfCountry" class="card-title">Card title</h5>
-                                <p id="summaryWiki" class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                <h6 class="card-subtitle mb-2 text-muted">Click to read more...</h6>
-                                <a id="desktopLink" class="btn btn-success" style="margin-right: 10px;" target="_blank">Desktop Link</a>
-                                <a id="mobileLink" class="btn btn-success" target="_blank">Mobile Link</a>
-                                
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-success btn-sm" data-bs-dismiss="modal">Close</button>
-            </div>
+      <div class="modal-content shadow">
+        <div class="modal-header bg-success bg-gradient text-white">
+          <h5 class="modal-title">Wikipedia</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+        <div class="modal-body">
+          <div class="card" style="width: 29rem;">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-auto">
+                  <img id="thumbnailImg">
+                </div>
+                <div class="col">
+                  <h5 id="nameOfCountry" class="card-title"></h5>
+                  <p id="summaryWiki" class="card-text"></p>
+                  <h6 class="card-subtitle mb-2 text-muted">Click to read more...</h6>
+                  <a id="desktopLink" class="btn btn-success" style="margin-right: 10px;" target="_blank">Desktop
+                    Link</a>
+                  <a id="mobileLink" class="btn btn-success" target="_blank">Mobile Link</a>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-success btn-sm" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
 
 
 
@@ -451,34 +452,88 @@
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <p>this is the news</p>
+          <ul class="list-unstyled">
+            <li class="media border-bottom pb-3">
+              <div class="row">
+                <div class="col-md-3">
+                  <img id="thumbnail1" class="mr-3">
+                </div>
+                <div class="col-md-9">
+                  <div class="media-body">
+                    <h5 id="headline1" class="mt-0 mb-1"></h5>
+                    <h6 id="trailText1" class="text-muted"> </h6>
+                    <a id="newsLink1" class="btn btn-link" target="_blank">Click to read more...</a>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li class="media border-bottom py-3">
+              <div class="row">
+                <div class="col-md-3">
+                  <img id="thumbnail2" class="mr-3">
+                </div>
+                <div class="col-md-9">
+                  <div class="media-body">
+                    <h5 id="headline2" class="mt-0 mb-1"></h5>
+                    <h6 id="trailText2" class="text-muted"> </h6>
+                    <a id="newsLink2" class="btn btn-link" target="_blank">Click to read more...</a>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li class="media border-bottom py-3">
+              <div class="row">
+                <div class="col-md-3">
+                  <img id="thumbnail3" class="mr-3">
+                </div>
+                <div class="col-md-9">
+                  <div class="media-body">
+                    <h5 id="headline3" class="mt-0 mb-1"></h5>
+                    <h6 id="trailText3" class="text-muted"> </h6>
+                    <a id="newsLink3" class="btn btn-link" target="_blank">Click to read more...</a>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li class="media border-bottom pb-3">
+              <div class="row">
+                <div class="col-md-3">
+                  <img id="thumbnail4" class="mr-3">
+                </div>
+                <div class="col-md-9">
+                  <div class="media-body">
+                    <h5 id="headline4" class="mt-0 mb-1"></h5>
+                    <h6 id="trailText4" class="text-muted"> </h6>
+                    <a id="newsLink4" class="btn btn-link" target="_blank">Click to read more...</a>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li class="media border-bottom py-3">
+              <div class="row">
+                <div class="col-md-3">
+                  <img id="thumbnail5" class="mr-3">
+                </div>
+                <div class="col-md-9">
+                  <div class="media-body">
+                    <h5 id="headline5" class="mt-0 mb-1"></h5>
+                    <h6 id="trailText5" class="text-muted"> </h6>
+                    <a id="newsLink5" class="btn btn-link" target="_blank">Click to read more...</a>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer d-flex justify-content-between align-items-center">
+          <h6 class="text-muted">Source: The Guardian</h6>
           <button type="button" class="btn btn-outline-success btn-sm" data-bs-dismiss="modal">Close</button>
         </div>
+        
       </div>
     </div>
   </div>
-  <!--find your location-->
-  <div id="geolocationModal" class="modal" data-bs-backdrop="false" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-      <div class="modal-content shadow">
-        <div class="modal-header bg-success bg-gradient text-white">
-          <h5 class="modal-title">Location</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <p>This will show you where you are</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-success btn-sm" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.8.0/leaflet.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.2/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.6.1/toastify.min.js"></script>

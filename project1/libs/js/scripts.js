@@ -78,8 +78,32 @@ $(document).ready(function () {
     //geolocation
 
     //geolocation - on load
-
-
+    function getLocation() {
+        map.locate({
+            setView: true,
+            maxZoom: 16,
+            enableHighAccuracy: true, // Request high accuracy
+            timeout: 10000, // Set timeout to 10 seconds
+            maximumAge: 60000 // Accept cached location data up to 1 minute old
+        });
+    
+        function onLocationFound(e) {
+            var radius = e.accuracy.toFixed(0);
+    
+            L.marker(e.latlng).addTo(map)
+                .bindPopup("You are within " + radius + " meters from this point").openPopup();
+    
+            L.circle(e.latlng, radius).addTo(map);
+        }
+    
+        map.on('locationfound', onLocationFound);
+    
+        function onLocationError(e) {
+            alert("Error getting location: " + e.message);
+        }
+    
+        map.on('locationerror', onLocationError);
+    }
 });
 
 //when selecting country.
@@ -253,41 +277,41 @@ function weatherInfo(lat, lon) {
 
 function getWiki(countryName) {
     var cleanedCountryName = countryName.replace(/\s+/g, '_');
-    $.ajax({
-        url: '/clone/libs/php/wiki.php',
-        type: 'GET',
-        dataType: 'json',
-        data: {
-            countryName: cleanedCountryName
-        },
-        success: function (result) {
-            if (result.status.name == "ok") {
-                $('#nameOfCountry').empty();
-                $('#summaryWiki').empty();
-
-                var mobileLinkHTML = $('#mobileLink').html();
-                var desktopLinkHTML = $('#desktopLink').html();
-
-                $('#desktopLink').removeAttr('href').empty();
-                $('#mobileLink').removeAttr('href').empty();
-
-                $('#nameOfCountry').html(result['data']['title']);
-                $('#summaryWiki').html(result['data']['extract']);
-
-                $('#desktopLink').html(desktopLinkHTML);
-                $('#mobileLink').html(mobileLinkHTML);
-
-                $('#desktopLink').attr('href', result['data']['content_urls']['desktop']['page']);
-                $('#mobileLink').attr('href', result['data']['content_urls']['mobile']['page']);
-
-                $('#thumbnailImg').attr('src', result['data']['thumbnail']['source']);
-            }
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            console.log(jqXHR, textStatus, errorThrown);
-        }
-    });
-}
+     $.ajax({
+         url: '/clone/libs/php/wiki.php',
+         type: 'GET',
+         dataType: 'json',
+         data: {
+             countryName: cleanedCountryName
+         },
+         success: function (result) {
+             if (result.status.name == "ok") {
+                 $('#nameOfCountry').empty();
+                 $('#summaryWiki').empty();
+ 
+                 var mobileLinkHTML = $('#mobileLink').html();
+                 var desktopLinkHTML = $('#desktopLink').html();
+ 
+                 $('#desktopLink').removeAttr('href').empty();
+                 $('#mobileLink').removeAttr('href').empty();
+ 
+                 $('#nameOfCountry').html(result['data']['title']);
+                 $('#summaryWiki').html(result['data']['extract']);
+ 
+                 $('#desktopLink').html(desktopLinkHTML);
+                 $('#mobileLink').html(mobileLinkHTML);
+ 
+                 $('#desktopLink').attr('href', result['data']['content_urls']['desktop']['page']);
+                 $('#mobileLink').attr('href', result['data']['content_urls']['mobile']['page']);
+ 
+                 $('#thumbnailImg').attr('src', result['data']['thumbnail']['source']);
+             }
+         },
+         error: function (jqXHR, textStatus, errorThrown) {
+             console.log(jqXHR, textStatus, errorThrown);
+         }
+     });
+ }
 function getNews(countryName) {
     var cleanedCountryName = encodeURIComponent(countryName);
     $.ajax({
@@ -332,27 +356,7 @@ $('#newsLink5').attr('href', result['data']['response']['results'][4]['fields'][
     });
 }
 
-    function getLocation(){
-     map.locate({ setView: true, maxZoom: 16 });
 
-    function onLocationFound(e) {
-        var radius = e.accuracy.toFixed(0);
-
-        L.marker(e.latlng).addTo(map)
-            .bindPopup("You are within " + radius + " meters from this point").openPopup();
-
-        L.circle(e.latlng, radius).addTo(map);
-    }
-
-    map.on('locationfound', onLocationFound);
-
-    function onLocationError(e) {
-        alert(e.message);
-    }
-
-    map.on('locationerror', onLocationError);
-
-    };
 
 
 function showBorder(selectedCountry) {

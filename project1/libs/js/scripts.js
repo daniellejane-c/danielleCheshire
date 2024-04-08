@@ -53,49 +53,12 @@ $(document).ready(function () {
     L.easyButton("fa-solid fa-location-crosshairs", function () {
         getLocation();
 
+
     }).addTo(map);
-
-
-
-var isMapCenteredOnLocation = false;
-
-function checkMapCenteredOnLocation() {
-    return map.distance(map.getCenter(), map.getBounds().getNorthEast()) < 50;
-}
-
-function getLocation() {
-    if (!isMapCenteredOnLocation) {
-        map.locate({ setView: true, maxZoom: 16 });
-    }
-}
-map.on('locationfound', function(e) {
-    isMapCenteredOnLocation = true;
-    onLocationFound(e);
-});
-map.on('locationerror', onLocationError);
-map.on('moveend', function() {
-    isMapCenteredOnLocation = checkMapCenteredOnLocation();
-});
-
-function onLocationFound(e) {
-    var radius = e.accuracy.toFixed(0);
-
-    L.marker(e.latlng).addTo(map)
-        .bindPopup("You are within " + radius + " meters from this point").openPopup();
-
-    L.circle(e.latlng, radius).addTo(map);
-}
-
-// Function to handle location error
-function onLocationError(e) {
-    alert(e.message);
-}
-
 
 
     populateDropdown();
     getLocation();
-
     function populateDropdown() {
         var selectedCountry = $("#countrySelect").val(); // Retrieve selected country
         $.ajax({
@@ -289,7 +252,7 @@ function weatherInfo(lat, lon) {
 }
 
 function getWiki(countryName) {
-    var cleanedCountryName = encodeURIComponent(countryName);
+    var cleanedCountryName = countryName.replace(/\s+/g, '_');
     $.ajax({
         url: '/clone/libs/php/wiki.php',
         type: 'GET',
@@ -369,29 +332,27 @@ $('#newsLink5').attr('href', result['data']['response']['results'][4]['fields'][
     });
 }
 
-function getLocation() {
-    map.locate({ setView: true, maxZoom: 16 });
-}
+    function getLocation(){
+     map.locate({ setView: true, maxZoom: 16 });
 
-function onLocationFound(e) {
-    var radius = e.accuracy;
+    function onLocationFound(e) {
+        var radius = e.accuracy.toFixed(0);
 
-    L.marker(e.latlng).addTo(map)
-        .bindPopup("You are within " + radius + " meters from this point").openPopup();
+        L.marker(e.latlng).addTo(map)
+            .bindPopup("You are within " + radius + " meters from this point").openPopup();
 
-    L.circle(e.latlng, radius).addTo(map);
+        L.circle(e.latlng, radius).addTo(map);
+    }
 
-    located = true; // Set located to true since user is now located
-}
+    map.on('locationfound', onLocationFound);
 
-map.on('locationfound', onLocationFound);
+    function onLocationError(e) {
+        alert(e.message);
+    }
 
-function onLocationError(e) {
-    alert(e.message);
-}
+    map.on('locationerror', onLocationError);
 
-map.on('locationerror', onLocationError);
-
+    };
 
 
 function showBorder(selectedCountry) {

@@ -31,7 +31,7 @@ $(document).ready(function () {
     L.easyButton("fa fa-info", function () {
 
         $("#countryModal").modal("show");
-        // Call function to fetch data when modal is shown
+
     }).addTo(map);
 
     L.easyButton("fa fa-cloud-sun", function () {
@@ -117,44 +117,44 @@ $(document).ready(function () {
     }
 
     getCurrencies();
-    
+
 
     function getCurrencies() {
         $.ajax({
             url: '/clone/libs/php/currencies.php',
             type: 'get',
             dataType: 'json',
-            success: function(result) {
+            success: function (result) {
                 // Populate currency select
                 if (result.status.name == "ok") {
                     // Get select element
                     var select = $('#currencyModal .currency-select');
-    
+
                     // Clear existing options
                     select.empty();
-    
+
                     // Iterate over result and append options with keys
-                    $.each(result.data, function(code, name) {
+                    $.each(result.data, function (code, name) {
                         // Append option with both code and name
                         var option = $('<option>').val(code).text(code + " - " + name);
                         select.append(option);
                     });
-    
+
                     // Trigger change event to update exchange rate when a currency is selected
-                    select.change(function() {
+                    select.change(function () {
                         var selectedCurrency = $(this).val(); // Get the selected currency code
                         currencyExchange(selectedCurrency); // Call currencyConvert with the selected currency code
                     });
                 }
             },
-            error: function(jqXHR, textStatus, errorThrown) {
+            error: function (jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR, textStatus, errorThrown);
             }
         });
     }
-    
 
-// Function to convert currency
+
+    // Function to convert currency
     // Function to fetch exchange rates and perform currency conversion
     function currencyExchange() {
         var amount = $('#number').val(); // Get the amount to convert
@@ -163,10 +163,10 @@ $(document).ready(function () {
 
         // Make AJAX request to fetch latest exchange rates
         $.ajax({
-            url: 'https://openexchangerates.org/api/latest.json?app_id=67dfb5b618574153adb56e19b8955114',
+            url: '/clone/libs/php/exchangeRate.php',
             type: 'GET',
             dataType: 'json',
-            success: function(response) {
+            success: function (response) {
                 // Calculate the converted amount
                 var exchangeRate = response.rates[targetCurrency];
                 var convertedAmount = (amount * exchangeRate);
@@ -174,7 +174,7 @@ $(document).ready(function () {
                 // Display the converted amount in the output field
                 $('#output').val(convertedAmount);
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.error('Error fetching exchange rates:', error);
             }
         });
@@ -184,7 +184,7 @@ $(document).ready(function () {
     $('#number').on('input', currencyExchange);
 });
 
-    
+
 
 //when selecting country.
 $('#countrySelect').change(function () {
@@ -356,41 +356,41 @@ function weatherInfo(lat, lon) {
 }
 
 function getWiki(countryName) {
-    var cleanedCountryName = countryName.replace(/\s+/g, '_');
-    $.ajax({
-        url: '/clone/libs/php/wiki.php',
-        type: 'GET',
-        dataType: 'json',
-        data: {
-            countryName: cleanedCountryName
-        },
-        success: function (result) {
-            if (result.status.name == "ok") {
-                $('#nameOfCountry').empty();
-                $('#summaryWiki').empty();
+var cleanedCountryName = countryName.replace(/\s+/g, '_');
+        $.ajax({
+            url: '/clone/libs/php/wiki.php',
+            type: 'GET',
+            dataType: 'json',
+            data: {
+                countryName: cleanedCountryName
+            },
+            success: function (result) {
+                if (result.status.name == "ok") {
+                    $('#nameOfCountry').empty();
+                    $('#summaryWiki').empty();
 
-                var mobileLinkHTML = $('#mobileLink').html();
-                var desktopLinkHTML = $('#desktopLink').html();
+                    var mobileLinkHTML = $('#mobileLink').html();
+                    var desktopLinkHTML = $('#desktopLink').html();
 
-                $('#desktopLink').removeAttr('href').empty();
-                $('#mobileLink').removeAttr('href').empty();
+                    $('#desktopLink').removeAttr('href').empty();
+                    $('#mobileLink').removeAttr('href').empty();
 
-                $('#nameOfCountry').html(result['data']['title']);
-                $('#summaryWiki').html(result['data']['extract']);
+                    $('#nameOfCountry').html(result['data']['title']);
+                    $('#summaryWiki').html(result['data']['extract']);
 
-                $('#desktopLink').html(desktopLinkHTML);
-                $('#mobileLink').html(mobileLinkHTML);
+                    $('#desktopLink').html(desktopLinkHTML);
+                    $('#mobileLink').html(mobileLinkHTML);
 
-                $('#desktopLink').attr('href', result['data']['content_urls']['desktop']['page']);
-                $('#mobileLink').attr('href', result['data']['content_urls']['mobile']['page']);
+                    $('#desktopLink').attr('href', result['data']['content_urls']['desktop']['page']);
+                    $('#mobileLink').attr('href', result['data']['content_urls']['mobile']['page']);
 
-                $('#thumbnailImg').attr('src', result['data']['thumbnail']['source']);
+                    $('#thumbnailImg').attr('src', result['data']['thumbnail']['source']);
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR, textStatus, errorThrown);
             }
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            console.log(jqXHR, textStatus, errorThrown);
-        }
-    });
+        });
 }
 function getNews(countryName) {
     var cleanedCountryName = encodeURIComponent(countryName);
@@ -446,76 +446,56 @@ function showBorder(selectedCountry) {
         }
     });
 
-    if (countryMarker) {
-        map.removeLayer(countryMarker);
-    }
 
-    // Fetch border data for the selected country
+    // Fetch border data for the selected country from PHP
     $.ajax({
         dataType: "json",
-        url: "/clone/libs/php/countryBorders.geo.json",
+        url: "/clone/libs/php/getCoordinates.php",
+        data: { selectedCountry: selectedCountry }, // Pass selected country name to PHP
         success: function (data) {
-            // Find the selected country in the border data
-            var selectedFeature = data.features.find(function (feature) {
-                return feature.properties.name === selectedCountry || feature.properties.name === selectedCountry;
+            // Find the selected country data
+            var selectedCountryData = data.find(function(countryData) {
+                return countryData.name === selectedCountry;
             });
 
-            if (!selectedFeature) {
-                console.error("Selected country not found.");
-                return;
+            if (selectedCountryData) {
+                var coordinates = selectedCountryData.coordinates;
+
+                // Flip the coordinates
+                coordinates = flipCoordinates(coordinates);
+
+                // Draw the polygon for the selected country
+                var polygon = L.polygon(coordinates, { color: 'blue' }).addTo(map);
+
+                // You can customize further actions here, such as adding popups or tooltips
+                polygon.bindPopup("Country: " + selectedCountry);
+                
+                // Fit the map view to the bounds of the selected polygon
+                var bounds = polygon.getBounds();
+                map.fitBounds(bounds);
+            } else {
+                console.error("Coordinates not found for the selected country:", selectedCountry);
             }
-
-            var coordinates = selectedFeature.geometry.coordinates;
-
-            // Flip the coordinates
-            coordinates = flipCoordinates(coordinates);
-
-            // Draw the polygon for the selected country
-            var polygon = L.polygon(coordinates, { color: 'blue' }).addTo(map);
-
-            // Calculate bounding box for the polygon
-            var bounds = polygon.getBounds();
-
-            // Update map view with the bounding box
-            updateMapView(bounds);
-
-            var countryName = selectedFeature.properties.name;
-
-            // Add marker at the center of the country
-            countryMarker = L.marker(polygon.getBounds().getCenter())
-                .addTo(map)
-                .bindPopup(countryName)
-                .openPopup();
-
         },
         error: function (xhr, status, error) {
-            console.error("Error fetching GeoJSON data:", error);
+            console.error("Error fetching border data:", error);
         }
     });
 }
-//may need to change to php rather than api
 
-//update the maps view based on selected country
-function updateMapView(bounds) {
-    // Fit the map view to the provided bounding box
-    map.fitBounds(bounds);
-}
-
-
-//flip coordinates for correct alignment
+// Function to flip coordinates for correct alignment
 function flipCoordinates(coordinates) {
     for (var i = 0; i < coordinates.length; i++) {
-        //single coordinate pair
+        // Single coordinate pair
         if (Array.isArray(coordinates[i]) && typeof coordinates[i][0] === 'number' && typeof coordinates[i][1] === 'number') {
             // Swap latitude and longitude
             var temp = coordinates[i][0];
             coordinates[i][0] = coordinates[i][1];
             coordinates[i][1] = temp;
         } else {
-            //array of coordinates, recursively call flipCoordinates
+            // Array of coordinates, recursively call flipCoordinates
             coordinates[i] = flipCoordinates(coordinates[i]);
         }
     }
     return coordinates;
-};
-
+}

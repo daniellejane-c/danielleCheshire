@@ -1,11 +1,10 @@
-// GLOBAL DECLARATIONS
-
 var map;
 var layerControl;
-var countryMarker;
 var proximityRadius = 2;
 
-//create map layers
+
+
+// Create map layers
 var streets = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
     attribution: "Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012"
 });
@@ -13,11 +12,11 @@ var satellite = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/service
     attribution: "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
 });
 
-
 var basemaps = {
     "Streets": streets,
     "Satellite": satellite,
 };
+
 //on ready function
 $(document).ready(function () {
     map = L.map("map", {
@@ -26,7 +25,7 @@ $(document).ready(function () {
 
     layerControl = L.control.layers(basemaps).addTo(map);
 
-
+   
     //buttons - each declare whether there is additional markers shown the selected country. if not, onclick puts them on the map
     L.easyButton("fa fa-info", function () {
 
@@ -195,6 +194,7 @@ $('#countrySelect').change(function () {
     showBorder(selectedCountry);
     getWiki(selectedCountry);
     getNews(selectedCountry);
+
 
 }
 );
@@ -435,6 +435,156 @@ function getNews(countryName) {
         }
     });
 }
+function clearMarkers() {
+    map.removeLayer(markers);
+    markers.clearLayers();
+}
+
+function showAirports(lat, lng) {
+    $.ajax({
+        url: '/clone/libs/php/airports.php',
+        type: 'GET',
+        dataType: 'json',
+        data: {
+            lat: lat,
+            lng: lng
+        },
+        success: function(result) {
+            console.log("Airport Data:", result);
+            
+            if (result && result.data && Array.isArray(result.data)) {
+                // Initialize Leaflet map if not already initialized
+                if (!map) {
+                    console.error("Map object is not available.");
+                    return;
+                }
+
+                // Initialize marker cluster group
+                var markers = L.markerClusterGroup();
+
+                // Loop through the data array and add markers to the cluster group
+                result.data.forEach(function (airport) {
+                    // Create a custom icon using Font Awesome
+                    var customIcon = L.divIcon({
+                        className: 'leaflet-div-icon',
+                        html: '<i class="fas fa-plane" style="color: #82d5ee;"></i>',
+                        iconSize: [24, 24]
+                    });
+                    
+                    var marker = L.marker([parseFloat(airport.lat), parseFloat(airport.lng)], {icon: customIcon});
+                    marker.bindPopup(airport.name); // Adjust popup content as needed
+                    markers.addLayer(marker);
+                });
+
+                // Add marker cluster group to the map
+                map.addLayer(markers);
+            } else {
+                console.error("Invalid airport data:", result);
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.error("Error:", jqXHR, textStatus, errorThrown);
+        }
+    });
+}
+
+function showCities(lat, lng) {
+    $.ajax({
+        url: '/clone/libs/php/cities.php',
+        type: 'GET',
+        dataType: 'json',
+        data: {
+            lat: lat,
+            lng: lng
+        },
+        success: function(result) {
+            console.log("City Data:", result);
+            
+            if (result && result.data && Array.isArray(result.data)) {
+                // Initialize Leaflet map if not already initialized
+                if (!map) {
+                    console.error("Map object is not available.");
+                    return;
+                }
+
+                // Initialize marker cluster group
+                var markers = L.markerClusterGroup();
+
+                // Loop through the data array and add markers to the cluster group
+                result.data.forEach(function (city) {
+                    // Create a custom icon using Font Awesome
+                    var customIcon = L.divIcon({
+                        className: 'leaflet-div-icon',
+                        html: '<i class="fas fa-city" style="color: #5F9EA0;"></i>',
+                        iconSize: [24, 24]
+                    });
+                    
+                    var marker = L.marker([parseFloat(city.lat), parseFloat(city.lng)], {icon: customIcon});
+                    marker.bindPopup(city.name); // Adjust popup content as needed
+                    markers.addLayer(marker);
+                });
+
+                // Add marker cluster group to the map
+                map.addLayer(markers);
+            } else {
+                console.error("Invalid city data:", result);
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.error("Error:", jqXHR, textStatus, errorThrown);
+        }
+    });
+}
+function showCastles(lat, lng) {
+    $.ajax({
+        url: '/clone/libs/php/castles.php',
+        type: 'GET',
+        dataType: 'json',
+        data: {
+            lat: lat,
+            lng: lng
+        },
+        success: function(result) {
+            console.log("Castle Data:", result);
+            
+            if (result && result.data && Array.isArray(result.data)) {
+                // Initialize Leaflet map if not already initialized
+                if (!map) {
+                    console.error("Map object is not available.");
+                    return;
+                }
+
+                // Initialize marker cluster group
+                var markers = L.markerClusterGroup();
+
+                // Loop through the data array and add markers to the cluster group
+                result.data.forEach(function (castle) {
+                    // Create a custom icon using Font Awesome
+                    var customIcon = L.divIcon({
+                        className: 'leaflet-div-icon',
+                        html: '<i class="fas fa-chess-rook" style="color: #ee9582;"></i>',
+                        iconSize: [24, 24]
+                    });
+                    
+                    var marker = L.marker([parseFloat(castle.lat), parseFloat(castle.lng)], {icon: customIcon});
+                    marker.bindPopup(castle.name); // Adjust popup content as needed
+                    markers.addLayer(marker);
+                });
+
+                // Add marker cluster group to the map
+                map.addLayer(markers);
+            } else {
+                console.error("Invalid castle data:", result);
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.error("Error:", jqXHR, textStatus, errorThrown);
+        }
+    });
+}
+
+
+
 
 
 
@@ -457,22 +607,33 @@ function showBorder(selectedCountry) {
             var selectedCountryData = data.find(function(countryData) {
                 return countryData.name === selectedCountry;
             });
-
+        
             if (selectedCountryData) {
                 var coordinates = selectedCountryData.coordinates;
-
+        
                 // Flip the coordinates
                 coordinates = flipCoordinates(coordinates);
-
+        
                 // Draw the polygon for the selected country
                 var polygon = L.polygon(coordinates, { color: 'blue' }).addTo(map);
-
+        
                 // You can customize further actions here, such as adding popups or tooltips
                 polygon.bindPopup("Country: " + selectedCountry);
-                
+        
                 // Fit the map view to the bounds of the selected polygon
                 var bounds = polygon.getBounds();
                 map.fitBounds(bounds);
+        
+                // Get the midpoint of the bounds
+                var center = bounds.getCenter();
+                var midpointLatLng = [center.lat, center.lng];
+        
+                console.log("Midpoint LatLng:", midpointLatLng);
+        
+                // Call showAirports function with the latitude and longitude of the midpoint
+                showAirports(midpointLatLng[0], midpointLatLng[1]);
+                showCities(midpointLatLng[0], midpointLatLng[1]);
+                showCastles(midpointLatLng[0], midpointLatLng[1]);
             } else {
                 console.error("Coordinates not found for the selected country:", selectedCountry);
             }
@@ -481,8 +642,8 @@ function showBorder(selectedCountry) {
             console.error("Error fetching border data:", error);
         }
     });
+    
 }
-
 // Function to flip coordinates for correct alignment
 function flipCoordinates(coordinates) {
     for (var i = 0; i < coordinates.length; i++) {

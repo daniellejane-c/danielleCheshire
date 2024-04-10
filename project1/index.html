@@ -20,10 +20,10 @@
 </head>
 
 <body>
-  
+
   <span id="selectContainer">
     <select id="countrySelect" class="form-select shadow-sm">
-      <option selected>Select a country...</option>
+      <option disabled selected value="">Select a country...</option>
       <!-- populate from an AJAX CALL to a PHP routine that returns a JSON object that is an array of just ISO codes and names from countryBorders.geo.json -->
     </select>
   </span>
@@ -524,7 +524,7 @@
   </div>
 
 
-<!--currency-->
+  <!--currency-->
   <div id="currencyModal" class="modal" data-bs-backdrop="false" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg container-fluid">
       <div class="modal-content shadow">
@@ -537,7 +537,8 @@
             <!-- First Card -->
             <div class="row">
               <div class="col-md-6">
-                <input type="number" class="form-control" id="number" placeholder="00000">
+                <input type="number" class="form-control" id="number" placeholder="00000" min="0"
+                  oninput="validity.valid||(value='');">
               </div>
               <div class="col-md-6">
                 <div class="input-group">
@@ -563,29 +564,27 @@
       </div>
     </div>
   </div>
-  
-            
-
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </div>
 
 
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.8.0/leaflet.js"></script>
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.2/jquery.min.js"></script>
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.6.1/toastify.min.js"></script>
-          <script
-            src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
-          <script
-            src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-extra-markers/1.2.1/js/leaflet.extra-markers.js"></script>
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.min.js"></script>
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.EasyButton/2.4.0/easy-button.min.js"></script>
-          <script src="/clone/libs/js/scripts.js"></script>
+
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+
+  </div>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.8.0/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.2/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.6.1/toastify.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-extra-markers/1.2.1/js/leaflet.extra-markers.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.EasyButton/2.4.0/easy-button.min.js"></script>
+  <script src="/clone/libs/js/scripts.js"></script>
 </body>
 
 </html>

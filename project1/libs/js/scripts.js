@@ -1,8 +1,9 @@
 var map;
 var layerControl;
 var proximityRadius = 2;
-
-
+var airportsMarkers;
+var citiesMarkers;
+var castlesMarkers;
 
 // Create map layers
 var streets = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
@@ -17,7 +18,6 @@ var basemaps = {
     "Satellite": satellite,
 };
 
-//on ready function
 $(document).ready(function () {
     map = L.map("map", {
         layers: [streets]
@@ -25,49 +25,77 @@ $(document).ready(function () {
 
     layerControl = L.control.layers(basemaps).addTo(map);
 
-   
-    //buttons - each declare whether there is additional markers shown the selected country. if not, onclick puts them on the map
+
+    // Initialize marker cluster group
+    airportsMarkers = L.markerClusterGroup();
+    citiesMarkers = L.markerClusterGroup();
+    castlesMarkers = L.markerClusterGroup();
+
+    // Add the marker cluster group to the map
+    map.addLayer(airportsMarkers);
+    map.addLayer(citiesMarkers);
+    map.addLayer(castlesMarkers);
+
+    layerControl.addOverlay(airportsMarkers, "Airports");
+    layerControl.addOverlay(citiesMarkers, "Cities");
+    layerControl.addOverlay(castlesMarkers, "Castles");
+
+    map.on('overlayadd', function (layer) {
+        if (layer === airportsMarkers) {
+            showAirports(countryName, countryCode);
+        } else if (layer === citiesMarkers) {
+            showCities(countryName, countryCode);
+        } else if (layer === castlesMarkers) {
+            showCastles(countryName, countryCode);
+        }
+    });
+
+    // Event listener for hiding marker groups when their layers are removed
+    map.on('overlayremove', function (layer) {
+        if (layer === airportsMarkers) {
+            airportsMarkers.clearLayers();
+        } else if (layer === citiesMarkers) {
+            citiesMarkers.clearLayers();
+        } else if (layer === castlesMarkers) {
+            castlesMarkers.clearLayers();
+        }
+    });
+
+
+
+    //buttons 
     L.easyButton("fa fa-info", function () {
-
         $("#countryModal").modal("show");
-
     }).addTo(map);
 
     L.easyButton("fa fa-cloud-sun", function () {
-
         $("#weatherModal").modal("show");
     }).addTo(map);
 
     L.easyButton("fa-brands fa-wikipedia-w", function () {
-
         $("#wikiModal").modal("show");
-
     }).addTo(map);
 
     L.easyButton("fa-regular fa-newspaper", function () {
-
         $("#newsModal").modal("show");
-
-
     }).addTo(map);
 
     L.easyButton("fa-solid fa-coins", function () {
-
         $("#currencyModal").modal("show");
-
-
     }).addTo(map);
 
     L.easyButton("fa-solid fa-location-crosshairs", function () {
         getLocation();
-
-
     }).addTo(map);
 
+    $('#countrySelect').on('change', function () {
+        if (this.value === "") {
+            this.classList.add("placeholder");
+        }
+    })
 
-    populateDropdown();
-    getLocation();
-    getCurrencies();
+
+
     function populateDropdown() {
         var selectedCountry = $("#countrySelect").val(); // Retrieve selected country
         $.ajax({
@@ -87,7 +115,6 @@ $(document).ready(function () {
 
     //geolocation
 
-    //geolocation - on load
     function getLocation() {
         map.locate({
             setView: true,
@@ -104,6 +131,34 @@ $(document).ready(function () {
                 .bindPopup("You are within " + radius + " meters from this point").openPopup();
 
             L.circle(e.latlng, radius).addTo(map);
+
+            // Reverse geocoding - pass coordinates to the server
+            $.ajax({
+                url: '/clone/libs/php/reverseGeocode.php',
+                method: 'GET',
+                data: {
+                    lat: e.latlng.lat,
+                    lng: e.latlng.lng
+                },
+                success: function (result) {
+                    console.log(result); // Debug logging
+                    var country = result['data']['results'][0]['components']['country'];
+                    var iso2Code = result['data']['results'][0]['components']['ISO_3166-1_alpha-2'];
+                    console.log(country);
+                    console.log(iso2Code);
+                    getCountryInfo(country);
+                    moreCountryInfo(country);
+                    getWiki(country);
+                    getNews(country);
+                    showCastles(country, iso2Code);
+                    showAirports(country, iso2Code);
+                    showCities(country, iso2Code);
+
+                },
+                error: function (jqXHR, status, error) {
+                    console.error(jqXHR, status + ': ' + error);
+                }
+            });
         }
 
         map.on('locationfound', onLocationFound);
@@ -114,7 +169,6 @@ $(document).ready(function () {
 
         map.on('locationerror', onLocationError);
     }
-
     getCurrencies();
 
 
@@ -141,8 +195,8 @@ $(document).ready(function () {
 
                     // Trigger change event to update exchange rate when a currency is selected
                     select.change(function () {
-                        var selectedCurrency = $(this).val(); // Get the selected currency code
-                        currencyExchange(selectedCurrency); // Call currencyConvert with the selected currency code
+                        var selectedCurrency = $(this).val();
+                        currencyExchange(selectedCurrency);
                     });
                 }
             },
@@ -152,8 +206,6 @@ $(document).ready(function () {
         });
     }
 
-
-    // Function to convert currency
     // Function to fetch exchange rates and perform currency conversion
     function currencyExchange() {
         var amount = $('#number').val(); // Get the amount to convert
@@ -178,22 +230,29 @@ $(document).ready(function () {
             }
         });
     }
-
-    // Call currencyExchange function when the input value changes
     $('#number').on('input', currencyExchange);
+
+
+
+    getLocation();
+
+    populateDropdown();
 });
 
 
 
-//when selecting country.
 $('#countrySelect').change(function () {
     var selectedCountry = $(this).val();
+    var countryCode = $(this).find('option:selected').data('code');
     console.log(selectedCountry);
     getCountryInfo(selectedCountry);
     moreCountryInfo(selectedCountry);
     showBorder(selectedCountry);
     getWiki(selectedCountry);
     getNews(selectedCountry);
+    showCastles(selectedCountry, countryCode);
+    showAirports(selectedCountry, countryCode);
+    showCities(selectedCountry, countryCode);
 
 
 }
@@ -206,11 +265,10 @@ function getCountryInfo(countryName) {
         type: 'GET',
         dataType: 'json',
         data: {
-            countryName: cleanedCountryName
+            countryName: cleanedCountryName,
+
         },
         success: function (result) {
-
-            // console.log(JSON.stringify(result));
 
             if (result.status.name == "ok") {
 
@@ -241,8 +299,12 @@ function getCountryInfo(countryName) {
                 var longitudeNo = result["data"]["results"][0]["geometry"]["lng"];
                 var geometry = latitudeNo + ', ' + longitudeNo;
                 $('#geometryInfo').html(geometry);
+                var isoCode2 = result["data"]["results"][0]["components"]["ISO_3166-1_alpha-2"];
 
 
+                var currencySelect = $('#currencyModal .currency-select');
+                currencySelect.val(currencyCode);
+                currencySelect.trigger('change');
                 weatherInfo(latitudeNo, longitudeNo);
 
 
@@ -271,7 +333,6 @@ function moreCountryInfo(countryName) {
             $('#areaInfo').empty();
             $('#weekStart').empty();
             $('#coatOfArms').empty();
-            //console.log(JSON.stringify(result));
 
             if (result.status.name == "ok") {
 
@@ -308,7 +369,6 @@ function weatherInfo(lat, lon) {
         },
         success: function (result) {
 
-            //  console.log(JSON.stringify(result));
 
             if (result.status.name == "ok") {
 
@@ -356,41 +416,45 @@ function weatherInfo(lat, lon) {
 }
 
 function getWiki(countryName) {
-var cleanedCountryName = countryName.replace(/\s+/g, '_');
-        $.ajax({
-            url: '/clone/libs/php/wiki.php',
-            type: 'GET',
-            dataType: 'json',
-            data: {
-                countryName: cleanedCountryName
-            },
-            success: function (result) {
-                if (result.status.name == "ok") {
-                    $('#nameOfCountry').empty();
-                    $('#summaryWiki').empty();
+    var cleanedCountryName = countryName.replace(/\s+/g, '_');
+    if (countryName === "Bahamas") {
+        cleanedCountryName = "The_Bahamas";
+    }
 
-                    var mobileLinkHTML = $('#mobileLink').html();
-                    var desktopLinkHTML = $('#desktopLink').html();
+    $.ajax({
+        url: '/clone/libs/php/wiki.php',
+        type: 'GET',
+        dataType: 'json',
+        data: {
+            countryName: cleanedCountryName
+        },
+        success: function (result) {
+            if (result.status.name == "ok") {
+                $('#nameOfCountry').empty();
+                $('#summaryWiki').empty();
 
-                    $('#desktopLink').removeAttr('href').empty();
-                    $('#mobileLink').removeAttr('href').empty();
+                var mobileLinkHTML = $('#mobileLink').html();
+                var desktopLinkHTML = $('#desktopLink').html();
 
-                    $('#nameOfCountry').html(result['data']['title']);
-                    $('#summaryWiki').html(result['data']['extract']);
+                $('#desktopLink').removeAttr('href').empty();
+                $('#mobileLink').removeAttr('href').empty();
 
-                    $('#desktopLink').html(desktopLinkHTML);
-                    $('#mobileLink').html(mobileLinkHTML);
+                $('#nameOfCountry').html(result['data']['title']);
+                $('#summaryWiki').html(result['data']['extract']);
 
-                    $('#desktopLink').attr('href', result['data']['content_urls']['desktop']['page']);
-                    $('#mobileLink').attr('href', result['data']['content_urls']['mobile']['page']);
+                $('#desktopLink').html(desktopLinkHTML);
+                $('#mobileLink').html(mobileLinkHTML);
 
-                    $('#thumbnailImg').attr('src', result['data']['thumbnail']['source']);
-                }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log(jqXHR, textStatus, errorThrown);
+                $('#desktopLink').attr('href', result['data']['content_urls']['desktop']['page']);
+                $('#mobileLink').attr('href', result['data']['content_urls']['mobile']['page']);
+
+                $('#thumbnailImg').attr('src', result['data']['thumbnail']['source']);
             }
-        });
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR, textStatus, errorThrown);
+        }
+    });
 }
 function getNews(countryName) {
     var cleanedCountryName = encodeURIComponent(countryName);
@@ -427,7 +491,6 @@ function getNews(countryName) {
 
 
 
-                // console.log(result);
             }
         },
         error: function (jqXHR, textStatus, errorThrown) {
@@ -435,49 +498,46 @@ function getNews(countryName) {
         }
     });
 }
+
+
+var airportsMarkers = L.markerClusterGroup();
+var citiesMarkers = L.markerClusterGroup();
+var castlesMarkers = L.markerClusterGroup();
 function clearMarkers() {
-    map.removeLayer(markers);
-    markers.clearLayers();
+    airportsMarkers.clearLayers();
+    citiesMarkers.clearLayers();
+    castlesMarkers.clearLayers();
 }
 
-function showAirports(lat, lng) {
+function showAirports(countryName, countryCode) {
+    clearMarkers();
     $.ajax({
         url: '/clone/libs/php/airports.php',
         type: 'GET',
         dataType: 'json',
         data: {
-            lat: lat,
-            lng: lng
+            countryCode: countryCode
         },
-        success: function(result) {
-            console.log("Airport Data:", result);
-            
+        success: function (result) {
+            console.log("Airport:", result);
+
             if (result && result.data && Array.isArray(result.data)) {
-                // Initialize Leaflet map if not already initialized
-                if (!map) {
-                    console.error("Map object is not available.");
-                    return;
-                }
-
-                // Initialize marker cluster group
-                var markers = L.markerClusterGroup();
-
                 // Loop through the data array and add markers to the cluster group
                 result.data.forEach(function (airport) {
-                    // Create a custom icon using Font Awesome
+
                     var customIcon = L.divIcon({
                         className: 'leaflet-div-icon',
                         html: '<i class="fas fa-plane" style="color: #82d5ee;"></i>',
                         iconSize: [24, 24]
                     });
-                    
-                    var marker = L.marker([parseFloat(airport.lat), parseFloat(airport.lng)], {icon: customIcon});
-                    marker.bindPopup(airport.name); // Adjust popup content as needed
-                    markers.addLayer(marker);
+
+                    // Create a marker for each castle
+                    var marker = L.marker([parseFloat(airport['lat']), parseFloat(airport['lng'])], { icon: customIcon });
+                    marker.bindPopup(airport['name']);
+                    airportsMarkers.addLayer(marker); 
                 });
 
-                // Add marker cluster group to the map
-                map.addLayer(markers);
+                map.addLayer(airportsMarkers);
             } else {
                 console.error("Invalid airport data:", result);
             }
@@ -488,46 +548,36 @@ function showAirports(lat, lng) {
     });
 }
 
-function showCities(lat, lng) {
+function showCities(countryName, countryCode) {
+    clearMarkers();
     $.ajax({
         url: '/clone/libs/php/cities.php',
         type: 'GET',
         dataType: 'json',
         data: {
-            lat: lat,
-            lng: lng
+            countryCode: countryCode
         },
-        success: function(result) {
-            console.log("City Data:", result);
-            
+        success: function (result) {
+            console.log("city:", result);
+
             if (result && result.data && Array.isArray(result.data)) {
-                // Initialize Leaflet map if not already initialized
-                if (!map) {
-                    console.error("Map object is not available.");
-                    return;
-                }
-
-                // Initialize marker cluster group
-                var markers = L.markerClusterGroup();
-
-                // Loop through the data array and add markers to the cluster group
                 result.data.forEach(function (city) {
-                    // Create a custom icon using Font Awesome
+
                     var customIcon = L.divIcon({
                         className: 'leaflet-div-icon',
                         html: '<i class="fas fa-city" style="color: #5F9EA0;"></i>',
                         iconSize: [24, 24]
                     });
-                    
-                    var marker = L.marker([parseFloat(city.lat), parseFloat(city.lng)], {icon: customIcon});
-                    marker.bindPopup(city.name); // Adjust popup content as needed
-                    markers.addLayer(marker);
+
+                    // Create a marker for each castle
+                    var marker = L.marker([parseFloat(city['lat']), parseFloat(city['lng'])], { icon: customIcon });
+                    marker.bindPopup(city['name']); 
+                    citiesMarkers.addLayer(marker); 
                 });
 
-                // Add marker cluster group to the map
-                map.addLayer(markers);
+                map.addLayer(citiesMarkers);
             } else {
-                console.error("Invalid city data:", result);
+                console.error("Invalid castle data:", result);
             }
         },
         error: function (jqXHR, textStatus, errorThrown) {
@@ -535,44 +585,37 @@ function showCities(lat, lng) {
         }
     });
 }
-function showCastles(lat, lng) {
+
+
+
+function showCastles(countryName, countryCode) {
+    clearMarkers();
     $.ajax({
         url: '/clone/libs/php/castles.php',
         type: 'GET',
         dataType: 'json',
         data: {
-            lat: lat,
-            lng: lng
+            countryCode: countryCode
         },
-        success: function(result) {
+        success: function (result) {
             console.log("Castle Data:", result);
-            
+
             if (result && result.data && Array.isArray(result.data)) {
-                // Initialize Leaflet map if not already initialized
-                if (!map) {
-                    console.error("Map object is not available.");
-                    return;
-                }
-
-                // Initialize marker cluster group
-                var markers = L.markerClusterGroup();
-
-                // Loop through the data array and add markers to the cluster group
                 result.data.forEach(function (castle) {
-                    // Create a custom icon using Font Awesome
+
                     var customIcon = L.divIcon({
                         className: 'leaflet-div-icon',
                         html: '<i class="fas fa-chess-rook" style="color: #ee9582;"></i>',
                         iconSize: [24, 24]
                     });
-                    
-                    var marker = L.marker([parseFloat(castle.lat), parseFloat(castle.lng)], {icon: customIcon});
-                    marker.bindPopup(castle.name); // Adjust popup content as needed
-                    markers.addLayer(marker);
+
+                    // Create a marker for each castle
+                    var marker = L.marker([parseFloat(castle['lat']), parseFloat(castle['lng'])], { icon: customIcon });
+                    marker.bindPopup(castle['name']); 
+                    castlesMarkers.addLayer(marker); 
                 });
 
-                // Add marker cluster group to the map
-                map.addLayer(markers);
+                map.addLayer(castlesMarkers);
             } else {
                 console.error("Invalid castle data:", result);
             }
@@ -589,6 +632,7 @@ function showCastles(lat, lng) {
 
 
 function showBorder(selectedCountry) {
+
     // Clear existing polygons from the map
     map.eachLayer(function (layer) {
         if (layer instanceof L.Polygon) {
@@ -596,44 +640,31 @@ function showBorder(selectedCountry) {
         }
     });
 
-
     // Fetch border data for the selected country from PHP
     $.ajax({
         dataType: "json",
         url: "/clone/libs/php/getCoordinates.php",
-        data: { selectedCountry: selectedCountry }, // Pass selected country name to PHP
+        data: { selectedCountry: selectedCountry },
         success: function (data) {
             // Find the selected country data
-            var selectedCountryData = data.find(function(countryData) {
+            var selectedCountryData = data.find(function (countryData) {
                 return countryData.name === selectedCountry;
             });
-        
+
             if (selectedCountryData) {
                 var coordinates = selectedCountryData.coordinates;
-        
+
                 // Flip the coordinates
                 coordinates = flipCoordinates(coordinates);
-        
+
                 // Draw the polygon for the selected country
                 var polygon = L.polygon(coordinates, { color: 'blue' }).addTo(map);
-        
-                // You can customize further actions here, such as adding popups or tooltips
                 polygon.bindPopup("Country: " + selectedCountry);
-        
+
                 // Fit the map view to the bounds of the selected polygon
                 var bounds = polygon.getBounds();
                 map.fitBounds(bounds);
-        
-                // Get the midpoint of the bounds
-                var center = bounds.getCenter();
-                var midpointLatLng = [center.lat, center.lng];
-        
-                console.log("Midpoint LatLng:", midpointLatLng);
-        
-                // Call showAirports function with the latitude and longitude of the midpoint
-                showAirports(midpointLatLng[0], midpointLatLng[1]);
-                showCities(midpointLatLng[0], midpointLatLng[1]);
-                showCastles(midpointLatLng[0], midpointLatLng[1]);
+
             } else {
                 console.error("Coordinates not found for the selected country:", selectedCountry);
             }
@@ -642,7 +673,7 @@ function showBorder(selectedCountry) {
             console.error("Error fetching border data:", error);
         }
     });
-    
+
 }
 // Function to flip coordinates for correct alignment
 function flipCoordinates(coordinates) {

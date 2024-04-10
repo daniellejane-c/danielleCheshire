@@ -88,11 +88,7 @@ $(document).ready(function () {
         getLocation();
     }).addTo(map);
 
-    $('#countrySelect').on('change', function () {
-        if (this.value === "") {
-            this.classList.add("placeholder");
-        }
-    })
+
 
 
 

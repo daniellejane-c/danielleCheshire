@@ -5,18 +5,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gazeteer</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.8.0/leaflet.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.6.1/toastify.min.css">
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.min.css">
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.min.css">
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-extra-markers/1.2.1/css/leaflet.extra-markers.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.EasyButton/2.4.0/easy-button.min.css">
+  <link rel="stylesheet" href="/clone/libs/vendors/leaflet/dist/leaflet.css">
   <link rel="stylesheet" href="/clone/libs/css/style.css">
+  <link rel="stylesheet" href="/clone/libs/vendors/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/clone/libs/vendors/toastify-js/src/toastify.css">
+  <link rel="stylesheet" href="/clone/libs/vendors/leaflet.markercluster/dist/MarkerCluster.Default.css">
+  <link rel="stylesheet" href="/clone/libs/vendors/leaflet.markercluster/dist/MarkerCluster.css">
+  <link rel="stylesheet" href="/clone/libs/vendors/leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css">
+  <link rel="stylesheet" href="/clone/libs/vendors/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="/clone/libs/vendors/leaflet-easybutton/src/easy-button.css">
+
 </head>
 
 <body>
@@ -35,7 +33,7 @@
   <div id="countryModal" class="modal" data-bs-backdrop="false" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content shadow">
-        <div class="modal-header bg-success bg-gradient text-white">
+        <div class="modal-header bg-success bg-gradtypet text-white">
           <h5 class="modal-title">Country Information</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
@@ -43,15 +41,15 @@
           <table class="table table-striped">
             <tr>
 
-              <td class="text-center">
-                <i class="fa-solid fa-shield sfa-xl text-success"></i>
+              <td cltype="text-center">
+                <i class="fa-solid fa-shield sftypel text-success"></i>
               </td>
 
               <td>
                 Coat Of Arms:
               </td>
 
-              <td id="coatOfArms" class="text-end">
+              <td id="coatOfArms" cltype="text-end">
 
               </td>
 
@@ -59,15 +57,15 @@
 
             <tr>
 
-              <td class="text-center">
-                <i class="fa-solid fa-flag fa-xl text-success"></i>
+              <td cltype="text-center">
+                <i class="fa-solid fa-flag ftypel text-success"></i>
               </td>
 
               <td>
                 Flag:
               </td>
 
-              <td id="flagImg" class="text-end">
+              <td id="flagImg" cltype="text-end">
 
               </td>
 
@@ -76,30 +74,30 @@
 
             <tr>
 
-              <td class="text-center">
-                <i class="fa-solid fa-street-view fa-xl text-success"></i>
+              <td cltype="text-center">
+                <i class="fa-solid fa-street-view ftypel text-success"></i>
               </td>
 
               <td>
                 Country Name:
               </td>
 
-              <td id="placeName" class="text-end">
+              <td id="placeName" cltype="text-end">
 
               </td>
 
             </tr>
             <tr>
 
-              <td class="text-center">
-                <i class="fa-solid fa-globe fa-xl text-success"></i>
+              <td cltype="text-center">
+                <i class="fa-solid fa-globe ftypel text-success"></i>
               </td>
 
               <td>
                 ISO Code:
               </td>
 
-              <td id="isoCode" class="text-end">
+              <td id="isoCode" cltype="text-end">
 
               </td>
 
@@ -107,150 +105,150 @@
 
             <tr>
 
-              <td class="text-center">
-                <i class="fa-solid fa-map-pin fa-xl text-success"></i>
+              <td cltype="text-center">
+                <i class="fa-solid fa-map-pin ftypel text-success"></i>
               </td>
 
               <td>
                 Continent:
               </td>
 
-              <td id="continentInfo" class="text-end">
+              <td id="continentInfo" cltype="text-end">
 
               </td>
 
             </tr>
             <tr>
 
-              <td class="text-center">
-                <i class="fa-solid  fa-phone fa-xl text-success"></i>
+              <td cltype="text-center">
+                <i class="fa-solid  fa-phone ftypel text-success"></i>
               </td>
 
               <td>
                 Calling Code:
               </td>
 
-              <td id="callingCode" class="text-end">
+              <td id="callingCode" cltype="text-end">
 
               </td>
 
             </tr>
             <tr>
 
-              <td class="text-center">
-                <i class="fa-solid fa-money-bill fa-xl text-success"></i>
+              <td cltype="text-center">
+                <i class="fa-solid fa-money-bill ftypel text-success"></i>
               </td>
 
               <td>
                 Currency:
               </td>
 
-              <td id="currencyInfo" class="text-end">
+              <td id="currencyInfo" cltype="text-end">
 
               </td>
 
             </tr>
             <tr>
 
-              <td class="text-center">
-                <i class="fa-solid fa-car  fa-xl text-success"></i>
+              <td cltype="text-center">
+                <i class="fa-solid fa-car  ftypel text-success"></i>
               </td>
 
               <td>
                 Road information:
               </td>
 
-              <td id="roadInfo" class="text-end">
+              <td id="roadInfo" cltype="text-end">
 
               </td>
 
             </tr>
             <tr>
 
-              <td class="text-center">
-                <i class="fa-solid fa-clock fa-xl text-success"></i>
+              <td cltype="text-center">
+                <i class="fa-solid fa-clock ftypel text-success"></i>
               </td>
 
               <td>
                 Timezone:
               </td>
 
-              <td id="timezoneInfo" class="text-end">
+              <td id="timezoneInfo" cltype="text-end">
 
               </td>
 
             </tr>
             <tr>
 
-              <td class="text-center">
-                <i class="fa-solid fa-map-marker fa-xl text-success"></i>
+              <td cltype="text-center">
+                <i class="fa-solid fa-map-marker ftypel text-success"></i>
               </td>
 
               <td>
                 what3words:
               </td>
 
-              <td id="locationInfo" class="text-end">
+              <td id="locationInfo" cltype="text-end">
 
               </td>
 
             </tr>
             <tr>
 
-              <td class="text-center">
-                <i class="fa-solid fa-compass fa-xl text-success"></i>
+              <td cltype="text-center">
+                <i class="fa-solid fa-compass ftypel text-success"></i>
               </td>
 
               <td>
                 Coordinates:
               </td>
 
-              <td id="geometryInfo" class="text-end">
+              <td id="geometryInfo" cltype="text-end">
 
               </td>
 
             </tr>
             <tr>
 
-              <td class="text-center">
-                <i class="fa-solid fa-arrows-alt sfa-xl text-success"></i>
+              <td cltype="text-center">
+                <i class="fa-solid fa-arrows-alt sftypel text-success"></i>
               </td>
 
               <td>
                 Area:
               </td>
 
-              <td id="areaInfo" class="text-end">
+              <td id="areaInfo" cltype="text-end">
 
               </td>
 
             </tr>
             <tr>
 
-              <td class="text-center">
-                <i class="fa-solid fa-calendar sfa-xl text-success"></i>
+              <td cltype="text-center">
+                <i class="fa-solid fa-calendar sftypel text-success"></i>
               </td>
 
               <td>
                 Start of Week:
               </td>
 
-              <td id="weekStart" class="text-end">
+              <td id="weekStart" cltype="text-end">
 
               </td>
 
             </tr>
             <tr>
 
-              <td class="text-center">
-                <i class="fa-solid fa-language fa-xl text-success"></i>
+              <td cltype="text-center">
+                <i class="fa-solid fa-language ftypel text-success"></i>
               </td>
 
               <td>
                 Languages:
               </td>
 
-              <td id="languageInfo" class="text-end">
+              <td id="languageInfo" cltype="text-end">
 
               </td>
 
@@ -258,15 +256,15 @@
 
             <tr>
 
-              <td class="text-center">
-                <i class="fa-solid fa-users fa-xl text-success"></i>
+              <td cltype="text-center">
+                <i class="fa-solid fa-users ftypel text-success"></i>
               </td>
 
               <td>
                 Population:
               </td>
 
-              <td id="populationInfo" class="text-end">
+              <td id="populationInfo" cltype="text-end">
 
               </td>
 
@@ -285,7 +283,7 @@
   <div id="weatherModal" class="modal" data-bs-backdrop="false" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable container-fluid">
       <div class="modal-content shadow">
-        <div class="modal-header bg-success bg-gradient text-white">
+        <div class="modal-header bg-success bg-gradtypet text-white">
           <h5 class="modal-title">Weather Forecast</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
@@ -305,7 +303,7 @@
                       </h6>
 
                     </div>
-                    <div class="d-flex flex-column text-center mt-5 mb-4">
+                    <div class="d-flex flex-cotypen text-center mt-5 mb-4">
                       <h6 class="display-4 mb-0 font-weight-bold" style="color: #1C2331;">
                         <i class="fas fa-arrow-up fa-fw" style="color: #868B94;"></i>
                         <span id="maxTemp1" class="ms-1">
@@ -320,7 +318,7 @@
                       </h6>
                       <span id="weatherSummary1" class="small" style="color: #868B94"></span>
                     </div>
-                    <div class="text-center">
+                    <div cltype="text-center">
                       <div id="weatherImage1">
 
                       </div>
@@ -341,11 +339,11 @@
                       </h6>
 
                     </div>
-                    <div class="text-center" id="weatherImage2">
+                    <div cltype="text-center" id="weatherImage2">
 
                     </div>
-                    <div class="d-flex flex-column text-left mt-3 mb-2">
-                      <span id="weatherSummary2" class="small text-center"
+                    <div class="d-flex flex-cotypen text-left mt-3 mb-2">
+                      <span id="weatherSummary2" class="stypel text-center"
                         style="color: #868B94; font-size: 0.8rem;"></span>
                       <h6 class="display-5 mb-0 font-weight-bold" style="color: #1C2331; font-size: 1.4rem;">
                         <i class="fas fa-arrow-up  fa-fw" style="color: #868B94;"></i>
@@ -372,11 +370,11 @@
                       </h6>
 
                     </div>
-                    <div class="text-center" id="weatherImage3">
+                    <div cltype="text-center" id="weatherImage3">
 
                     </div>
-                    <div class="d-flex flex-column text-left mt-3 mb-2">
-                      <span id="weatherSummary3" class="small text-center"
+                    <div class="d-flex flex-cotypen text-left mt-3 mb-2">
+                      <span id="weatherSummary3" class="stypel text-center"
                         style="color: #868B94; font-size: 0.8rem;"></span>
                       <h6 class="display-5 mb-0 font-weight-bold" style="color: #1C2331; font-size: 1.4rem;">
                         <i class="fas fa-arrow-up  fa-fw" style="color: #868B94;"></i>
@@ -401,7 +399,7 @@
   <div id="wikiModal" class="modal" data-bs-backdrop="false" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content shadow">
-        <div class="modal-header bg-success bg-gradient text-white">
+        <div class="modal-header bg-success bg-gradtypet text-white">
           <h5 class="modal-title">Wikipedia</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
@@ -414,8 +412,8 @@
                 </div>
                 <div class="col">
                   <h5 id="nameOfCountry" class="card-title"></h5>
-                  <p id="summaryWiki" class="card-text"></p>
-                  <h6 class="card-subtitle mb-2 text-muted">Click to read more...</h6>
+                  <p id="summaryWiki" class="typed-text"></p>
+                  <h6 class="card-subtitle type2 text-muted">Click to read more...</h6>
                   <a id="desktopLink" class="btn btn-success" style="margin-right: 10px;" target="_blank">Desktop
                     Link</a>
                   <a id="mobileLink" class="btn btn-success" target="_blank">Mobile Link</a>
@@ -436,7 +434,7 @@
   <div id="newsModal" class="modal" data-bs-backdrop="false" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content shadow">
-        <div class="modal-header bg-success bg-gradient text-white">
+        <div class="modal-header bg-success bg-gradtypet text-white">
           <h5 class="modal-title">Overview</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
@@ -450,7 +448,7 @@
                 <div class="col-md-9">
                   <div class="media-body">
                     <h5 id="headline1" class="mt-0 mb-1"></h5>
-                    <h6 id="trailText1" class="text-muted"> </h6>
+                    <h6 id="trailText1" cltype="text-muted"> </h6>
                     <a id="newsLink1" class="btn btn-link" target="_blank">Click to read more...</a>
                   </div>
                 </div>
@@ -464,7 +462,7 @@
                 <div class="col-md-9">
                   <div class="media-body">
                     <h5 id="headline2" class="mt-0 mb-1"></h5>
-                    <h6 id="trailText2" class="text-muted"> </h6>
+                    <h6 id="trailText2" cltype="text-muted"> </h6>
                     <a id="newsLink2" class="btn btn-link" target="_blank">Click to read more...</a>
                   </div>
                 </div>
@@ -478,7 +476,7 @@
                 <div class="col-md-9">
                   <div class="media-body">
                     <h5 id="headline3" class="mt-0 mb-1"></h5>
-                    <h6 id="trailText3" class="text-muted"> </h6>
+                    <h6 id="trailText3" cltype="text-muted"> </h6>
                     <a id="newsLink3" class="btn btn-link" target="_blank">Click to read more...</a>
                   </div>
                 </div>
@@ -492,7 +490,7 @@
                 <div class="col-md-9">
                   <div class="media-body">
                     <h5 id="headline4" class="mt-0 mb-1"></h5>
-                    <h6 id="trailText4" class="text-muted"> </h6>
+                    <h6 id="trailText4" cltype="text-muted"> </h6>
                     <a id="newsLink4" class="btn btn-link" target="_blank">Click to read more...</a>
                   </div>
                 </div>
@@ -506,7 +504,7 @@
                 <div class="col-md-9">
                   <div class="media-body">
                     <h5 id="headline5" class="mt-0 mb-1"></h5>
-                    <h6 id="trailText5" class="text-muted"> </h6>
+                    <h6 id="trailText5" cltype="text-muted"> </h6>
                     <a id="newsLink5" class="btn btn-link" target="_blank">Click to read more...</a>
                   </div>
                 </div>
@@ -515,7 +513,7 @@
           </ul>
         </div>
         <div class="modal-footer d-flex justify-content-between align-items-center">
-          <h6 class="text-muted">Source: The Guardian</h6>
+          <h6 cltype="text-muted">Source: The Guardian</h6>
           <button type="button" class="btn btn-outline-success btn-sm" data-bs-dismiss="modal">Close</button>
         </div>
 
@@ -528,7 +526,7 @@
   <div id="currencyModal" class="modal" data-bs-backdrop="false" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg container-fluid">
       <div class="modal-content shadow">
-        <div class="modal-header bg-success bg-gradient text-white">
+        <div class="modal-header bg-success bg-gradtypet text-white">
           <h5 class="modal-title">Currency converter</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
@@ -542,7 +540,7 @@
               </div>
               <div class="col-md-6">
                 <div class="input-group">
-                  <i name="currency1" class="text-muted">USD - United States Dollar</i>
+                  <i name="currency1" cltype="text-muted">USD - United States Dollar</i>
 
                 </div>
               </div>
@@ -550,7 +548,7 @@
             <!-- Second Card -->
             <div class="row mt-3">
               <div class="col-md-6">
-                <input type="text" class="form-control" id="output" placeholder="00000" disabled>
+                <input ttype="text" class="form-control" id="output" placeholder="00000" disabled>
               </div>
               <div class="col-md-6">
                 <div class="input-group">
@@ -565,8 +563,6 @@
     </div>
   </div>
 
-
-
   </div>
   </div>
   </div>
@@ -577,14 +573,15 @@
   </div>
 
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.8.0/leaflet.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.2/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.6.1/toastify.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-extra-markers/1.2.1/js/leaflet.extra-markers.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.EasyButton/2.4.0/easy-button.min.js"></script>
-  <script src="/clone/libs/js/scripts.js"></script>
+  <script type="text/javascript" src="/clone/libs/vendors/leaflet/dist/leaflet.js"></script>
+  <script type="text/javascript" src="/clone/libs/vendors/jquery/dist/jquery.min.js"
+  <script type="text/javascript" src="/clone/libs/vendors/toastify-js/src/toastify.js"></script>
+  <script type="text/javascript" src="/clone/libs/vendors/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+  <script type="text/javascript"
+    src="/clone/libs/vendors/leaflet-extra-markers/dist/js/leaflet.extra-markers.js"></script>
+  <script type="text/javascript" src="/clone/libs/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/clone/libs/vendors/leaflet-easybutton/src/easy-button.js"></script>
+  <script type="text/javascript" src="/clone/libs/js/scripts.js"></script>
 </body>
 
 </html>

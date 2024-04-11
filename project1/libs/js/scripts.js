@@ -521,14 +521,16 @@ function showAirports(countryName, countryCode) {
                 // Loop through the data array and add markers to the cluster group
                 result.data.forEach(function (airport) {
 
-                    var customIcon = L.divIcon({
-                        className: 'leaflet-div-icon',
-                        html: '<i class="fas fa-plane" style="color: #82d5ee;"></i>',
-                        iconSize: [24, 24]
+                    var marker = L.ExtraMarkers.icon({
+                        icon: 'fas fa-plane',
+                        iconColor: '#fad0f0',
+                        markerColor: 'blue',
+                        shape: 'square',
+                        prefix: 'fa'
                     });
 
                     // Create a marker for each castle
-                    var marker = L.marker([parseFloat(airport['lat']), parseFloat(airport['lng'])], { icon: customIcon });
+                    var marker = L.marker([parseFloat(airport['lat']), parseFloat(airport['lng'])], { icon: marker });
                     marker.bindPopup(airport['name']);
                     airportsMarkers.addLayer(marker); 
                 });
@@ -559,14 +561,17 @@ function showCities(countryName, countryCode) {
             if (result && result.data && Array.isArray(result.data)) {
                 result.data.forEach(function (city) {
 
-                    var customIcon = L.divIcon({
-                        className: 'leaflet-div-icon',
-                        html: '<i class="fas fa-city" style="color: #5F9EA0;"></i>',
-                        iconSize: [24, 24]
+                    var marker = L.ExtraMarkers.icon({
+                        icon: 'fas fa-city',
+                        iconColor: '#ffffff',
+                        markerColor: 'green',
+                        shape: 'penta',
+                        prefix: 'fa'
                     });
 
+
                     // Create a marker for each castle
-                    var marker = L.marker([parseFloat(city['lat']), parseFloat(city['lng'])], { icon: customIcon });
+                    var marker = L.marker([parseFloat(city['lat']), parseFloat(city['lng'])], { icon: marker });
                     marker.bindPopup(city['name']); 
                     citiesMarkers.addLayer(marker); 
                 });
@@ -599,14 +604,17 @@ function showCastles(countryName, countryCode) {
             if (result && result.data && Array.isArray(result.data)) {
                 result.data.forEach(function (castle) {
 
-                    var customIcon = L.divIcon({
-                        className: 'leaflet-div-icon',
-                        html: '<i class="fas fa-chess-rook" style="color: #ee9582;"></i>',
-                        iconSize: [24, 24]
+
+                    var marker = L.ExtraMarkers.icon({
+                        icon: 'fas fa-chess-rook',
+                        iconColor: '#f3f4da',
+                        markerColor: 'orange',
+                        shape: 'star',
+                        prefix: 'fa'
                     });
 
                     // Create a marker for each castle
-                    var marker = L.marker([parseFloat(castle['lat']), parseFloat(castle['lng'])], { icon: customIcon });
+                    var marker = L.marker([parseFloat(castle['lat']), parseFloat(castle['lng'])], { icon: marker });
                     marker.bindPopup(castle['name']); 
                     castlesMarkers.addLayer(marker); 
                 });

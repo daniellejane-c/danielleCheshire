@@ -95,7 +95,7 @@ $(document).ready(function () {
     function populateDropdown() {
         var selectedCountry = $("#countrySelect").val(); // Retrieve selected country
         $.ajax({
-            url: "/clone/libs/php/countryform.php",
+            url: "/project1/libs/php/countryform.php",
             type: 'post',
             data: { countrySelect: selectedCountry }, // Send selected country to server
             success: function (result) {
@@ -130,7 +130,7 @@ $(document).ready(function () {
 
             // Reverse geocoding - pass coordinates to the server
             $.ajax({
-                url: '/clone/libs/php/reverseGeocode.php',
+                url: '/project1/libs/php/reverseGeocode.php',
                 method: 'GET',
                 data: {
                     lat: e.latlng.lat,
@@ -170,7 +170,7 @@ $(document).ready(function () {
 
     function getCurrencies() {
         $.ajax({
-            url: '/clone/libs/php/currencies.php',
+            url: '/project1/libs/php/currencies.php',
             type: 'get',
             dataType: 'json',
             success: function (result) {
@@ -210,7 +210,7 @@ $(document).ready(function () {
 
         // Make AJAX request to fetch latest exchange rates
         $.ajax({
-            url: '/clone/libs/php/exchangeRate.php',
+            url: '/project1/libs/php/exchangeRate.php',
             type: 'GET',
             dataType: 'json',
             success: function (response) {
@@ -257,7 +257,7 @@ $('#countrySelect').change(function () {
 function getCountryInfo(countryName) {
     var cleanedCountryName = encodeURIComponent(countryName);
     $.ajax({
-        url: '/clone/libs/php/countryInfo.php',
+        url: '/project1/libs/php/countryInfo.php',
         type: 'GET',
         dataType: 'json',
         data: {
@@ -317,7 +317,7 @@ function getCountryInfo(countryName) {
 function moreCountryInfo(countryName) {
     var cleanedCountryName = encodeURI(countryName);
     $.ajax({
-        url: '/clone/libs/php/moreCountryInfo.php',
+        url: '/project1/libs/php/moreCountryInfo.php',
         type: 'GET',
         dataType: 'json',
         data: {
@@ -356,7 +356,7 @@ function moreCountryInfo(countryName) {
 function weatherInfo(lat, lon) {
 
     $.ajax({
-        url: '/clone/libs/php/weather.php',
+        url: '/project1/libs/php/weather.php',
         type: 'GET',
         dataType: 'json',
         data: {
@@ -418,7 +418,7 @@ function getWiki(countryName) {
     }
 
     $.ajax({
-        url: '/clone/libs/php/wiki.php',
+        url: '/project1/libs/php/wiki.php',
         type: 'GET',
         dataType: 'json',
         data: {
@@ -455,7 +455,7 @@ function getWiki(countryName) {
 function getNews(countryName) {
     var cleanedCountryName = encodeURIComponent(countryName);
     $.ajax({
-        url: '/clone/libs/php/news.php',
+        url: '/project1/libs/php/news.php',
         type: 'GET',
         dataType: 'json',
         data: {
@@ -508,7 +508,7 @@ function clearMarkers() {
 function showAirports(countryName, countryCode) {
     clearMarkers();
     $.ajax({
-        url: '/clone/libs/php/airports.php',
+        url: '/project1/libs/php/airports.php',
         type: 'GET',
         dataType: 'json',
         data: {
@@ -547,7 +547,7 @@ function showAirports(countryName, countryCode) {
 function showCities(countryName, countryCode) {
     clearMarkers();
     $.ajax({
-        url: '/clone/libs/php/cities.php',
+        url: '/project1/libs/php/cities.php',
         type: 'GET',
         dataType: 'json',
         data: {
@@ -587,7 +587,7 @@ function showCities(countryName, countryCode) {
 function showCastles(countryName, countryCode) {
     clearMarkers();
     $.ajax({
-        url: '/clone/libs/php/castles.php',
+        url: '/project1/libs/php/castles.php',
         type: 'GET',
         dataType: 'json',
         data: {
@@ -639,7 +639,7 @@ function showBorder(selectedCountry) {
     // Fetch border data for the selected country from PHP
     $.ajax({
         dataType: "json",
-        url: "/clone/libs/php/getCoordinates.php",
+        url: "/project1/libs/php/getCoordinates.php",
         data: { selectedCountry: selectedCountry },
         success: function (data) {
             // Find the selected country data

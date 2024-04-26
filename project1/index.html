@@ -4,9 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gazeteer</title>
+  <title>Gazetteer</title>
   <link rel="stylesheet" href="/project1/libs/vendors/leaflet/dist/leaflet.css">
-  <link rel="stylesheet" href="/project1/libs/css/style.css">
   <link rel="stylesheet" href="/project1/libs/vendors/bootstrap/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="/project1/libs/vendors/toastify-js/src/toastify.css">
   <link rel="stylesheet" href="/project1/libs/vendors/leaflet.markercluster/dist/MarkerCluster.Default.css">
@@ -14,15 +13,19 @@
   <link rel="stylesheet" href="/project1/libs/vendors/leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css">
   <link rel="stylesheet" href="/project1/libs/vendors/fontawesome-free/css/all.min.css">
   <link rel="stylesheet" href="/project1/libs/vendors/leaflet-easybutton/src/easy-button.css">
+  <link rel="stylesheet" href="/project1/libs/css/style.css">
 
 </head>
 
 <body>
+  <div id="preloader">
+    <div id="loader"></div>
+  </div>
+
 
   <span id="selectContainer">
     <select id="countrySelect" class="form-select shadow-sm">
       <option disabled selected value="">Select a country...</option>
-      <!-- populate from an AJAX CALL to a PHP routine that returns a JSON object that is an array of just ISO codes and names from countryBorders.geo.json -->
     </select>
   </span>
 
@@ -106,7 +109,7 @@
             <tr>
 
               <td class="text-center">
-                <i class="fa-solid fa-map-pin fs-xl text-success"></i>
+                <i class="fa-solid fa-map fs-xl text-success"></i>
               </td>
 
               <td>
@@ -114,6 +117,21 @@
               </td>
 
               <td id="continentInfo" class="text-end">
+
+              </td>
+
+            </tr>
+            <tr>
+
+              <td class="text-center">
+                <i class="fa-solid  fa-map-pin fa-xl text-success"></i>
+              </td>
+
+              <td>
+                Capital:
+              </td>
+
+              <td id="capitalInfo" class="text-end">
 
               </td>
 
@@ -272,9 +290,6 @@
 
           </table>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-success btn-sm" data-bs-dismiss="modal">Close</button>
-        </div>
       </div>
     </div>
   </div>
@@ -284,106 +299,68 @@
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable container-fluid">
       <div class="modal-content shadow">
         <div class="modal-header bg-success bg-gradient text-white">
-          <h5 class="modal-title">Weather Forecast</h5>
+          <h5 class="modal-title weatherTitle">Weather Forecast</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-
-
-
           <div class="container">
-            <!-- First Card -->
-            <div class="row d-flex justify-content-center align-items-center h-100">
-              <div class="col-md-8 col-lg-6 col-xl-10 p-1">
+            <!-- Top Row: First Card -->
+            <div class="row mb-3">
+              <div class="col-md">
                 <div class="card" style="color: #4B515D; border-radius: 35px;">
-                  <div class="card-body p-4">
-                    <div class="d-flex">
-                      <h6 id="todayDate" class="flex-grow-1">
-                        Today
-                      </h6>
-
-                    </div>
-                    <div class="d-flex flex-column text-center mt-5 mb-4">
-                      <h6 class="display-4 mb-0 font-weight-bold" style="color: #1C2331;">
-                        <i class="fas fa-arrow-up fa-fw" style="color: #868B94;"></i>
-                        <span id="maxTemp1" class="ms-1">
-
-                        </span>
-                      </h6>
-                      <h6 class="display-4 mb-0 font-weight-bold" style="color: #1C2331;">
-                        <i class="fas fa-arrow-down fa-fw" style="color: #868B94;"></i>
-                        <span id="minTemp1" class="ms-1">
-
-                        </span>
-                      </h6>
-                      <span id="weatherSummary1" class="small" style="color: #868B94"></span>
-                    </div>
-                    <div class="text-center">
-                      <div id="weatherImage1">
-
+                  <div class="card-body p-3">
+                    <h6 id="todayDate" class="fw-bold fs-3">Today</h6>
+                    <div class="row justify-content-between align-items-center">
+                      <!-- Weather Summary Column -->
+                      <div class="col-sm-4">
+                        <span id="weatherSummary1" class="text-center fs-5 fst-italic"></span>
+                      </div>
+                      <!-- Weather Image Column -->
+                      <div class="col-sm-3">
+                        <div id="weatherImage1" class="text-center fs-5"></div>
+                      </div>
+                      <!-- Temperature Column -->
+                      <div class="col-sm-4">
+                        <div class="text-center">
+                          <h6 id="maxTemp1" class="fw-bold fs-5 mb-0"></h6>
+                          <h6 id="minTemp1" class="mb-0 fs-5"></h6>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-
-            <!-- Second Card -->
-            <div class="row justify-content-center">
-              <div class="col-md-6 col-lg-5 p-1">
-                <div class="card" style="color: #4B515D; border-radius: 35px; height: auto;">
-                  <div class="card-body p-4">
-                    <div class="d-flex">
-                      <h6 id="tomorrowDate" class="flex-grow-1" style="font-size: 0.8rem;">
-                        Tomorrow
-                      </h6>
-
+            <!-- Second Row: Second and Third Cards -->
+            <div class="row">
+              <!-- Second Card -->
+              <div class="col-md-6 mb-3">
+                <div class="card" style="color: #4B515D; border-radius: 35px;">
+                  <div class="card-body p-3">
+                    <h6 id="tomorrowDate" class="fw-bold fs-5 text-center"></h6>
+                    <div class="text-center">
+                      <div id="weatherImage2"></div>
                     </div>
-                    <div class="text-center" id="weatherImage2">
-
+                    <div class="text-center mt-3">
+                      <h6 id="maxTemp2" class="fw-bold mb-0"></h6>
+                      <h6 id="minTemp2" class=" mb-0"></h6>
+                      <span id="weatherSummary2" class="small fst-italic"></span>
                     </div>
-                    <div class="d-flex flex-columnn text-left mt-3 mb-2">
-                      <span id="weatherSummary2" class="small text-center"
-                        style="color: #868B94; font-size: 0.8rem;"></span>
-                      <h6 class="display-5 mb-0 font-weight-bold" style="color: #1C2331; font-size: 1.4rem;">
-                        <i class="fas fa-arrow-up  fa-fw" style="color: #868B94;"></i>
-                        <span id="maxTemp2" class="ms-1"></span>
-                      </h6>
-                      <h6 class="display-5 mb-0 font-weight-bold" style="color: #1C2331; font-size: 1.4rem;">
-                        <i class="fas fa-arrow-down fa-fw" style="color: #868B94;"></i>
-                        <span id="minTemp2" class="ms-1"></span>
-                      </h6>
-
-                    </div>
-
                   </div>
                 </div>
               </div>
-
               <!-- Third Card -->
-              <div class="col-md-6 col-lg-5 p-1">
-                <div class="card" style="color: #4B515D; border-radius: 35px; height: auto;">
-                  <div class="card-body p-4">
-                    <div class="d-flex">
-                      <h6 id="furtherDate" class="flex-grow-1" style="font-size: 0.8rem;">
-                        Further Date
-                      </h6>
-
+              <div class="col-md-6 mb-3">
+                <div class="card" style="color: #4B515D; border-radius: 35px;">
+                  <div class="card-body p-3">
+                    <h6 id="furtherDate" class="fw-bold fs-5 text-center"></h6>
+                    <div class="text-center">
+                      <div id="weatherImage3"></div>
                     </div>
-                    <div class="text-center" id="weatherImage3">
-
-                    </div>
-                    <div class="d-flex flex-column text-left mt-3 mb-2">
-                      <span id="weatherSummary3" class="small text-center"
-                        style="color: #868B94; font-size: 0.8rem;"></span>
-                      <h6 class="display-5 mb-0 font-weight-bold" style="color: #1C2331; font-size: 1.4rem;">
-                        <i class="fas fa-arrow-up  fa-fw" style="color: #868B94;"></i>
-                        <span id="maxTemp3" class="ms-1"></span>
-                      </h6>
-                      <h6 class="display-5 mb-0 font-weight-bold" style="color: #1C2331; font-size: 1.4rem;">
-                        <i class="fas fa-arrow-down fa-fw" style="color: #868B94;"></i>
-                        <span id="minTemp3" class="ms-1"></span>
-                      </h6>
+                    <div class="text-center mt-3">
+                      <h6 id="maxTemp3" class="fw-bold mb-0"></h6>
+                      <h6 id="minTemp3" class=" mb-0"></h6>
+                      <span id="weatherSummary3" class="small fst-italic"></span>
                     </div>
                   </div>
                 </div>
@@ -394,6 +371,7 @@
       </div>
     </div>
   </div>
+
 
   <!--wikipedia modal-->
   <div id="wikiModal" class="modal" data-bs-backdrop="false" tabindex="-1">
@@ -423,89 +401,92 @@
             </div>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-success btn-sm" data-bs-dismiss="modal">Close</button>
-        </div>
+
       </div>
     </div>
   </div>
 
   <!--newsmodal-->
   <div id="newsModal" class="modal" data-bs-backdrop="false" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content shadow">
-        <div class="modal-header bg-success bg-gradient text-white">
-          <h5 class="modal-title">Overview</h5>
+        <div class="modal-header bg-danger bg-gradient text-white">
+          <h5 class="modal-title">BREAKING NEWS</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <ul class="list-unstyled">
-            <li class="media border-bottom pb-3">
+            <li class="media border-bottom py-3">
               <div class="row">
-                <div class="col-md-3">
-                  <img id="thumbnail1" class="mr-3">
+                <div class="col-md-6">
+                  <img id="thumbnail1" class="img-fluid mr-3 newsImg">
                 </div>
-                <div class="col-md-9">
+                <div class="col-md-6">
                   <div class="media-body">
-                    <h5 id="headline1" class="mt-0 mb-1"></h5>
+                    <a id="newsLink1" target="_blank">
+                      <h5 id="headline1" class="mt-0 mb-1"></h5>
+                    </a>
                     <h6 id="trailText1" class="text-muted"> </h6>
-                    <a id="newsLink1" class="btn btn-link" target="_blank">Click to read more...</a>
                   </div>
                 </div>
               </div>
             </li>
             <li class="media border-bottom py-3">
               <div class="row">
-                <div class="col-md-3">
-                  <img id="thumbnail2" class="mr-3">
+                <div class="col-md-6">
+                  <img id="thumbnail2" class="img-fluid mr-3 newsImg">
                 </div>
-                <div class="col-md-9">
+                <div class="col-md-6">
                   <div class="media-body">
-                    <h5 id="headline2" class="mt-0 mb-1"></h5>
+                    <a id="newsLink2" target="_blank">
+                      <h5 id="headline2" class="mt-0 mb-1"></h5>
+                    </a>
                     <h6 id="trailText2" class="text-muted"> </h6>
-                    <a id="newsLink2" class="btn btn-link" target="_blank">Click to read more...</a>
                   </div>
                 </div>
               </div>
             </li>
             <li class="media border-bottom py-3">
               <div class="row">
-                <div class="col-md-3">
-                  <img id="thumbnail3" class="mr-3">
+                <div class="col-md-6">
+                  <img id="thumbnail3" class="img-fluid mr-3 newsImg">
                 </div>
-                <div class="col-md-9">
+                <div class="col-md-6">
                   <div class="media-body">
-                    <h5 id="headline3" class="mt-0 mb-1"></h5>
+                    <a id="newsLink3" target="_blank">
+                      <h5 id="headline3" class="mt-0 mb-1"></h5>
+                    </a>
                     <h6 id="trailText3" class="text-muted"> </h6>
-                    <a id="newsLink3" class="btn btn-link" target="_blank">Click to read more...</a>
-                  </div>
-                </div>
-              </div>
-            </li>
-            <li class="media border-bottom pb-3">
-              <div class="row">
-                <div class="col-md-3">
-                  <img id="thumbnail4" class="mr-3">
-                </div>
-                <div class="col-md-9">
-                  <div class="media-body">
-                    <h5 id="headline4" class="mt-0 mb-1"></h5>
-                    <h6 id="trailText4" class="text-muted"> </h6>
-                    <a id="newsLink4" class="btn btn-link" target="_blank">Click to read more...</a>
                   </div>
                 </div>
               </div>
             </li>
             <li class="media border-bottom py-3">
               <div class="row">
-                <div class="col-md-3">
-                  <img id="thumbnail5" class="mr-3">
+                <div class="col-md-6">
+                  <img id="thumbnail4" class="img-fluid mr-3 newsImg">
                 </div>
-                <div class="col-md-9">
+                <div class="col-md-6">
                   <div class="media-body">
-                    <h5 id="headline5" class="mt-0 mb-1"></h5>
+                    <a id="newsLink4" target="_blank">
+                      <h5 id="headline4" class="mt-0 mb-1"></h5>
+                    </a>
+                    <h6 id="trailText4" class="text-muted"> </h6>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li class="media border-bottom py-3">
+              <div class="row">
+                <div class="col-md-6">
+                  <img id="thumbnail5" class="img-fluid mr-3 newsImg">
+                </div>
+                <div class="col-md-6">
+                  <div class="media-body">
+                    <a id="newsLink5" target="_blank">
+                      <h5 id="headline5" class="mt-0 mb-1"></h5>
+                    </a>
                     <h6 id="trailText5" class="text-muted"> </h6>
-                    <a id="newsLink5" class="btn btn-link" target="_blank">Click to read more...</a>
                   </div>
                 </div>
               </div>
@@ -514,9 +495,8 @@
         </div>
         <div class="modal-footer d-flex justify-content-between align-items-center">
           <h6 class="text-muted">Source: The Guardian</h6>
-          <button type="button" class="btn btn-outline-success btn-sm" data-bs-dismiss="modal">Close</button>
-        </div>
 
+        </div>
       </div>
     </div>
   </div>
@@ -531,57 +511,52 @@
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <div class="container">
-            <!-- First Card -->
-            <div class="row">
-              <div class="col-md-6">
-                <input type="number" class="form-control" id="number" placeholder="00000" min="0"
-                  oninput="validity.valid||(value='');">
-              </div>
-              <div class="col-md-6">
-                <div class="input-group">
-                  <i name="currency1" class="text-muted">USD - United States Dollar</i>
 
-                </div>
-              </div>
-            </div>
-            <!-- Second Card -->
-            <div class="row mt-3">
-              <div class="col-md-6">
-                <input type="text" class="form-control" id="output" placeholder="00000" disabled>
-              </div>
-              <div class="col-md-6">
-                <div class="input-group">
+          <div class="modal-body">
+
+            <form>
+
+              <div class="form-floating mb-3">
+
+                <input id="fromAmount" type="number" class="form-control" value="1" min="1" step="1">
+                <label>From USD - United States Dollar</label>
+                <div class="form-floating mb-3">
+
                   <select name="currency2" class="currency-select form-select shadow-m"></select>
 
+                  <label for="exchangeRate">Convert to</label>
+
                 </div>
-              </div>
-            </div>
+
+                <div class="form-floating">
+
+                  <input id="toAmount" type="text" class="form-control" disabled>
+                  <label for="toAmount">Result</label>
+
+                </div>
+
+            </form>
+
           </div>
         </div>
       </div>
     </div>
-  </div>
-
-  </div>
-  </div>
-  </div>
-  </div>
-  </div>
-  </div>
-
-  </div>
 
 
-  <script type="text/javascript" src="/project1/libs/vendors/leaflet/dist/leaflet.js"></script>
-  <script type="text/javascript" src="/project1/libs/vendors/jquery/dist/jquery.min.js"
-  <script type="text/javascript" src="/project1/libs/vendors/toastify-js/src/toastify.js"></script>
-  <script type="text/javascript" src="/project1/libs/vendors/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
-  <script type="text/javascript"
-    src="/project1/libs/vendors/leaflet-extra-markers/dist/js/leaflet.extra-markers.js"></script>
-  <script type="text/javascript" src="/project1/libs/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="/project1/libs/vendors/leaflet-easybutton/src/easy-button.js"></script>
-  <script type="text/javascript" src="/project1/libs/js/scripts.js"></script>
+
+
+    <script type="text/javascript" src="/project1/libs/vendors/leaflet/dist/leaflet.js"></script>
+    <script type="text/javascript" src="/project1/libs/vendors/jquery/dist/jquery.min.js" <script type="text/javascript"
+      src="/project1/libs/vendors/toastify-js/src/toastify.js"></script>
+    <script type="text/javascript"
+      src="/project1/libs/vendors/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+    <script type="text/javascript"
+      src="/project1/libs/vendors/leaflet-extra-markers/dist/js/leaflet.extra-markers.js"></script>
+    <script type="text/javascript" src="/project1/libs/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/project1/libs/vendors/leaflet-easybutton/src/easy-button.js"></script>
+    <script type="text/javascript" src="/project1/libs/vendors/numeral/min/numeral.min.js"></script>
+    <script type="text/javascript" src="/project1/libs/vendors/datejs/build/date.js"></script>
+    <script type="text/javascript" src="/project1/libs/js/scripts.js"></script>
 </body>
 
 </html>

@@ -37,30 +37,50 @@ img {
 }
 
 #preloader {
-    width: 80px;
-    height: 80px;
-    
-    border: 2px solid #f3f3f3;
-    border-top:3px solid #f25a41;
-    border-radius: 100%;
-    
-    position: absolute;
-    top:0;
-    bottom:0;
-    left:0;
-    right: 0;
-    margin: auto;
-    
-    animation: spin 1s infinite linear;
+  width: 80px;
+  height: 80px;
+  border: 10px solid transparent; /* Transparent border */
+  border-top: 11px solid #f25a41; /* Reddish color */
+  border-bottom: 11px solid #41ecf2; /* Bluish color */
+  border-radius: 50%; /* For a perfect circle */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -50px; /* Adjusting to center vertically */
+  margin-left: -50px; /* Adjusting to center horizontally */
+  animation: spin 1s infinite linear, pulse 2s infinite alternate;
+ /* Added pulse animation */
 }
 
 @keyframes spin {
-    from{
-        transform: rotate(0deg);
-    }to{
-        transform: rotate(360deg);
-    }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Blue background for the entire page */
+body.loading {
+  background: linear-gradient(45deg, #f25a41, #41ecf2); /* Gradient colors */
+  background-size: 400% 400%; /* Increase the background size for animation */
+  animation: gradientAnimation 4s ease infinite; /* Animation properties */
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%; /* Initial background position */
+  }
+  50% {
+    background-position: 100% 50%; /* Midway background position */
+  }
+  100% {
+    background-position: 0% 50%; /* Final background position */
+  }
 }
 
 
-
+#content {
+  visibility: hidden;
+}

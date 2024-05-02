@@ -22,10 +22,19 @@ var basemaps = {
     "Satellite": satellite,
 };
 
+setTimeout(function(){
+    var preloader = document.getElementById('preloader');
+ // Remove loading class to remove blue background
+
+    // Show the #content element after the delay
+    var content = document.getElementById('content');
+    content.style.visibility = 'visible'; // Assuming the initial display property is set to 'none'
+    preloader.style.display = 'none';
+    document.body.classList.remove('loading');
+}, 3000);
+      
 $(document).ready(function () {
 
-    var preloader = $('#preloader');
-    preloader.hide();
 
     map = L.map("map", {
         layers: [streets]
@@ -197,7 +206,7 @@ $(document).ready(function () {
         var amount = $('#fromAmount').val(); // Get the amount to convert
         var baseCurrency = 'USD'; // Base currency assumed to be USD
         var targetCurrency = $('.currency-select').val(); // Get the target currency
-    
+
         // Make AJAX request to fetch latest exchange rates
         $.ajax({
             url: '/project1/libs/php/exchangeRate.php',
@@ -207,10 +216,10 @@ $(document).ready(function () {
                 // Calculate the converted amount
                 var exchangeRate = response.rates[targetCurrency];
                 var convertedAmount = amount * exchangeRate;
-    
+
                 // Format the converted amount using Numeral.js
                 var formattedAmount = numeral(convertedAmount).format('0,0.00');
-    
+
                 // Display the formatted converted amount in the output field
                 $('#toAmount').val(formattedAmount);
             },
@@ -219,7 +228,7 @@ $(document).ready(function () {
             }
         });
     }
-    
+
 
     $('#fromAmount').on('input', currencyExchange); // Trigger currency exchange on input change
     $('.currency-select').change(currencyExchange); // Trigger currency exchange on currency selection change
@@ -271,7 +280,7 @@ function getCountryInfo(countryName, iso_a2) {
                     $('#placeName').html(result["data"][0]["components"]["place"]);
                 };
                 $('#isoCode').html(result["data"][0]["components"]["ISO_3166-1_alpha-3"]);
-                $('#flagImg').html(result["data"][0]["annotations"]["flag"]);
+
                 $('#continentInfo').html(result["data"][0]["components"]["continent"]);
                 $('#callingCode').html(result["data"][0]["annotations"]["callingcode"]);
                 var currencyName = result["data"][0]["annotations"]["currency"]["name"];
@@ -283,10 +292,6 @@ function getCountryInfo(countryName, iso_a2) {
                 var speedMeasure = result["data"][0]["annotations"]["roadinfo"]["speed_in"];
                 var roadInfo = 'Drive on ' + sideOfRoad + ' hand side' + ' | ' + 'Speed = ' + speedMeasure;
                 $('#roadInfo').html(roadInfo);
-                var timezone_name = result["data"][0]["annotations"]["timezone"]["name"];
-                var timezone_short = result["data"][0]["annotations"]["timezone"]["short_name"];
-                var timezoneInfo = timezone_name + ' | ' + timezone_short;
-                $('#timezoneInfo').html(timezoneInfo);
                 $('#locationInfo').html(result["data"][0]["annotations"]["what3words"]["words"]);
                 var latitudeNo = result["data"][0]["geometry"]["lat"];
                 var longitudeNo = result["data"][0]["geometry"]["lng"];
@@ -299,7 +304,7 @@ function getCountryInfo(countryName, iso_a2) {
                 currencySelect.val(currencyCode);
                 currencySelect.trigger('change');
                 weatherInfo(latitudeNo, longitudeNo);
-                
+
 
 
             }
@@ -336,7 +341,7 @@ function moreCountryInfo(countryName) {
                 $('#capitalInfo').html(capitalName);
                 $('#populationInfo').html(result['data'][0]['population'].toLocaleString());
                 var area = result['data'][0]['area'];
-                var formattedArea = numeral(area).format('0,0')  + ' km²';
+                var formattedArea = numeral(area).format('0,0') + ' km²';
                 $('#areaInfo').html(formattedArea);
                 $('#weekStart').html(capitalizeFirstLetter(result['data'][0]['startOfWeek']));
                 var coatOfArmsUrl = result['data'][0]['coatOfArms']['png'];
@@ -413,7 +418,7 @@ function weatherInfo(lat, lon) {
                     // Using date.js to format the date
                     return date.toString('dddd dS');
                 }
-                
+
                 var tomorrowDate = formatTimestamp(tomorrowTimestamp);
                 var furtherDate = formatTimestamp(furtherTimestamp);
 

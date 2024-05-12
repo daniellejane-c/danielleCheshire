@@ -6,10 +6,24 @@ $(document).ready(function () {
 
   // Function to filter table rows
   function filterTable(tableBodyId, searchText) {
+    var anyResults = false;
     $(tableBodyId + " tr").each(function () {
-      $(this).toggle($(this).text().toLowerCase().indexOf(searchText) > -1);
+        var rowText = $(this).text().toLowerCase();
+        var matched = rowText.indexOf(searchText) > -1;
+        $(this).toggle(matched);
+        if (matched) {
+            anyResults = true;
+        }
     });
-  }
+
+    if (!anyResults) {
+        // If no results found, display a message
+        $(tableBodyId).append('<tr class="no-results"><td colspan="5"><span class="no-results-message">We could not find any data matching your search criteria.</span></td></tr>');    
+      } else {
+        // Remove the no-results message if it exists
+        $(tableBodyId + " .no-results").remove();
+    }
+}
 
   // Event handler for keyup event on search input
   $("#searchInp").on("keyup", function () {
@@ -315,18 +329,12 @@ console.log(response);
       type: "get",
       dataType: "json",
       data: {
-        // Retrieve the data-id attribute from the calling button
-        // see https://getbootstrap.com/docs/5.0/components/modal/#varying-modal-content
-        // for the non-jQuery JavaScript alternative
         id: $(e.relatedTarget).attr("data-id")
       },
       success: function (result) {
         var resultCode = result.status.code;
-        console.log(result);
-        if (resultCode == 200) {
 
-          // Update the hidden input with the employee id so that
-          // it can be referenced when the form is submitted
+        if (resultCode == 200) {
 
           $("#editPersonnelEmployeeID").val(result.data.personnel[0].id);
           $("#editPersonnelFirstName").val(result.data.personnel[0].firstName);

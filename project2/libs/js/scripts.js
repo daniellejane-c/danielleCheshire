@@ -39,7 +39,7 @@ $(document).ready(function () {
 
           // Clear existing table content
           $('#personnelTableBody').empty();
-
+console.log(response);
           // Loop through personnel data and populate table rows
           $.each(personnelData, function (index, personnel) {
             var row = '<tr>' +
@@ -311,8 +311,8 @@ $(document).ready(function () {
 
     $.ajax({
       url:
-        "https://coding.itcareerswitch.co.uk/companydirectory/libs/php/getPersonnelByID.php",
-      type: "POST",
+        "/project2/libs/php/getPersonnelByID.php",
+      type: "get",
       dataType: "json",
       data: {
         // Retrieve the data-id attribute from the calling button
@@ -322,14 +322,13 @@ $(document).ready(function () {
       },
       success: function (result) {
         var resultCode = result.status.code;
-
+        console.log(result);
         if (resultCode == 200) {
 
           // Update the hidden input with the employee id so that
           // it can be referenced when the form is submitted
 
           $("#editPersonnelEmployeeID").val(result.data.personnel[0].id);
-
           $("#editPersonnelFirstName").val(result.data.personnel[0].firstName);
           $("#editPersonnelLastName").val(result.data.personnel[0].lastName);
           $("#editPersonnelJobTitle").val(result.data.personnel[0].jobTitle);

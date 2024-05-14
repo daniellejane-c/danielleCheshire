@@ -507,8 +507,8 @@ fetchDropdownData('#addLocationName');
                 // Refresh the content of the "Locations" tab
                 refreshLocationsTab();
             } else if (response.status.code == '409') {
-              $('#successMessage').html('Location "' + locationName + '" already exists.');
-              $('#successMessage').show();
+              $('#duplicateMessage').html('Location "' + locationName + '" already exists.');
+              $('#duplicateMessage').show();
             } 
             else {
                 // Handle error (optional)

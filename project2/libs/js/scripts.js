@@ -8,22 +8,22 @@ $(document).ready(function () {
   function filterTable(tableBodyId, searchText) {
     var anyResults = false;
     $(tableBodyId + " tr").each(function () {
-        var rowText = $(this).text().toLowerCase();
-        var matched = rowText.indexOf(searchText) > -1;
-        $(this).toggle(matched);
-        if (matched) {
-            anyResults = true;
-        }
+      var rowText = $(this).text().toLowerCase();
+      var matched = rowText.indexOf(searchText) > -1;
+      $(this).toggle(matched);
+      if (matched) {
+        anyResults = true;
+      }
     });
 
     if (!anyResults) {
-        // If no results found, display a message
-        $(tableBodyId).append('<tr class="no-results"><td colspan="5"><span class="no-results-message">We could not find any data matching your search criteria.</span></td></tr>');    
-      } else {
-        // Remove the no-results message if it exists
-        $(tableBodyId + " .no-results").remove();
+      // If no results found, display a message
+      $(tableBodyId).append('<tr class="no-results"><td colspan="5"><span class="no-results-message">We could not find any data matching your search criteria.</span></td></tr>');
+    } else {
+      // Remove the no-results message if it exists
+      $(tableBodyId + " .no-results").remove();
     }
-}
+  }
 
   // Event handler for keyup event on search input
   $("#searchInp").on("keyup", function () {
@@ -53,7 +53,7 @@ $(document).ready(function () {
 
           // Clear existing table content
           $('#personnelTableBody').empty();
-console.log(response);
+          // console.log(response);
           // Loop through personnel data and populate table rows
           $.each(personnelData, function (index, personnel) {
             var row = '<tr>' +
@@ -232,76 +232,76 @@ console.log(response);
 
     // Set the appropriate modal target based on the active tab
     switch (activeTab) {
-        case 'personnelBtn':
-            modalTarget = '#addPersonnelModal';
-            break;
-        case 'departmentsBtn':
-            modalTarget = '#addDepartmentModal';
-            break;
-        case 'locationsBtn':
-            modalTarget = '#addLocationModal';
-            break;
-        // Add more cases as needed for additional tabs
+      case 'personnelBtn':
+        modalTarget = '#addPersonnelModal';
+        break;
+      case 'departmentsBtn':
+        modalTarget = '#addDepartmentModal';
+        break;
+      case 'locationsBtn':
+        modalTarget = '#addLocationModal';
+        break;
+      // Add more cases as needed for additional tabs
     }
 
     // If a modal target is found, open the modal
     if (modalTarget) {
-        $(modalTarget).modal('show');
+      $(modalTarget).modal('show');
     }
-});
+  });
 
 
 
-    // Fetch locations and populate dropdown on page load
-    fetchDropdownData('#addLocationName');
-    fetchDropdownData('#addPersonnelDepartment');
-    
-    // Event listener for dropdown change
-    $('.dropdown').on('change', function() {
-      // Get the selected option value
-      var selectedValue = $(this).val();
-      
-      // Set the dropdown value to the selected option value
-      $(this).val(selectedValue);
-    });
-    
-    function fetchDropdownData(dropdownId) {
-      var url;
-      if (dropdownId === '#addLocationName') {
-        url = '/project2/libs/php/getAllLocations.php';
-      } else if (dropdownId === '#addPersonnelDepartment') {
-        url = '/project2/libs/php/getAllDepartments.php';
-      }
-    
-      $.ajax({
-        url: url,
-        type: 'GET',
-        dataType: 'json',
-        success: function(response) {
-          if (response.status.code === "200") {
-            var dropdownData = response.data;
-    
-            // Clear existing options
-            $(dropdownId).empty();
-    
-            // Populate dropdown with data
-            $.each(dropdownData, function(index, item) {
-              $(dropdownId).append($('<option>', {
-                value: item.id, // Assuming each item has an ID
-                text: item.name // Assuming each item has a name
-              }));
-            });
-          } else {
-            // Handle other status codes if needed
-            console.log("Error: " + response.status.description);
-          }
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-          console.log("Error:", textStatus, errorThrown);
+  // Fetch locations and populate dropdown on page load
+  fetchDropdownData('#addLocationName');
+  fetchDropdownData('#addPersonnelDepartment');
+
+  // Event listener for dropdown change
+  $('.dropdown').on('change', function () {
+    // Get the selected option value
+    var selectedValue = $(this).val();
+
+    // Set the dropdown value to the selected option value
+    $(this).val(selectedValue);
+  });
+
+  function fetchDropdownData(dropdownId) {
+    var url;
+    if (dropdownId === '#addLocationName') {
+      url = '/project2/libs/php/getAllLocations.php';
+    } else if (dropdownId === '#addPersonnelDepartment') {
+      url = '/project2/libs/php/getAllDepartments.php';
+    }
+
+    $.ajax({
+      url: url,
+      type: 'GET',
+      dataType: 'json',
+      success: function (response) {
+        if (response.status.code === "200") {
+          var dropdownData = response.data;
+
+          // Clear existing options
+          $(dropdownId).empty();
+
+          // Populate dropdown with data
+          $.each(dropdownData, function (index, item) {
+            $(dropdownId).append($('<option>', {
+              value: item.id, // Assuming each item has an ID
+              text: item.name // Assuming each item has a name
+            }));
+          });
+        } else {
+          // Handle other status codes if needed
+          console.log("Error: " + response.status.description);
         }
-      });
-    }
-    
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        console.log("Error:", textStatus, errorThrown);
+      }
+    });
+  }
+
 
   $("#personnelBtn").click(function () {
 
@@ -381,4 +381,99 @@ console.log(response);
     // AJAX call to save form data
 
   });
+  //edit department
+  $("#editDepartmentModal").on("show.bs.modal", function (e) {
+    $.ajax({
+      url: "/project2/libs/php/getDepartmentByID.php",
+      type: "get",
+      dataType: "json",
+      data: {
+        id: $(e.relatedTarget).attr("data-id")
+      },
+      success: function (result) {
+        var resultCode = result.status.code;
+        if (resultCode == 200) {
+          $("#editDepartmentID").val(result.data[0].id);
+          $("#editDepartmentName").val(result.data[0].name);
+
+          // Fetch all locations
+          $.ajax({
+            url: "/project2/libs/php/getAllLocations.php",
+            type: "get",
+            dataType: "json",
+            success: function (locationResult) {
+              if (locationResult.status.code == 200) {
+                var currentLocationID = result.data[0].locationID;
+                $("#editDepartmentLocation").empty(); // Clear previous options
+                locationResult.data.forEach(function (location) {
+                  // Append option with location name
+                  $("#editDepartmentLocation").append(
+                    $("<option>", {
+                      value: location.id,
+                      text: location.name,
+                      selected: location.id == currentLocationID ? true : false
+                    })
+                  );
+                });
+              }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+              console.error("Error retrieving location data:", errorThrown);
+            }
+          });
+        } else {
+          $("#editPersonnelModal .modal-title").replaceWith("Error retrieving data");
+        }
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        $("#editPersonnelModal .modal-title").replaceWith("Error retrieving data");
+      }
+    });
+  });
+
+
+
+
+  // Executes when the form button with type="submit" is clicked
+
+  $("#editPersonnelForm").on("submit", function (e) {
+
+    // Executes when the form button with type="submit" is clicked
+    // stop the default browser behviour
+
+    e.preventDefault();
+
+    // AJAX call to save form data
+
+  });
+  //edit location
+  $("#editLocationModal").on("show.bs.modal", function (e) {
+    $.ajax({
+      url: "/project2/libs/php/getLocationByID.php",
+      type: "get",
+      dataType: "json",
+      data: {
+        id: $(e.relatedTarget).attr("data-id")
+      },
+      success: function (result) {
+        var resultCode = result.status.code;
+  
+        if (resultCode == 200) {
+          $("#editLocationID").val(result.data[0].id);
+          $("#editLocation").val(result.data[0].name);
+  
+        } else {
+          $("#editLocationModal .modal-title").replaceWith(
+            "Error retrieving data"
+          );
+        }
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        $("#editLocationModal .modal-title").replaceWith(
+          "Error retrieving data"
+        );
+      }
+    });
+  });
+
 });

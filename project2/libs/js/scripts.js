@@ -250,12 +250,20 @@ $(document).ready(function () {
     }
   });
 
+  $("#addDepartmentModal").on("show.bs.modal", function (e) {
+fetchDropdownData('#addLocationName');
+  });
 
-
+  $("#editDepartmentModal").on("show.bs.modal", function (e) {
+    fetchDropdownData('#addLocationName');
+      });
   // Fetch locations and populate dropdown on page load
-  fetchDropdownData('#addLocationName');
-  fetchDropdownData('#addPersonnelDepartment');
-
+  $("#addPersonnelModal").on("show.bs.modal", function (e) {
+    fetchDropdownData('#addPersonnelDepartment');
+  })
+  $("#editPersonnelModal").on("show.bs.modal", function (e) {
+    fetchDropdownData('#addPersonnelDepartment');
+  })
   // Event listener for dropdown change
   $('.dropdown').on('change', function () {
     // Get the selected option value
@@ -475,5 +483,65 @@ $(document).ready(function () {
       }
     });
   });
+  $('#addLocationForm').submit(function(event) {
+    // Prevent default form submission
+    event.preventDefault();
+
+    // Get the location name from the input field
+    var locationName = $('#addLocation').val();
+
+    // Send an AJAX request to addLocation.php
+    $.ajax({
+        url: '/project2/libs/php/addLocation.php',
+        type: 'POST',
+        data: { name: locationName },
+        dataType: 'json',
+        success: function(response) {
+            // Check if the operation was successful
+            if (response.status.code == '200') {
+
+                // Show success message within the modal
+                $('#successMessage').html('Location "' + locationName + '" has been successfully added.');
+                $('#successMessage').show();
+
+                // Refresh the content of the "Locations" tab
+                refreshLocationsTab();
+            } else if (response.status.code == '409') {
+              $('#successMessage').html('Location "' + locationName + '" already exists.');
+              $('#successMessage').show();
+            } 
+            else {
+                // Handle error (optional)
+                console.error('Error: ' + response.status.description);
+            }
+        },
+        error: function(xhr, status, error) {
+            // Handle AJAX errors (optional)
+            console.error('AJAX Error: ' + error);
+        }
+    });
+});
+
+// Function to refresh the content of the "Locations" tab
+function refreshLocationsTab() {
+    // Send an AJAX request to fetch the updated content of the "Locations" tab
+    $.ajax({
+        url: '/project2/libs/php/getAllLocations.php', // Adjust the URL as needed
+        type: 'GET',
+        dataType: 'html', // Assuming the response is HTML
+        success: function(html) {
+            // Replace the content of the "Locations" tab with the updated content
+            populateLocationData();
+        },
+        error: function(xhr, status, error) {
+            // Handle AJAX errors (optional)
+            console.error('AJAX Error: ' + error);
+        }
+    });
+}
+
+
 
 });
+
+

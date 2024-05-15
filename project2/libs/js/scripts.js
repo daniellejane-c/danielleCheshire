@@ -406,6 +406,7 @@ $(document).ready(function () {
 
   $("#addDepartmentModal").on("show.bs.modal", function (e) {
     fetchDropdownData('#addLocationName');
+   clearForm();
   });
 
   $('#addDepartmentForm').submit(function (event) {
@@ -451,7 +452,7 @@ $(document).ready(function () {
                   // Refresh the content of the "Locations" tab
                   refreshTabs();
                 } else if (response.status.code == '409') {
-                  $('#duplicateDepartment').html('Department "' + departmentName + '" in "' + selectedLocation + '" already exists.');
+                  $('#duplicateDepartment').html('Department "' + departmentName + '" already exists.');
                   $('#duplicateDepartment').show();
                 } else {
                   // Handle error (optional)
@@ -585,7 +586,7 @@ $(document).ready(function () {
                                         $('#editDepartmentForm')[0].reset();
                                         refreshTabs();
                                     } else if (response.status.code == '409') {
-                                        $('#depDuplicateMessage').html('Location "' + newDepName + '" already exists.');
+                                        $('#depDuplicateMessage').html('Department "' + newDepName + '" already exists.');
                                         $('#depDuplicateMessage').show();
                                     } else {
                                         console.error('Error: ' + response.status.description);
@@ -738,6 +739,8 @@ $(document).ready(function () {
   // Function to clear the form fields
   function clearForm() {
     $('#addLocationForm')[0].reset();
+    $('#addDepartmentForm')[0].reset();
+    $('#addPersonnelForm')[0].reset();
     $('#successMessage').hide();
     $('#duplicateMessage').hide();
     $('#duplicateMessage1').hide();

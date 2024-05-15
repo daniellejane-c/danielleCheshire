@@ -4,15 +4,6 @@ $(document).ready(function () {
   populateDepartment();
   //search bar
 
-  function clearForm() {
-    $('#addLocationForm')[0].reset();
-    $('#successMessage').hide();
-    $('#duplicateMessage').hide();
-    $('#successDepAdd').hide();
-    $('#duplicateDepartment').hide();
-  }
-
- 
   // Function to filter table rows
   function filterTable(tableBodyId, searchText) {
     var anyResults = false;
@@ -258,15 +249,14 @@ $(document).ready(function () {
       $(modalTarget).modal('show');
     }
 
-      clearForm();
-  
+    clearForm();
+
   });
 
 
 
   $("#editDepartmentModal").on("show.bs.modal", function (e) {
     fetchDropdownData('#addLocationName');
-    
   });
   // Fetch locations and populate dropdown on page load
   $("#addPersonnelModal").on("show.bs.modal", function (e) {
@@ -276,7 +266,7 @@ $(document).ready(function () {
     fetchDropdownData('#addPersonnelDepartment');
   });
 
-  $('#editLocationModal').on("show.bs.modal", function (e){
+  $('#editLocationModal').on("show.bs.modal", function (e) {
     clearForm();
   });
   // Event listener for dropdown change
@@ -409,78 +399,77 @@ $(document).ready(function () {
 
   $("#addDepartmentModal").on("show.bs.modal", function (e) {
     fetchDropdownData('#addLocationName');
-    clearForm();
-});
+  });
 
-$('#addDepartmentForm').submit(function(event) {
+  $('#addDepartmentForm').submit(function (event) {
     event.preventDefault();
-
+  
     var departmentName = $('#addDepartmentName').val();
     var selectedLocation = $('#addLocationName').val();
-
+  
     // Fetch the location ID first
     $.ajax({
-        url: '/project2/libs/php/getLocationID.php',
-        method: 'GET',
-        data: { location: selectedLocation },
-        success: function(response) {
-            var locationID = selectedLocation;
-
-            $.ajax({
-              url: '/project2/libs/php/getLocationByID.php',
-              type: 'GET',
-              dataType: 'json',
-              data: {
-                id: locationID
-              },
-              success: function (response) {
-                
-                var locationName = response.data[0].name;
-
+      url: '/project2/libs/php/getLocationID.php',
+      method: 'GET',
+      data: { location: selectedLocation },
+      success: function (response) {
+        var locationID = selectedLocation;
+  
+        $.ajax({
+          url: '/project2/libs/php/getLocationByID.php',
+          type: 'GET',
+          dataType: 'json',
+          data: {
+            id: locationID
+          },
+          success: function (response) {
+            var locationName = response.data[0].name;
+  
             // Now that you have the location ID, make the second AJAX call
             $.ajax({
-                url: '/project2/libs/php/addDepartment.php',
-                type: 'POST',
-                data: { name: departmentName, locationID: locationID }, // Include locationID here
-                dataType: 'json',
-                success: function (response) {
-                    // Check if the operation was successful
-
-                    if (response.status.code == '200') {
-
-                        // Show success message within the modal
-                        $('#successDepAdd').html('Department "' + departmentName +'" in "' + locationName + '" has been successfully added.');
-                        $('#successDepAdd').show();
-
-                        // Clear the form fields
-                        $('#addDepartmentForm')[0].reset();
-
-                        // Refresh the content of the "Locations" tab
-                        refreshTabs();
-                    } else if (response.status.code == '409') {
-                        $('#duplicateDepartment').html('Department "' + departmentName + '" in "' + selectedLocation + '" already exists.');
-                        $('#duplicateDepartment').show();
-                    } else {
-                        // Handle error (optional)
-                        console.error('Error: ' + response.status.description);
-                    }
-                },
-                error: function (xhr, status, error) {
-                    // Handle AJAX errors (optional)
-                    console.error('AJAX Error: ' + error);
+              url: '/project2/libs/php/addDepartment.php',
+              type: 'POST',
+              data: { name: departmentName, locationID: locationID }, // Include locationID here
+              dataType: 'json',
+              success: function (response) {
+                // Check if the operation was successful
+                if (response.status.code == '200') {
+                  // Show success message within the modal
+                  $('#successDepAdd').html('Department "' + departmentName + '" in "' + locationName + ' " has been successfully added.');
+                  $('#successDepAdd').show();
+  
+                  // Clear the form fields
+                  $('#addDepartmentForm')[0].reset();
+  
+                  // Refresh the content of the "Locations" tab
+                  refreshTabs();
+                } else if (response.status.code == '409') {
+                  $('#duplicateDepartment').html('Department "' + departmentName + '" in "' + selectedLocation + '" already exists.');
+                  $('#duplicateDepartment').show();
+                } else {
+                  // Handle error (optional)
+                  console.error('Error: ' + response.status.description);
                 }
-            
+              },
+              error: function (xhr, status, error) {
+                // Handle AJAX errors (optional)
+                console.error('AJAX Error: ' + error);
+              }
             });
-        },
-        error: function(xhr, status, error) {
+          },
+          error: function (xhr, status, error) {
             console.error('Error fetching location ID:', error);
             // Handle error if needed
-        }
+          }
+        });
+      },
+      error: function (xhr, status, error) {
+        console.error('Error fetching location ID:', error);
+        // Handle error if needed
+      }
     });
-        }
-});
-
-
+  });
+  
 
   $("#editDepartmentModal").on("show.bs.modal", function (e) {
     $.ajax({
@@ -531,11 +520,6 @@ $('#addDepartmentForm').submit(function(event) {
     });
   });
 
-
-
-
-  // Executes when the form button with type="submit" is clicked
-
   $("#editPersonnelForm").on("submit", function (e) {
 
     // Executes when the form button with type="submit" is clicked
@@ -550,37 +534,37 @@ $('#addDepartmentForm').submit(function(event) {
   $("#editLocationModal").on("show.bs.modal", function (e) {
     // AJAX request to retrieve location details
     $.ajax({
-        url: "/project2/libs/php/getLocationByID.php",
-        type: "get",
-        dataType: "json",
-        data: {
-            id: $(e.relatedTarget).data("id"), // Assuming data-id is used to store the location ID
-        },
-        
-        success: function (result) {
+      url: "/project2/libs/php/getLocationByID.php",
+      type: "get",
+      dataType: "json",
+      data: {
+        id: $(e.relatedTarget).data("id"), // Assuming data-id is used to store the location ID
+      },
 
-            var resultCode = result.status.code;
+      success: function (result) {
 
-            if (resultCode == 200) {
-                // Populate form fields with location details
-                $("#editLocationID").val(result.data[0].id);
-                $("#editLocation").val(result.data[0].name);
+        var resultCode = result.status.code;
 
-                // Set the value of originalLocationName input field
-                $("#originalLocationName").val(result.data[0].name);
-            } else {
-                // Display error message if data retrieval fails
-                $("#editLocationModal .modal-title").text("Error retrieving data");
-            }
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            // Display error message if AJAX request fails
-            $("#editLocationModal .modal-title").text("Error retrieving data");
+        if (resultCode == 200) {
+          // Populate form fields with location details
+          $("#editLocationID").val(result.data[0].id);
+          $("#editLocation").val(result.data[0].name);
+
+          // Set the value of originalLocationName input field
+          $("#originalLocationName").val(result.data[0].name);
+        } else {
+          // Display error message if data retrieval fails
+          $("#editLocationModal .modal-title").text("Error retrieving data");
         }
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        // Display error message if AJAX request fails
+        $("#editLocationModal .modal-title").text("Error retrieving data");
+      }
     });
-});
+  });
 
-$('#editLocationForm').on("submit", function (event) {
+  $('#editLocationForm').on("submit", function (event) {
     // Prevent default form submission
     event.preventDefault();
 
@@ -588,42 +572,40 @@ $('#editLocationForm').on("submit", function (event) {
     var originalName = $("#originalLocationName").val(); // Retrieve the original name
 
     $.ajax({
-        url: '/project2/libs/php/editLocation.php',
-        type: 'POST',
-        data: {
-            name: newName,
-            originalName: originalName // Pass the original name as parameter
-        },
-        dataType: 'json',
-        success: function (response) {
+      url: '/project2/libs/php/editLocation.php',
+      type: 'POST',
+      data: {
+        name: newName,
+        originalName: originalName // Pass the original name as parameter
+      },
+      dataType: 'json',
+      success: function (response) {
 
-            // Check if the operation was successful
-            if (response.status.code == '200') {
-                // Show success message within the modal
-                $('#successMessage').html('Location "' + originalName + '" has been successfully changed to "' + newName + '"');
-                $('#successMessage').show();
+        // Check if the operation was successful
+        if (response.status.code == '200') {
+          // Show success message within the modal
+          $('#successMessage').html('Location "' + originalName + '" has been successfully changed to "' + newName + '"');
+          $('#successMessage').show();
 
-                // Clear the form fields
-                $('#editLocationForm')[0].reset();
+          // Clear the form fields
+          $('#editLocationForm')[0].reset();
 
-                // Refresh the content of the "Locations" tab
-                refreshTabs();
-            } else if (response.status.code == '409') {
-                $('#duplicateMessage').html('Location "' + newName + '" already exists.');
-                $('#duplicateMessage').show();
-            } else {
-                // Handle other errors here
-                console.error('Error: ' + response.status.description);
-            }
-        },
-        error: function (xhr, status, error) {
-            // Handle AJAX errors here
-            console.error('AJAX Error: ' + error);
+          // Refresh the content of the "Locations" tab
+          refreshTabs();
+        } else if (response.status.code == '409') {
+          $('#duplicateMessage').html('Location "' + newName + '" already exists.');
+          $('#duplicateMessage').show();
+        } else {
+          // Handle other errors here
+          console.error('Error: ' + response.status.description);
         }
+      },
+      error: function (xhr, status, error) {
+        // Handle AJAX errors here
+        console.error('AJAX Error: ' + error);
+      }
     });
-});
-
-
+  });
 
   $('#addLocationForm').on("submit", function (event) {
     // Prevent default form submission
@@ -634,41 +616,48 @@ $('#editLocationForm').on("submit", function (event) {
 
     // Send an AJAX request to addLocation.php
     $.ajax({
-      url: '/project2/libs/php/addLocation.php',
-      type: 'POST',
-      data: { name: locationName },
-      dataType: 'json',
-      success: function (response) {
-        // Check if the operation was successful
-        if (response.status.code == '200') {
+        url: '/project2/libs/php/addLocation.php',
+        type: 'POST',
+        data: { name: locationName },
+        dataType: 'json',
+        success: function (response) {
+            // Check if the operation was successful
 
-          // Show success message within the modal
-          $('#successMessage').html('Location "' + locationName + '" has been successfully added.');
-          $('#successMessage').show();
+            if (response.status.code == '200') {
+                // Show success message within the modal
+                $('#successMessage1').html('Location "' + locationName + '" has been successfully added.');
+                $('#successMessage1').show();
 
-          // Clear the form fields
-          $('#addLocationForm')[0].reset();
+                // Clear the form fields
+                $('#addLocationForm')[0].reset();
 
-          // Refresh the content of the "Locations" tab
-          refreshTabs();
-        } else if (response.status.code == '409') {
-          $('#duplicateMessage').html('Location "' + locationName + '" already exists.');
-          $('#duplicateMessage').show();
+                // Refresh the content of the "Locations" tab
+                refreshTabs();
+            } else if (response.status.code == '409') {
+                $('#duplicateMessage1').html('Location "' + locationName + '" already exists.');
+                $('#duplicateMessage1').show();
+            } else {
+                // Handle other status codes if needed
+                console.error('Error: ' + response.status.description);
+            }
+        },
+        error: function (xhr, status, error) {
+            // Handle AJAX errors
+            console.error('AJAX Error: ' + error);
         }
-        else {
-          // Handle error (optional)
-          console.error('Error: ' + response.status.description);
-        }
-      },
-      error: function (xhr, status, error) {
-        // Handle AJAX errors (optional)
-        console.error('AJAX Error: ' + error);
-      }
     });
-  });
+});
 
   // Function to clear the form fields
-
+  function clearForm() {
+    $('#addLocationForm')[0].reset();
+    $('#successMessage').hide();
+    $('#duplicateMessage').hide();
+    $('#duplicateMessage1').hide();
+    $('#successMessage1').hide();
+    $('#successDepAdd').hide();
+    $('#duplicateDepartment').hide();
+  }
 
   // Function to refresh the content of the "Locations" tab
   function refreshTabs() {
@@ -718,9 +707,10 @@ $('#editLocationForm').on("submit", function (event) {
 
     } else {
       console.log("No active button found.");
-  
+
     }
   }
 
-  });
-})
+});
+
+

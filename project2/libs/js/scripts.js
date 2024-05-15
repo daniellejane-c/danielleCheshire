@@ -4,6 +4,15 @@ $(document).ready(function () {
   populateDepartment();
   //search bar
 
+  function clearForm() {
+    $('#addLocationForm')[0].reset();
+    $('#successMessage').hide();
+    $('#duplicateMessage').hide();
+    $('#successDepAdd').hide();
+    $('#duplicateDepartment').hide();
+  }
+
+ 
   // Function to filter table rows
   function filterTable(tableBodyId, searchText) {
     var anyResults = false;
@@ -253,12 +262,11 @@ $(document).ready(function () {
   
   });
 
-  $("#addDepartmentModal").on("show.bs.modal", function (e) {
-    fetchDropdownData('#addLocationName');
-  });
+
 
   $("#editDepartmentModal").on("show.bs.modal", function (e) {
     fetchDropdownData('#addLocationName');
+    
   });
   // Fetch locations and populate dropdown on page load
   $("#addPersonnelModal").on("show.bs.modal", function (e) {
@@ -397,6 +405,83 @@ $(document).ready(function () {
 
   });
   //edit department
+
+
+  $("#addDepartmentModal").on("show.bs.modal", function (e) {
+    fetchDropdownData('#addLocationName');
+    clearForm();
+});
+
+$('#addDepartmentForm').submit(function(event) {
+    event.preventDefault();
+
+    var departmentName = $('#addDepartmentName').val();
+    var selectedLocation = $('#addLocationName').val();
+
+    // Fetch the location ID first
+    $.ajax({
+        url: '/project2/libs/php/getLocationID.php',
+        method: 'GET',
+        data: { location: selectedLocation },
+        success: function(response) {
+            var locationID = selectedLocation;
+
+            $.ajax({
+              url: '/project2/libs/php/getLocationByID.php',
+              type: 'GET',
+              dataType: 'json',
+              data: {
+                id: locationID
+              },
+              success: function (response) {
+                
+                var locationName = response.data[0].name;
+
+            // Now that you have the location ID, make the second AJAX call
+            $.ajax({
+                url: '/project2/libs/php/addDepartment.php',
+                type: 'POST',
+                data: { name: departmentName, locationID: locationID }, // Include locationID here
+                dataType: 'json',
+                success: function (response) {
+                    // Check if the operation was successful
+
+                    if (response.status.code == '200') {
+
+                        // Show success message within the modal
+                        $('#successDepAdd').html('Department "' + departmentName +'" in "' + locationName + '" has been successfully added.');
+                        $('#successDepAdd').show();
+
+                        // Clear the form fields
+                        $('#addDepartmentForm')[0].reset();
+
+                        // Refresh the content of the "Locations" tab
+                        refreshTabs();
+                    } else if (response.status.code == '409') {
+                        $('#duplicateDepartment').html('Department "' + departmentName + '" in "' + selectedLocation + '" already exists.');
+                        $('#duplicateDepartment').show();
+                    } else {
+                        // Handle error (optional)
+                        console.error('Error: ' + response.status.description);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Handle AJAX errors (optional)
+                    console.error('AJAX Error: ' + error);
+                }
+            
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching location ID:', error);
+            // Handle error if needed
+        }
+    });
+        }
+});
+
+
+
   $("#editDepartmentModal").on("show.bs.modal", function (e) {
     $.ajax({
       url: "/project2/libs/php/getDepartmentByID.php",
@@ -515,7 +600,7 @@ $('#editLocationForm').on("submit", function (event) {
             // Check if the operation was successful
             if (response.status.code == '200') {
                 // Show success message within the modal
-                $('#successMessage').html('Location "' + originalName + '" has been successfully changed to ' + newName);
+                $('#successMessage').html('Location "' + originalName + '" has been successfully changed to "' + newName + '"');
                 $('#successMessage').show();
 
                 // Clear the form fields
@@ -583,13 +668,7 @@ $('#editLocationForm').on("submit", function (event) {
   });
 
   // Function to clear the form fields
-  function clearForm() {
-    $('#addLocationForm')[0].reset();
-    $('#successMessage').hide();
-    $('#duplicateMessage').hide();
-  }
 
- 
 
   // Function to refresh the content of the "Locations" tab
   function refreshTabs() {
@@ -644,5 +723,4 @@ $('#editLocationForm').on("submit", function (event) {
   }
 
   });
-
-
+})

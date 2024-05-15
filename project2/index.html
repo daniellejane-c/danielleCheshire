@@ -341,7 +341,7 @@
 
           <form id="addDepartmentForm">
 
-            <input type="hidden" id="addDepartmentName">
+            <input type="hidden" id="addDepartmentID">
 
             <div class="form-floating mb-3">
               <input type="text" class="form-control" id="addDepartmentName" placeholder="Department" required>
@@ -356,7 +356,9 @@
               <label for="addLocationName">Location</label>
             </div>
 
-          </form>
+            </form>
+            <div id="successDepAdd" class="alert alert-success mt-3" role="alert" style="display: none;"></div>
+            <div id="duplicateDepartment" class="alert alert-success mt-3 bg-warning" role="alert" style="display: none;"></div>
         </div>
         <div class="modal-footer">
           <button type="submit" form="addDepartmentForm" class="btn btn-outline-primary btn-sm myBtn">SAVE</button>

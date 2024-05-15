@@ -32,44 +32,36 @@
 	// SQL statement accepts parameters and so is prepared to avoid SQL injection.
 	// $_REQUEST used for development / debugging. Remember to change to $_POST for production
 
-	$query = $conn->prepare('SELECT id, name FROM location WHERE id =  ? ');
+	$query = $conn->prepare('SELECT id, name FROM location WHERE id = ?');
+$query->bind_param("i", $_REQUEST['id']);
+$query->execute();
 
-	$query->bind_param("i", $_REQUEST['id']);
+if (false === $query) {
+    $output['status']['code'] = "400";
+    $output['status']['name'] = "executed";
+    $output['status']['description'] = "query failed";
+    $output['data'] = [];
 
-	$query->execute();
-	
-	if (false === $query) {
+    echo json_encode($output);
+    mysqli_close($conn);
+    exit;
+}
 
-		$output['status']['code'] = "400";
-		$output['status']['name'] = "executed";
-		$output['status']['description'] = "query failed";	
-		$output['data'] = [];
+$result = $query->get_result();
 
-		echo json_encode($output); 
-	
-		mysqli_close($conn);
-		exit;
+$data = [];
+while ($row = mysqli_fetch_assoc($result)) {
+    array_push($data, $row);
+}
 
-	}
+$output['status']['code'] = "200";
+$output['status']['name'] = "ok";
+$output['status']['description'] = "success";
+$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
+$output['data'] = $data;
 
-	$result = $query->get_result();
+echo json_encode($output);
+mysqli_close($conn);
 
-   	$data = [];
-
-	while ($row = mysqli_fetch_assoc($result)) {
-
-		array_push($data, $row);
-
-	}
-
-	$output['status']['code'] = "200";
-	$output['status']['name'] = "ok";
-	$output['status']['description'] = "success";
-	$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
-	$output['data'] = $data;
-
-	echo json_encode($output); 
-
-	mysqli_close($conn);
 
 ?>

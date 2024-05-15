@@ -504,6 +504,9 @@ fetchDropdownData('#addLocationName');
                 $('#successMessage').html('Location "' + locationName + '" has been successfully added.');
                 $('#successMessage').show();
 
+                // Clear the form fields
+                $('#addLocationForm')[0].reset();
+
                 // Refresh the content of the "Locations" tab
                 refreshLocationsTab();
             } else if (response.status.code == '409') {
@@ -520,6 +523,19 @@ fetchDropdownData('#addLocationName');
             console.error('AJAX Error: ' + error);
         }
     });
+});
+
+// Function to clear the form fields
+function clearForm() {
+    $('#addLocationForm')[0].reset();
+    $('#successMessage').hide();
+    $('#duplicateMessage').hide();
+}
+
+// Call clearForm() when the "Add" button is clicked
+$('#addBtn').click(function() {
+    clearForm();
+
 });
 
 // Function to refresh the content of the "Locations" tab

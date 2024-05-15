@@ -264,6 +264,7 @@ $(document).ready(function () {
   });
   $("#editPersonnelModal").on("show.bs.modal", function (e) {
     fetchDropdownData('#addPersonnelDepartment');
+    clearForm();
   });
 
   $('#editLocationModal').on("show.bs.modal", function (e) {
@@ -334,6 +335,16 @@ $(document).ready(function () {
 
   });
 
+  $("#addPersonnelModal").on("show.bs.modal", function (e) {
+
+
+  });
+  $("#addPersonnelForm").on("submit", function (e) {
+
+    e.preventDefault();
+
+
+  });
   $("#editPersonnelModal").on("show.bs.modal", function (e) {
 
     $.ajax({
@@ -381,9 +392,6 @@ $(document).ready(function () {
       }
     });
   });
-
-  // Executes when the form button with type="submit" is clicked
-
   $("#editPersonnelForm").on("submit", function (e) {
 
     // Executes when the form button with type="submit" is clicked
@@ -394,7 +402,6 @@ $(document).ready(function () {
     // AJAX call to save form data
 
   });
-  //edit department
 
 
   $("#addDepartmentModal").on("show.bs.modal", function (e) {
@@ -472,6 +479,7 @@ $(document).ready(function () {
   
 
   $("#editDepartmentModal").on("show.bs.modal", function (e) {
+    clearForm();
     $.ajax({
       url: "/project2/libs/php/getDepartmentByID.php",
       type: "get",
@@ -480,10 +488,13 @@ $(document).ready(function () {
         id: $(e.relatedTarget).attr("data-id")
       },
       success: function (result) {
+
         var resultCode = result.status.code;
         if (resultCode == 200) {
           $("#editDepartmentID").val(result.data[0].id);
           $("#editDepartmentName").val(result.data[0].name);
+          $("#originalDepartmentName").val(result.data[0].name);
+          $('#originalDepartmentLocation').val(result.data[0].locationID);
 
           // Fetch all locations
           $.ajax({
@@ -520,16 +531,91 @@ $(document).ready(function () {
     });
   });
 
-  $("#editPersonnelForm").on("submit", function (e) {
+  $("#editDepartmentForm").on("submit", function (event) {
+    event.preventDefault();
 
-    // Executes when the form button with type="submit" is clicked
-    // stop the default browser behviour
+    var newDepName = $("#editDepartmentName").val(); // Retrieve the new department name
+    var newLocationID = $("#editDepartmentLocation").val(); // Retrieve the new location ID
+    var originalDepName = $("#originalDepartmentName").val(); // Retrieve the original department name
+    var originalDepLocationID = $("#originalDepartmentLocation").val(); // Retrieve the original department location ID
 
-    e.preventDefault();
+    // Variables to store original and new department location names
+    var originalDepLocationName, newDepLocationName;
 
-    // AJAX call to save form data
+    // AJAX request to retrieve the original department location name
+    $.ajax({
+        url: '/project2/libs/php/getLocationByID.php',
+        type: 'GET',
+        dataType: 'json',
+        data: {
+            id: originalDepLocationID // Pass the original department location ID
+        },
+        success: function (response) {
+            if (response.status.code == 200) {
+                originalDepLocationName = response.data[0].name; // Assuming response structure has 'data' as an object
 
-  });
+                
+                // AJAX request to retrieve the new department location name
+                $.ajax({
+                    url: '/project2/libs/php/getLocationByID.php',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: {
+                        id: newLocationID // Pass the new department location ID
+                    },
+                    success: function (response) {
+                        if (response.status.code == 200) {
+                            newDepLocationName = response.data[0].name;
+
+                            // AJAX request to edit the department
+                            $.ajax({
+                                url: '/project2/libs/php/editDepartment.php',
+                                type: 'POST',
+                                data: {
+                                    departmentName: newDepName,
+                                    locationID: newLocationID, // Pass the new location ID
+                                    originalDepartmentName: originalDepName
+                                },
+                                dataType: 'json',
+                                success: function (response) {
+
+                                    if (response.status.code == '200') {
+                                        $('#depSuccessMessage').html('Department "' + originalDepName + ' in ' + originalDepLocationName + '" has been successfully changed to "' + newDepName + ' in ' + newDepLocationName + '"');
+                                        $('#depSuccessMessage').show();
+                                        $('#editDepartmentForm')[0].reset();
+                                        refreshTabs();
+                                    } else if (response.status.code == '409') {
+                                        $('#depDuplicateMessage').html('Location "' + newDepName + '" already exists.');
+                                        $('#depDuplicateMessage').show();
+                                    } else {
+                                        console.error('Error: ' + response.status.description);
+                                    }
+                                },
+                                error: function (xhr, status, error) {
+                                    console.error('AJAX Error: ' + error);
+                                }
+                            });
+                        } else {
+                            console.error('Error: Unable to retrieve new department location name');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('AJAX Error: ' + error);
+                    }
+                });
+            } else {
+                console.error('Error: Unable to retrieve original department location name');
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('AJAX Error: ' + error);
+        }
+    });
+});
+
+
+
+
   //edit location
   $("#editLocationModal").on("show.bs.modal", function (e) {
     // AJAX request to retrieve location details
@@ -552,6 +638,7 @@ $(document).ready(function () {
 
           // Set the value of originalLocationName input field
           $("#originalLocationName").val(result.data[0].name);
+
         } else {
           // Display error message if data retrieval fails
           $("#editLocationModal .modal-title").text("Error retrieving data");
@@ -657,6 +744,8 @@ $(document).ready(function () {
     $('#successMessage1').hide();
     $('#successDepAdd').hide();
     $('#duplicateDepartment').hide();
+    $('#depSuccessMessage').hide();
+    $('#depDuplicateMessage').hide();
   }
 
   // Function to refresh the content of the "Locations" tab

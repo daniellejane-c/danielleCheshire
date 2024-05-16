@@ -509,7 +509,7 @@ console.log(departmentID);
                     }
                 });
             } else if (response.status.code == '409') {
-                $('#personnelDuplicateMessage').html('Employee with email' + emailAddress + ' already exists');
+              $('#personnelDuplicateMessage').html('Employee with email "' + emailAddress + '" already exists');
                 $('#personnelDuplicateMessage').show();
             } else {
                 console.error('Error: ' + response.status.description);

@@ -1,74 +1,111 @@
 <?php
 
-	// example use from browser
-	// http://localhost/companydirectory/libs/php/getAllDepartments.php
+// Display errors for debugging purposes
+ini_set('display_errors', 'On');
+error_reporting(E_ALL);
 
-	// remove next two lines for production	
-	
-	ini_set('display_errors', 'On');
-	error_reporting(E_ALL);
+// Measure script execution time
+$executionStartTime = microtime(true);
 
-	$executionStartTime = microtime(true);
+// Set response headers to indicate JSON content
+header('Content-Type: application/json; charset=UTF-8');
 
-	include("config.php");
+// Include database configuration
+include("config.php");
 
-	header('Content-Type: application/json; charset=UTF-8');
+// Check if the configuration file exists
+if (!file_exists("config.php")) {
+    $output['status']['code'] = "500";
+    $output['status']['name'] = "failure";
+    $output['status']['description'] = "Configuration file not found";
+    $output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
+    $output['data'] = [];
 
-	$conn = new mysqli($cd_host, $cd_user, $cd_password, $cd_dbname, $cd_port, $cd_socket);
+    echo json_encode($output);
+    exit;
+}
 
-	if (mysqli_connect_errno()) {
-		
-		$output['status']['code'] = "300";
-		$output['status']['name'] = "failure";
-		$output['status']['description'] = "database unavailable";
-		$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
-		$output['data'] = [];
+// Check if the configuration file is readable
+if (!is_readable("config.php")) {
+    $output['status']['code'] = "500";
+    $output['status']['name'] = "failure";
+    $output['status']['description'] = "Configuration file is not readable";
+    $output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
+    $output['data'] = [];
 
-		mysqli_close($conn);
+    echo json_encode($output);
+    exit;
+}
 
-		echo json_encode($output);
+// Include database configuration
+include("config.php");
 
-		exit;
+// Check for required database configuration variables
+if (!isset($cd_host) || !isset($cd_user) || !isset($cd_password) || !isset($cd_dbname) || !isset($cd_port) || !isset($cd_socket)) {
+    $output['status']['code'] = "500";
+    $output['status']['name'] = "failure";
+    $output['status']['description'] = "Incomplete database configuration";
+    $output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
+    $output['data'] = [];
 
-	}	
+    echo json_encode($output);
+    exit;
+}
 
-	// SQL does not accept parameters and so is not prepared
+// Establish database connection
+$conn = new mysqli($cd_host, $cd_user, $cd_password, $cd_dbname, $cd_port, $cd_socket);
 
-	$query = 'SELECT id, name, locationID FROM department';
+// Check for database connection errors
+if ($conn->connect_errno) {
+    // Database connection failed
+    $output['status']['code'] = "300";
+    $output['status']['name'] = "failure";
+    $output['status']['description'] = "Database connection failed";
+    $output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
+    $output['data'] = [];
 
-	$result = $conn->query($query);
-	
-	if (!$result) {
+    echo json_encode($output);
+    exit;
+}
 
-		$output['status']['code'] = "400";
-		$output['status']['name'] = "executed";
-		$output['status']['description'] = "query failed";	
-		$output['data'] = [];
+// SQL query to select department data
+$query = 'SELECT id, name, locationID FROM department';
 
-		mysqli_close($conn);
+// Execute SQL query
+$result = $conn->query($query);
 
-		echo json_encode($output); 
+// Check for query execution errors
+if (!$result) {
+    // Query execution failed
+    $output['status']['code'] = "400";
+    $output['status']['name'] = "failure";
+    $output['status']['description'] = "Query execution failed";
+    $output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
+    $output['data'] = [];
 
-		exit;
+    echo json_encode($output);
+    exit;
+}
 
-	}
-   
-  $data = [];
+// Initialize an array to store fetched data
+$data = [];
 
-	while ($row = mysqli_fetch_assoc($result)) {
+// Fetch rows from the result set and store in the data array
+while ($row = $result->fetch_assoc()) {
+    $data[] = $row;
+}
 
-		array_push($data, $row);
+// Close the database connection
+$conn->close();
 
-	}
+// Prepare success response
+$output['status']['code'] = "200";
+$output['status']['name'] = "success";
+$output['status']['description'] = "Query executed successfully";
+$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
+$output['data'] = $data;
 
-	$output['status']['code'] = "200";
-	$output['status']['name'] = "ok";
-	$output['status']['description'] = "success";
-	$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
-	$output['data'] = $data;
-	
-	mysqli_close($conn);
-
-	echo json_encode($output); 
+// Return success response as JSON
+echo json_encode($output); 
 
 ?>

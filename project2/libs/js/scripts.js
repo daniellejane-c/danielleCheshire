@@ -59,6 +59,7 @@ $(document).ready(function () {
             var row = '<tr>' +
               '<td class="align-middle text-nowrap" id="personnelName">' + personnel.lastName + ', ' + personnel.firstName + '</td>' +
               '<td class="align-middle text-nowrap d-none d-md-table-cell" id="personnelDepartment">' + personnel.department + '</td>' +
+              '<td class="align-middle text-nowrap d-none d-md-table-cell" id="personneljobTitle">' + personnel.jobTitle + '</td>' +
               '<td class="align-middle text-nowrap d-none d-md-table-cell" id="personnelLocation">' + personnel.location + '</td>' +
               '<td class="align-middle text-nowrap d-none d-md-table-cell" id="personnelEmail">' + personnel.email + '</td>' +
               '<td class="text-end text-nowrap">' +
@@ -259,9 +260,7 @@ $(document).ready(function () {
     fetchDropdownData('#addLocationName');
   });
   // Fetch locations and populate dropdown on page load
-  $("#addPersonnelModal").on("show.bs.modal", function (e) {
-    fetchDropdownData('#addPersonnelDepartment');
-  });
+
   $("#editPersonnelModal").on("show.bs.modal", function (e) {
     fetchDropdownData('#addPersonnelDepartment');
     clearForm();
@@ -292,6 +291,7 @@ $(document).ready(function () {
       type: 'GET',
       dataType: 'json',
       success: function (response) {
+        console.log(response);
         if (response.status.code === "200") {
           var dropdownData = response.data;
 
@@ -311,7 +311,7 @@ $(document).ready(function () {
         }
       },
       error: function (jqXHR, textStatus, errorThrown) {
-        console.log("Error:", textStatus, errorThrown);
+        console.log("Error:", jqXHR, textStatus, errorThrown);
       }
     });
   }
@@ -334,17 +334,79 @@ $(document).ready(function () {
     // Call function to refresh location table
 
   });
-
   $("#addPersonnelModal").on("show.bs.modal", function (e) {
+    fetchDropdownData('#addPersonnelDepartment');
+    clearForm();
+});
+
+$('#addPersonnelForm').on("submit", function (event) {
+    event.preventDefault();
+
+    var firstName = $('#addPersonnelFirstName').val();
+    var lastName = $('#addPersonnelLastName').val();
+    var jobTitle = $('#addPersonnelJobTitle').val();
+    var email = $('#addPersonnelEmailAddress').val();
+    var departmentID = $('#addPersonnelDepartment').val();
+    console.log(firstName, lastName, jobTitle, email, departmentID);
+console.log(departmentID);
+    // Fetch the department name first
+    $.ajax({
+        url: '/project2/libs/php/getDepartmentByID.php',
+        method: 'GET',
+        data: { id: departmentID },
+        dataType: 'json',
+        success: function (response) {
+          console.log(response);
+            var departmentName = response.data[0].name;
+            console.log(departmentName);
 
 
-  });
-  $("#addPersonnelForm").on("submit", function (e) {
+            // Now that you have the department name, make the second AJAX call
+            $.ajax({
+                url: '/project2/libs/php/addPersonnel.php',
+                type: 'POST',
+                data: {
+                    firstName: firstName,
+                    lastName: lastName,
+                    jobTitle: jobTitle,
+                    email: email,
+                    departmentID: departmentID,
 
-    e.preventDefault();
+                },
+                dataType: 'json',
+                
+                success: function (response) {
+                  
+                    console.log(response);
+                    // Check if the operation was successful
+                    if (response.status.code == '200') {
+                        // Show success message within the modal
+                        $('#successAddPersonnel').html('Employee added successfully: "' + firstName + ', ' + lastName + ', ' + jobTitle + ', ' + email + ', ' + departmentName + '"');
+                        $('#successAddPersonnel').show();
+                        // Clear the form fields
+                        $('#addPersonnelForm')[0].reset();
+                        refreshTabs();
+                    } else if (response.status.code == '409') {
+                        $('#duplicatePersonnel').html('Employee with email "' + email + '" already exists.');
+                        $('#duplicatePersonnel').show();
+                    } else {
+                        // Handle error (optional)
+                        console.error('Error: ' + response.status.description);
+                    }
+                },
+                error: function (jqXHR, status, error) {
+                    // Handle AJAX errors (optional)
+                    console.error('AJAX Error: ' + jqXHR, status, error);
+                }
+            });
+        },
+        error: function (xhr, status, error) {
+            console.error('Error fetching department name:', xhr, status, error);
+            // Handle error if needed
+        }
+    });
+});
 
-
-  });
   $("#editPersonnelModal").on("show.bs.modal", function (e) {
 
     $.ajax({
@@ -402,7 +464,6 @@ $(document).ready(function () {
     // AJAX call to save form data
 
   });
-
 
   $("#addDepartmentModal").on("show.bs.modal", function (e) {
     fetchDropdownData('#addLocationName');

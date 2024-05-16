@@ -108,7 +108,7 @@
     </footer>
 
   </section>
-
+//editPersonnelModal
   <div id="editPersonnelModal" class="modal fade" tabindex="-1" data-bs-backdrop="false" data-bs-keyboard="false"
     aria-labelledby="exampleModalLabel" aria-hidden="true">
 
@@ -126,6 +126,7 @@
           <form id="editPersonnelForm">
 
             <input type="hidden" id="editPersonnelEmployeeID">
+            <input type="hidden" id="originalPersonnelEmployeeEmail">
 
             <div class="form-floating mb-3">
               <input type="text" class="form-control" id="editPersonnelFirstName" placeholder="First name" required>
@@ -155,7 +156,9 @@
             </div>
 
           </form>
-
+          <div id="personnelSuccessMessage" class="alert alert-success mt-3" role="alert" style="display: none;"></div>
+          <div id="personnelDuplicateMessage" class="alert alert-success mt-3 bg-warning" role="alert" style="display: none;">
+          </div>
         </div>
 
         <div class="modal-footer">

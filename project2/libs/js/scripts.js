@@ -427,6 +427,7 @@ console.log(departmentID);
           $("#editPersonnelLastName").val(result.data.personnel[0].lastName);
           $("#editPersonnelJobTitle").val(result.data.personnel[0].jobTitle);
           $("#editPersonnelEmailAddress").val(result.data.personnel[0].email);
+          $("#originalPersonnelEmployeeEmail").val(result.data.personnel[0].email);
 
           $("#editPersonnelDepartment").html("");
 
@@ -454,16 +455,75 @@ console.log(departmentID);
       }
     });
   });
-  $("#editPersonnelForm").on("submit", function (e) {
+  $("#editPersonnelForm").on("submit", function (event) {
+    event.preventDefault();
 
-    // Executes when the form button with type="submit" is clicked
-    // stop the default browser behviour
+    var employeeID = $("#editPersonnelEmployeeID").val(); // Retrieve the employee ID
+    var firstName = $("#editPersonnelFirstName").val(); // Retrieve the first name
+    var lastName = $("#editPersonnelLastName").val(); // Retrieve the last name
+    var jobTitle = $("#editPersonnelJobTitle").val(); // Retrieve the job title
+    var emailAddress = $("#editPersonnelEmailAddress").val(); // Retrieve the email address
+    var department = $("#editPersonnelDepartment").val(); // Retrieve the department
+    var originalEmailAddress = $("#originalPersonnelEmployeeEmail").val();
+    var emailToUpdate = (emailAddress !== originalEmailAddress) ? emailAddress : originalEmailAddress;
 
-    e.preventDefault();
+    // AJAX request to edit the personnel
+    $.ajax({
+        url: '/project2/libs/php/editPersonnel.php',
+        type: 'POST',
+        dataType: 'json',
+        data: {
+            employeeID: employeeID,
+            firstName: firstName,
+            lastName: lastName,
+            jobTitle: jobTitle,
+            email: emailToUpdate,
+            departmentID: department
+        },
+        success: function (response) {
+            if (response.status.code == '200') {
+                // Retrieve department name using AJAX
+                $.ajax({
+                    url: '/project2/libs/php/getDepartmentByID.php',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: {
+                        id: department
+                    },
+                    success: function (departmentResponse) {
+                        var departmentName = departmentResponse.data[0].name;
+                        var successMessage = 'Personnel updated to: ';
+                        successMessage += firstName + ', ';
+                        successMessage += lastName + ', ';
+                        successMessage += jobTitle + ', ';
+                        successMessage += emailAddress + ', ';
+                        successMessage += departmentName;
 
-    // AJAX call to save form data
+                        $('#personnelSuccessMessage').html(successMessage);
+                        $('#personnelSuccessMessage').show();
+                        $('#editPersonnelForm')[0].reset();
+                        refreshTabs();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error retrieving department name: ' + error);
+                    }
+                });
+            } else if (response.status.code == '409') {
+                $('#personnelDuplicateMessage').html('Employee with email' + emailAddress + ' already exists');
+                $('#personnelDuplicateMessage').show();
+            } else {
+                console.error('Error: ' + response.status.description);
+            }
+        },
+        error: function (xhr, status, error) {
+            $('#personnelErrorMessage').html('AJAX Error: ' + error);
+            $('#personnelErrorMessage').show();
+            console.error('AJAX Error: ' + error);
+        }
+    });
+});
 
-  });
+
 
   $("#addDepartmentModal").on("show.bs.modal", function (e) {
     fetchDropdownData('#addLocationName');
@@ -810,6 +870,8 @@ console.log(departmentID);
     $('#duplicateDepartment').hide();
     $('#depSuccessMessage').hide();
     $('#depDuplicateMessage').hide();
+    $('#personnelSuccessMessage').hide();
+    $('#personnelDuplicateMessage').hide();
   }
 
   // Function to refresh the content of the "Locations" tab

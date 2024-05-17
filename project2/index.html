@@ -414,7 +414,7 @@
   //deletePersonnelModal
 
   <div class="modal fade" id="deletePersonnelModal" data-bs-backdrop="false" style="display: none;" aria-modal="true" role="dialog">
-    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
       <div class="modal-content">
         <div class="modal-header bg-primary bg-gradient text-white">
           <h4 class="modal-title">Delete Employee</h4>
@@ -440,7 +440,7 @@
   
   //deleteDepartmentModal
   <div class="modal fade" id="deleteDepartmentModal" data-bs-backdrop="false" style="display: none;" aria-modal="true" role="dialog">
-    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content">
             <div class="modal-header bg-primary bg-gradient text-white">
                 <h4 class="modal-title">Delete Department</h4>
@@ -453,7 +453,7 @@
                 <form id="deleteDepartmentForm"> 
                     <input class="form-control" type="hidden" name="id">
                     <div id="deleteDepartmentTextEligible" style="display: none;">
-                      <p>Remove Department: <span id="departmentNameEligible"></span></p>
+                      <p>Remove Department: <strong id="departmentNameEligible"></strong></p>
                   </div>
                   <div id="deleteDepartmentTextNotEligible" style="display: none;">
                       <p><strong id="departmentNameNotEligible"></strong> cannot be deleted as it has <strong id="numEmployees"></strong> employees assigned to it.</p>
@@ -473,7 +473,38 @@
 </div>
 
   //deleteLocationModal
+  <div class="modal fade" id="deleteLocationModal" data-bs-backdrop="false" style="display: none;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header bg-primary bg-gradient text-white">
+                <h4 class="modal-title">Delete Location</h4>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+  
+            <div class="modal-body shadow">
 
+
+                <form id="deleteLocationForm"> 
+                    <input class="form-control" type="hidden" name="id">
+                    <div id="deleteLocationTextEligible" style="display: none;">
+                      <p>Remove Location: <strong id="locationNameEligible"></strong></p>
+                  </div>
+                  <div id="deleteLocationTextNotEligible" style="display: none;">
+                      <p><strong id="locationNameNotEligible"></strong> cannot be deleted as it has <strong id="numDepartments"></strong> departments assigned to it.</p>
+                  </div>
+
+                    <button type="submit" id="locYesBtn" class="btn btn-primary btn-sm" id="btnDeleteSubmit" form="deleteLocationForm">
+                        YES
+                    </button>
+                    <button type="button" id="locNoBtn" class="btn btn-primary btn-sm float-right" data-bs-dismiss="modal">
+                        NO
+                    </button>
+                </form>
+                <div id="deleteLocationSuccess" class="alert alert-success mt-3" role="alert" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+</div>
 
 
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>

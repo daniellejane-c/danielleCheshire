@@ -167,7 +167,7 @@ $(document).ready(function () {
               '<button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editLocationModal" data-id="' + location.id + '">' +
               '<i class="fa-solid fa-pencil fa-fw"></i>' +
               '</button>' +
-              '<button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#deleteLocationModal" data-id="' + location.id + '">' +
+              '<button type="button" class="btn btn-primary btn-sm deleteLocationBtn" data-bs-toggle="modal" data-bs-target="#deleteLocationModal" data-id="' + location.id + '">' +
               '<i class="fa-solid fa-trash fa-fw"></i>' +
               '</button>' +
               '</td>' +
@@ -1029,6 +1029,117 @@ $('#deleteDepartmentForm').submit(function (event) {
       }
   });
 });
+//delete location
+
+$('.deleteLocationBtn').on('click', function () {
+  var locationId = $(this).data('id');
+  var locationName = $(this).closest('tr').find('#locationName').text().trim();
+  var numDepartments = $(this).closest('tr').find('#numDepartments').text().trim();
+
+  if (numDepartments == 0) {
+    $('#deleteLocationTextEligible').show();
+    $('#deleteLocationTextNotEligible').hide();
+    $('#locationNameEligible').text(locationName);
+  } else {
+    $('#deleteLocationTextEligible').hide();
+    $('#deleteLocationTextNotEligible').show();
+    $('#locationNameNotEligible').text(locationName);
+    $('#numDepartments').text(numDepartments);
+  }
+
+  $('#deleteLocationForm input[name="id"]').val(locationId);
+});
+
+$('#deleteLocationModal').on('show.bs.modal', function (e) {
+  clearForm();
+  var button = $(e.relatedTarget);
+
+  var locationId = button.data('id');
+  var locationName = button.closest('tr').find('#locationName').text();
+
+  $.ajax({
+    url: '/project2/libs/php/checkLocationEligibility.php',
+    type: 'POST',
+    dataType: 'json',
+    data: { id: locationId },
+    success: function(response) {
+        console.log(response);
+        if (response.status.code === "200") {
+            $('#deleteLocationTextEligible').show();
+            $('#deleteLocationTextNotEligible').hide();
+            $('#locationNameEligible').text(locationName);
+            $('#deleteLocationForm input[name="id"]').val(locationId);
+            $('#deleteLocationModal').modal('show');
+            $('#locYesBtn').show();
+            $('#locNoBtn').show();
+        } else {
+            if (response.status.code === "409") {
+                $('#deleteLocationTextEligible').hide();
+                $('#deleteLocationTextNotEligible').show();
+                $('#locationNameNotEligible').text(locationName);
+                $('#numDepartments').text(response.data.count);
+                $('#deleteLocationModal').modal('show');
+                $('#locYesBtn').hide();
+              $('#locNoBtn').hide();
+            } else {
+                console.log("Error: " + response.status.description);
+            }
+        }
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+        console.log("Error:", textStatus, errorThrown);
+    }
+});
+});
+
+$('#deleteLocationForm').submit(function (event) {
+event.preventDefault();
+
+var locationId = $('#deleteLocationForm input[name="id"]').val();
+$.ajax({
+    url: '/project2/libs/php/getLocationByID.php',
+    type: 'POST',
+    dataType: 'json',
+    data: { id: locationId },
+    success: function (response) {
+      console.log(response);
+        if (response.status.code === "200") {
+            var locationName = response.data[0].name
+            console.log(locationName);
+            $.ajax({
+                url: '/project2/libs/php/deleteLocation.php',
+                type: 'POST',
+                dataType: 'json',
+                data: { id: locationId },
+                success: function(response) {
+                    console.log(response);
+                    if (response.status.code === "200") {
+                        $('#deleteLocationSuccess').text('Location: ' + locationName + ' has been successfully deleted.');
+                        $('#deleteLocationSuccess').show();
+                        $('#locYesBtn').hide();
+                        $('#locNoBtn').hide();
+                        refreshTabs();
+                    } else {
+                        // Handle other status codes if needed
+                        if (response.status.code === "409") {
+                            $('#deleteLocationTextEligible').hide();
+                            $('#deleteLocationTextNotEligible').show();
+                            $('#locationNameNotEligible').text(response.data.LocationName);
+                            $('#numDepartments').text(response.data.count);
+                        } else {
+                            console.log("Error: " + response.status.description);
+                        }
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log("Error:", textStatus, errorThrown);
+                }
+            });
+        }
+    }
+});
+});
+
 
   // Function to clear the form fields
   function clearForm() {
@@ -1049,6 +1160,7 @@ $('#deleteDepartmentForm').submit(function (event) {
     $('#deleteDepartmentSuccess').hide();
     $('#yesBtn').show();
     $('#noBtn').show();
+    $('#deleteLocationSuccess').hide();
   }
 
   // Function to refresh the content of the "Locations" tab

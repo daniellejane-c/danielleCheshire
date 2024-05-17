@@ -53,7 +53,7 @@ $(document).ready(function () {
 
           // Clear existing table content
           $('#personnelTableBody').empty();
-          // console.log(response);
+
           // Loop through personnel data and populate table rows
           $.each(personnelData, function (index, personnel) {
             var row = '<tr>' +
@@ -83,9 +83,7 @@ $(document).ready(function () {
       }
     });
   }
-
-
-
+ 
   function populateDepartment() {
     $.ajax({
       url: '/project2/libs/php/getAllDepartments.php',
@@ -145,8 +143,6 @@ $(document).ready(function () {
     });
   }
 
-
-
   function populateLocationData() {
     $.ajax({
       url: '/project2/libs/php/getAllLocations.php',
@@ -185,39 +181,83 @@ $(document).ready(function () {
     });
   }
 
+
+  $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (event) {
+    var target = $(event.target).data('bs-target');
+    refreshTable(getTableName(target));
+  });
+
+  // Handle refresh button click
   $("#refreshBtn").click(function () {
     if ($("#personnelBtn").hasClass("active")) {
       refreshTable("personnel");
     } else if ($("#departmentsBtn").hasClass("active")) {
-      refreshTable("departments");
+      refreshTable("department");
     } else if ($("#locationsBtn").hasClass("active")) {
-      refreshTable("locations");
+      refreshTable("location");
     } else {
       console.log("No active button found.");
     }
   });
 
-  function refreshTable(table) {
-    $.ajax({
-      url: "/project2/libs/php/refresh.php",
-      type: "GET",
-      data: { table: table }, // Specify the table parameter
-      success: function (data, textStatus, jqXHR) {
-        console.log("Data received:", data);
-        console.log("Status:", textStatus);
-        if (data === "success") {
-          console.log(table + " table refreshed successfully!");
-          // You can update the UI here if needed
-        } else {
-          console.log("Error refreshing " + table + " table: " + data);
-        }
-      },
-      error: function (jqXHR, textStatus, errorThrown) {
-        console.log("Error refreshing " + table + " table: " + textStatus + " - " + errorThrown);
-      }
-    });
+  // Map tab pane IDs to table names
+  function getTableName(tabId) {
+    switch (tabId) {
+      case '#personnel-tab-pane':
+        return 'personnel';
+      case '#departments-tab-pane':
+        return 'department';
+      case '#locations-tab-pane':
+        return 'location';
+      default:
+        return '';
+    }
   }
 
+  // Refresh table function
+  function refreshTable(table) {
+    if (table === '') {
+        showMessage("Invalid table specified");
+        return;
+    }
+
+    $.ajax({
+        url: "/project2/libs/php/refresh.php",
+        type: "GET",
+        data: { table: table }, // Specify the table parameter
+        success: function (response) {
+            // Parse the JSON response
+            let data = JSON.parse(response);
+
+            if (data.status === "success") {
+                showTick(); // Show tick symbol
+                // Hide tick symbol after 1 second
+                setTimeout(hideTick, 1000);
+                // You can update the UI here if needed
+            } else {
+                showMessage("Error refreshing " + table + " table: " + data.message);
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            showMessage("Error refreshing " + table + " table: " + textStatus + " - " + errorThrown);
+        }
+    });
+}
+
+function showMessage(message) {
+    // Display the message in the messageContainer div
+    $('#messageContainer').text(message);
+}
+
+function showTick() {
+    // Show the tick icon
+    $('#tickIcon').show();
+}
+
+function hideTick() {
+    // Hide the tick icon
+    $('#tickIcon').hide();
+}
 
 
   $("#filterBtn").click(function () {

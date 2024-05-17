@@ -66,7 +66,7 @@ $(document).ready(function () {
               '<button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editPersonnelModal" data-id="' + personnel.id + '">' +
               '<i class="fa-solid fa-pencil fa-fw"></i>' +
               '</button>' +
-              '<button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#deletePersonnelModal" data-id="' + personnel.id + '">' +
+              '<button type="button" class="btn btn-primary btn-sm deletePersonnelBtn" data-bs-toggle="modal" data-bs-target="#deletePersonnelModal" data-id="' + personnel.id + '">' +
               '<i class="fa-solid fa-trash fa-fw"></i>' +
               '</button>' +
               '</td>' +
@@ -122,7 +122,7 @@ $(document).ready(function () {
                   '<button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editDepartmentModal" data-id=' + department.id + '">' +
                   '<i class="fa-solid fa-pencil fa-fw"></i>' +
                   '</button>' +
-                  '<button type="button" class="btn btn-primary btn-sm deleteDepartmentBtn" data-id=' + department.id + '">' +
+                  '<button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#deleteDepartmentModal" data-id="' + department.id + '">' +
                   '<i class="fa-solid fa-trash fa-fw"></i>' +
                   '</button>' +
                   '</td>' +
@@ -337,9 +337,9 @@ $(document).ready(function () {
   $("#addPersonnelModal").on("show.bs.modal", function (e) {
     fetchDropdownData('#addPersonnelDepartment');
     clearForm();
-});
+  });
 
-$('#addPersonnelForm').on("submit", function (event) {
+  $('#addPersonnelForm').on("submit", function (event) {
     event.preventDefault();
 
     var firstName = $('#addPersonnelFirstName').val();
@@ -348,64 +348,64 @@ $('#addPersonnelForm').on("submit", function (event) {
     var email = $('#addPersonnelEmailAddress').val();
     var departmentID = $('#addPersonnelDepartment').val();
     console.log(firstName, lastName, jobTitle, email, departmentID);
-console.log(departmentID);
+    console.log(departmentID);
     // Fetch the department name first
     $.ajax({
-        url: '/project2/libs/php/getDepartmentByID.php',
-        method: 'GET',
-        data: { id: departmentID },
-        dataType: 'json',
-        success: function (response) {
-          console.log(response);
-            var departmentName = response.data[0].name;
-            console.log(departmentName);
+      url: '/project2/libs/php/getDepartmentByID.php',
+      method: 'GET',
+      data: { id: departmentID },
+      dataType: 'json',
+      success: function (response) {
+        console.log(response);
+        var departmentName = response.data[0].name;
+        console.log(departmentName);
 
 
-            // Now that you have the department name, make the second AJAX call
-            $.ajax({
-                url: '/project2/libs/php/addPersonnel.php',
-                type: 'POST',
-                data: {
-                    firstName: firstName,
-                    lastName: lastName,
-                    jobTitle: jobTitle,
-                    email: email,
-                    departmentID: departmentID,
+        // Now that you have the department name, make the second AJAX call
+        $.ajax({
+          url: '/project2/libs/php/addPersonnel.php',
+          type: 'POST',
+          data: {
+            firstName: firstName,
+            lastName: lastName,
+            jobTitle: jobTitle,
+            email: email,
+            departmentID: departmentID,
 
-                },
-                dataType: 'json',
-                
-                success: function (response) {
-                  
-                    console.log(response);
-                    // Check if the operation was successful
-                    if (response.status.code == '200') {
-                        // Show success message within the modal
-                        $('#successAddPersonnel').html('Employee added successfully: "' + firstName + ', ' + lastName + ', ' + jobTitle + ', ' + email + ', ' + departmentName + '"');
-                        $('#successAddPersonnel').show();
-                        // Clear the form fields
-                        $('#addPersonnelForm')[0].reset();
-                        refreshTabs();
-                    } else if (response.status.code == '409') {
-                        $('#duplicatePersonnel').html('Employee with email "' + email + '" already exists.');
-                        $('#duplicatePersonnel').show();
-                    } else {
-                        // Handle error (optional)
-                        console.error('Error: ' + response.status.description);
-                    }
-                },
-                error: function (jqXHR, status, error) {
-                    // Handle AJAX errors (optional)
-                    console.error('AJAX Error: ' + jqXHR, status, error);
-                }
-            });
-        },
-        error: function (xhr, status, error) {
-            console.error('Error fetching department name:', xhr, status, error);
-            // Handle error if needed
-        }
+          },
+          dataType: 'json',
+
+          success: function (response) {
+
+            console.log(response);
+            // Check if the operation was successful
+            if (response.status.code == '200') {
+              // Show success message within the modal
+              $('#successAddPersonnel').html('Employee added successfully: "' + firstName + ', ' + lastName + ', ' + jobTitle + ', ' + email + ', ' + departmentName + '"');
+              $('#successAddPersonnel').show();
+              // Clear the form fields
+              $('#addPersonnelForm')[0].reset();
+              refreshTabs();
+            } else if (response.status.code == '409') {
+              $('#duplicatePersonnel').html('Employee with email "' + email + '" already exists.');
+              $('#duplicatePersonnel').show();
+            } else {
+              // Handle error (optional)
+              console.error('Error: ' + response.status.description);
+            }
+          },
+          error: function (jqXHR, status, error) {
+            // Handle AJAX errors (optional)
+            console.error('AJAX Error: ' + jqXHR, status, error);
+          }
+        });
+      },
+      error: function (xhr, status, error) {
+        console.error('Error fetching department name:', xhr, status, error);
+        // Handle error if needed
+      }
     });
-});
+  });
 
   $("#editPersonnelModal").on("show.bs.modal", function (e) {
 
@@ -469,73 +469,73 @@ console.log(departmentID);
 
     // AJAX request to edit the personnel
     $.ajax({
-        url: '/project2/libs/php/editPersonnel.php',
-        type: 'POST',
-        dataType: 'json',
-        data: {
-            employeeID: employeeID,
-            firstName: firstName,
-            lastName: lastName,
-            jobTitle: jobTitle,
-            email: emailToUpdate,
-            departmentID: department
-        },
-        success: function (response) {
-            if (response.status.code == '200') {
-                // Retrieve department name using AJAX
-                $.ajax({
-                    url: '/project2/libs/php/getDepartmentByID.php',
-                    type: 'GET',
-                    dataType: 'json',
-                    data: {
-                        id: department
-                    },
-                    success: function (departmentResponse) {
-                        var departmentName = departmentResponse.data[0].name;
-                        var successMessage = 'Personnel updated to: ';
-                        successMessage += firstName + ', ';
-                        successMessage += lastName + ', ';
-                        successMessage += jobTitle + ', ';
-                        successMessage += emailAddress + ', ';
-                        successMessage += departmentName;
+      url: '/project2/libs/php/editPersonnel.php',
+      type: 'POST',
+      dataType: 'json',
+      data: {
+        employeeID: employeeID,
+        firstName: firstName,
+        lastName: lastName,
+        jobTitle: jobTitle,
+        email: emailToUpdate,
+        departmentID: department
+      },
+      success: function (response) {
+        if (response.status.code == '200') {
+          // Retrieve department name using AJAX
+          $.ajax({
+            url: '/project2/libs/php/getDepartmentByID.php',
+            type: 'GET',
+            dataType: 'json',
+            data: {
+              id: department
+            },
+            success: function (departmentResponse) {
+              var departmentName = departmentResponse.data[0].name;
+              var successMessage = 'Personnel updated to: ';
+              successMessage += firstName + ', ';
+              successMessage += lastName + ', ';
+              successMessage += jobTitle + ', ';
+              successMessage += emailAddress + ', ';
+              successMessage += departmentName;
 
-                        $('#personnelSuccessMessage').html(successMessage);
-                        $('#personnelSuccessMessage').show();
-                        $('#editPersonnelForm')[0].reset();
-                        refreshTabs();
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('Error retrieving department name: ' + error);
-                    }
-                });
-            } else if (response.status.code == '409') {
-              $('#personnelDuplicateMessage').html('Employee with email "' + emailAddress + '" already exists');
-                $('#personnelDuplicateMessage').show();
-            } else {
-                console.error('Error: ' + response.status.description);
+              $('#personnelSuccessMessage').html(successMessage);
+              $('#personnelSuccessMessage').show();
+              $('#editPersonnelForm')[0].reset();
+              refreshTabs();
+            },
+            error: function (xhr, status, error) {
+              console.error('Error retrieving department name: ' + error);
             }
-        },
-        error: function (xhr, status, error) {
-            $('#personnelErrorMessage').html('AJAX Error: ' + error);
-            $('#personnelErrorMessage').show();
-            console.error('AJAX Error: ' + error);
+          });
+        } else if (response.status.code == '409') {
+          $('#personnelDuplicateMessage').html('Employee with email "' + emailAddress + '" already exists');
+          $('#personnelDuplicateMessage').show();
+        } else {
+          console.error('Error: ' + response.status.description);
         }
+      },
+      error: function (xhr, status, error) {
+        $('#personnelErrorMessage').html('AJAX Error: ' + error);
+        $('#personnelErrorMessage').show();
+        console.error('AJAX Error: ' + error);
+      }
     });
-});
+  });
 
 
 
   $("#addDepartmentModal").on("show.bs.modal", function (e) {
     fetchDropdownData('#addLocationName');
-   clearForm();
+    clearForm();
   });
 
   $('#addDepartmentForm').submit(function (event) {
     event.preventDefault();
-  
+
     var departmentName = $('#addDepartmentName').val();
     var selectedLocation = $('#addLocationName').val();
-  
+
     // Fetch the location ID first
     $.ajax({
       url: '/project2/libs/php/getLocationID.php',
@@ -543,7 +543,7 @@ console.log(departmentID);
       data: { location: selectedLocation },
       success: function (response) {
         var locationID = selectedLocation;
-  
+
         $.ajax({
           url: '/project2/libs/php/getLocationByID.php',
           type: 'GET',
@@ -553,7 +553,7 @@ console.log(departmentID);
           },
           success: function (response) {
             var locationName = response.data[0].name;
-  
+
             // Now that you have the location ID, make the second AJAX call
             $.ajax({
               url: '/project2/libs/php/addDepartment.php',
@@ -566,10 +566,10 @@ console.log(departmentID);
                   // Show success message within the modal
                   $('#successDepAdd').html('Department "' + departmentName + '" in "' + locationName + ' " has been successfully added.');
                   $('#successDepAdd').show();
-  
+
                   // Clear the form fields
                   $('#addDepartmentForm')[0].reset();
-  
+
                   // Refresh the content of the "Locations" tab
                   refreshTabs();
                 } else if (response.status.code == '409') {
@@ -598,7 +598,7 @@ console.log(departmentID);
       }
     });
   });
-  
+
 
   $("#editDepartmentModal").on("show.bs.modal", function (e) {
     clearForm();
@@ -666,74 +666,74 @@ console.log(departmentID);
 
     // AJAX request to retrieve the original department location name
     $.ajax({
-        url: '/project2/libs/php/getLocationByID.php',
-        type: 'GET',
-        dataType: 'json',
-        data: {
-            id: originalDepLocationID // Pass the original department location ID
-        },
-        success: function (response) {
-            if (response.status.code == 200) {
-                originalDepLocationName = response.data[0].name; // Assuming response structure has 'data' as an object
+      url: '/project2/libs/php/getLocationByID.php',
+      type: 'GET',
+      dataType: 'json',
+      data: {
+        id: originalDepLocationID // Pass the original department location ID
+      },
+      success: function (response) {
+        if (response.status.code == 200) {
+          originalDepLocationName = response.data[0].name; // Assuming response structure has 'data' as an object
 
-                
-                // AJAX request to retrieve the new department location name
+
+          // AJAX request to retrieve the new department location name
+          $.ajax({
+            url: '/project2/libs/php/getLocationByID.php',
+            type: 'GET',
+            dataType: 'json',
+            data: {
+              id: newLocationID // Pass the new department location ID
+            },
+            success: function (response) {
+              if (response.status.code == 200) {
+                newDepLocationName = response.data[0].name;
+
+                // AJAX request to edit the department
                 $.ajax({
-                    url: '/project2/libs/php/getLocationByID.php',
-                    type: 'GET',
-                    dataType: 'json',
-                    data: {
-                        id: newLocationID // Pass the new department location ID
-                    },
-                    success: function (response) {
-                        if (response.status.code == 200) {
-                            newDepLocationName = response.data[0].name;
+                  url: '/project2/libs/php/editDepartment.php',
+                  type: 'POST',
+                  data: {
+                    departmentName: newDepName,
+                    locationID: newLocationID, // Pass the new location ID
+                    originalDepartmentName: originalDepName
+                  },
+                  dataType: 'json',
+                  success: function (response) {
 
-                            // AJAX request to edit the department
-                            $.ajax({
-                                url: '/project2/libs/php/editDepartment.php',
-                                type: 'POST',
-                                data: {
-                                    departmentName: newDepName,
-                                    locationID: newLocationID, // Pass the new location ID
-                                    originalDepartmentName: originalDepName
-                                },
-                                dataType: 'json',
-                                success: function (response) {
-
-                                    if (response.status.code == '200') {
-                                        $('#depSuccessMessage').html('Department "' + originalDepName + ' in ' + originalDepLocationName + '" has been successfully changed to "' + newDepName + ' in ' + newDepLocationName + '"');
-                                        $('#depSuccessMessage').show();
-                                        $('#editDepartmentForm')[0].reset();
-                                        refreshTabs();
-                                    } else if (response.status.code == '409') {
-                                        $('#depDuplicateMessage').html('Department "' + newDepName + '" already exists.');
-                                        $('#depDuplicateMessage').show();
-                                    } else {
-                                        console.error('Error: ' + response.status.description);
-                                    }
-                                },
-                                error: function (xhr, status, error) {
-                                    console.error('AJAX Error: ' + error);
-                                }
-                            });
-                        } else {
-                            console.error('Error: Unable to retrieve new department location name');
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('AJAX Error: ' + error);
+                    if (response.status.code == '200') {
+                      $('#depSuccessMessage').html('Department "' + originalDepName + ' in ' + originalDepLocationName + '" has been successfully changed to "' + newDepName + ' in ' + newDepLocationName + '"');
+                      $('#depSuccessMessage').show();
+                      $('#editDepartmentForm')[0].reset();
+                      refreshTabs();
+                    } else if (response.status.code == '409') {
+                      $('#depDuplicateMessage').html('Department "' + newDepName + '" already exists.');
+                      $('#depDuplicateMessage').show();
+                    } else {
+                      console.error('Error: ' + response.status.description);
                     }
+                  },
+                  error: function (xhr, status, error) {
+                    console.error('AJAX Error: ' + error);
+                  }
                 });
-            } else {
-                console.error('Error: Unable to retrieve original department location name');
+              } else {
+                console.error('Error: Unable to retrieve new department location name');
+              }
+            },
+            error: function (xhr, status, error) {
+              console.error('AJAX Error: ' + error);
             }
-        },
-        error: function (xhr, status, error) {
-            console.error('AJAX Error: ' + error);
+          });
+        } else {
+          console.error('Error: Unable to retrieve original department location name');
         }
+      },
+      error: function (xhr, status, error) {
+        console.error('AJAX Error: ' + error);
+      }
     });
-});
+  });
 
 
 
@@ -825,37 +825,117 @@ console.log(departmentID);
 
     // Send an AJAX request to addLocation.php
     $.ajax({
-        url: '/project2/libs/php/addLocation.php',
+      url: '/project2/libs/php/addLocation.php',
+      type: 'POST',
+      data: { name: locationName },
+      dataType: 'json',
+      success: function (response) {
+        // Check if the operation was successful
+
+        if (response.status.code == '200') {
+          // Show success message within the modal
+          $('#successMessage1').html('Location "' + locationName + '" has been successfully added.');
+          $('#successMessage1').show();
+
+          // Clear the form fields
+          $('#addLocationForm')[0].reset();
+
+          // Refresh the content of the "Locations" tab
+          refreshTabs();
+        } else if (response.status.code == '409') {
+          $('#duplicateMessage1').html('Location "' + locationName + '" already exists.');
+          $('#duplicateMessage1').show();
+        } else {
+          // Handle other status codes if needed
+          console.error('Error: ' + response.status.description);
+        }
+      },
+      error: function (xhr, status, error) {
+        // Handle AJAX errors
+        console.error('AJAX Error: ' + error);
+      }
+    });
+  });
+
+  //deletePersonnel
+
+
+  $('.deletePersonnelBtn').on('click', function () {
+
+    var personnelId = $(this).data('id');
+    var personnelFirstName = $(this).closest('tr').find('#personnelName').text().split(',')[1].trim();
+    var personnelLastName = $(this).closest('tr').find('#personnelName').text().split(',')[0].trim();
+
+    $('#deleteEmployeeName').text(personnelLastName + ', ' + personnelFirstName);
+
+
+    $('#delete-form input[name="id"]').val(personnelId);
+  });
+
+
+  $('#deletePersonnelModal').on('show.bs.modal', function (e) {
+    clearForm();
+    var button = $(e.relatedTarget);
+
+    var personnelId = button.data('id');
+    var personnelFirstName = button.closest('tr').find('#personnelName').text().split(',')[1].trim();
+    var personnelLastName = button.closest('tr').find('#personnelName').text().split(',')[0].trim();
+
+    $('#deleteEmployeeName').text(personnelLastName + ', ' + personnelFirstName);
+
+
+    $('#delete-form input[name="id"]').val(personnelId);
+  });
+
+  $('#delete-form').submit(function (event) {
+
+    event.preventDefault();
+
+
+    var personnelId = $('#delete-form input[name="id"]').val();
+    $.ajax({
+        url: '/project2/libs/php/getPersonnelByID.php',
         type: 'POST',
-        data: { name: locationName },
         dataType: 'json',
-        success: function (response) {
-            // Check if the operation was successful
+        data: { id: personnelId },
+        success: function(personnelResponse) {
+            if (personnelResponse.status.code === "200") {
+                var personnelName = personnelResponse.data.personnel[0].firstName + ' ' + personnelResponse.data.personnel[0].lastName;
 
-            if (response.status.code == '200') {
-                // Show success message within the modal
-                $('#successMessage1').html('Location "' + locationName + '" has been successfully added.');
-                $('#successMessage1').show();
+                // Make an AJAX call to the PHP script to delete the personnel
+                $.ajax({
+                    url: '/project2/libs/php/deletePersonnel.php',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { id: personnelId },
+                    success: function(response) {
+                        if (response.status.code === "200") {
+                            $('#deletePersonnelSuccess').text('Employee ' + personnelName + ' has been successfully deleted.');
+                            $('#deletePersonnelSuccess').show();
+                            $('#yesBtn').hide();
+                            $('#noBtn').hide();
+                            refreshTabs();
 
-                // Clear the form fields
-                $('#addLocationForm')[0].reset();
 
-                // Refresh the content of the "Locations" tab
-                refreshTabs();
-            } else if (response.status.code == '409') {
-                $('#duplicateMessage1').html('Location "' + locationName + '" already exists.');
-                $('#duplicateMessage1').show();
+                        } else {
+                            // Handle other status codes if needed
+                            console.log("Error: " + response.status.description);
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.log("Error:", textStatus, errorThrown);
+                    }
+                });
             } else {
-                // Handle other status codes if needed
-                console.error('Error: ' + response.status.description);
+                console.log("Error: " + personnelResponse.status.description);
             }
         },
-        error: function (xhr, status, error) {
-            // Handle AJAX errors
-            console.error('AJAX Error: ' + error);
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.log("Error:", textStatus, errorThrown);
         }
     });
 });
+
 
   // Function to clear the form fields
   function clearForm() {
@@ -872,6 +952,9 @@ console.log(departmentID);
     $('#depDuplicateMessage').hide();
     $('#personnelSuccessMessage').hide();
     $('#personnelDuplicateMessage').hide();
+    $('#deletePersonnelSuccess').hide();
+    $('#yesBtn').show();
+    $('#noBtn').show();
   }
 
   // Function to refresh the content of the "Locations" tab

@@ -439,6 +439,38 @@
   </div>
   
   //deleteDepartmentModal
+  <div class="modal fade" id="deleteDepartmentModal" data-bs-backdrop="false" style="display: none;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+        <div class="modal-content">
+            <div class="modal-header bg-primary bg-gradient text-white">
+                <h4 class="modal-title">Delete Department</h4>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+  
+            <div class="modal-body shadow">
+
+
+                <form id="deleteDepartmentForm"> 
+                    <input class="form-control" type="hidden" name="id">
+                    <div id="deleteDepartmentTextEligible" style="display: none;">
+                      <p>Remove Department: <span id="departmentNameEligible"></span></p>
+                  </div>
+                  <div id="deleteDepartmentTextNotEligible" style="display: none;">
+                      <p><strong id="departmentNameNotEligible"></strong> cannot be deleted as it has <strong id="numEmployees"></strong> employees assigned to it.</p>
+                  </div>
+
+                    <button type="submit" id="depYesBtn" class="btn btn-primary btn-sm" id="btnDeleteSubmit" form="deleteDepartmentForm">
+                        YES
+                    </button>
+                    <button type="button" id="depNoBtn" class="btn btn-primary btn-sm float-right" data-bs-dismiss="modal">
+                        NO
+                    </button>
+                </form>
+                <div id="deleteDepartmentSuccess" class="alert alert-success mt-3" role="alert" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+</div>
 
   //deleteLocationModal
 

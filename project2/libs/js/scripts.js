@@ -122,7 +122,7 @@ $(document).ready(function () {
                   '<button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editDepartmentModal" data-id=' + department.id + '">' +
                   '<i class="fa-solid fa-pencil fa-fw"></i>' +
                   '</button>' +
-                  '<button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#deleteDepartmentModal" data-id="' + department.id + '">' +
+                  '<button type="button" class="btn btn-primary btn-sm deleteDepartmentBtn" data-bs-toggle="modal" data-bs-target="#deleteDepartmentModal" data-id="' + department.id + '">' +
                   '<i class="fa-solid fa-trash fa-fw"></i>' +
                   '</button>' +
                   '</td>' +
@@ -894,48 +894,141 @@ $(document).ready(function () {
 
     var personnelId = $('#delete-form input[name="id"]').val();
     $.ajax({
-        url: '/project2/libs/php/getPersonnelByID.php',
-        type: 'POST',
-        dataType: 'json',
-        data: { id: personnelId },
-        success: function(personnelResponse) {
-            if (personnelResponse.status.code === "200") {
-                var personnelName = personnelResponse.data.personnel[0].firstName + ' ' + personnelResponse.data.personnel[0].lastName;
+      url: '/project2/libs/php/getPersonnelByID.php',
+      type: 'POST',
+      dataType: 'json',
+      data: { id: personnelId },
+      success: function (personnelResponse) {
+        if (personnelResponse.status.code === "200") {
+          var personnelName = personnelResponse.data.personnel[0].firstName + ' ' + personnelResponse.data.personnel[0].lastName;
 
-                // Make an AJAX call to the PHP script to delete the personnel
-                $.ajax({
-                    url: '/project2/libs/php/deletePersonnel.php',
-                    type: 'POST',
-                    dataType: 'json',
-                    data: { id: personnelId },
-                    success: function(response) {
-                        if (response.status.code === "200") {
-                            $('#deletePersonnelSuccess').text('Employee ' + personnelName + ' has been successfully deleted.');
-                            $('#deletePersonnelSuccess').show();
-                            $('#yesBtn').hide();
-                            $('#noBtn').hide();
-                            refreshTabs();
+          // Make an AJAX call to the PHP script to delete the personnel
+          $.ajax({
+            url: '/project2/libs/php/deletePersonnel.php',
+            type: 'POST',
+            dataType: 'json',
+            data: { id: personnelId },
+            success: function (response) {
+              if (response.status.code === "200") {
+                $('#deletePersonnelSuccess').text('Employee ' + personnelName + ' has been successfully deleted.');
+                $('#deletePersonnelSuccess').show();
+                $('#yesBtn').hide();
+                $('#noBtn').hide();
+                refreshTabs();
 
 
-                        } else {
-                            // Handle other status codes if needed
-                            console.log("Error: " + response.status.description);
-                        }
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        console.log("Error:", textStatus, errorThrown);
-                    }
-                });
-            } else {
-                console.log("Error: " + personnelResponse.status.description);
+              } else {
+                // Handle other status codes if needed
+                console.log("Error: " + response.status.description);
+              }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+              console.log("Error:", textStatus, errorThrown);
             }
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            console.log("Error:", textStatus, errorThrown);
+          });
+        } else {
+          console.log("Error: " + personnelResponse.status.description);
         }
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        console.log("Error:", textStatus, errorThrown);
+      }
     });
+  });
+
+
+  //deleteDepartment
+
+
+  $('#deleteDepartmentModal').on('show.bs.modal', function (e) {
+    clearForm();
+    var button = $(e.relatedTarget);
+
+    var departmentId = button.data('id');
+    var departmentName = button.closest('tr').find('#departmentName').text();
+
+    $.ajax({
+      url: '/project2/libs/php/checkDepartmentEligibility.php',
+      type: 'POST',
+      dataType: 'json',
+      data: { id: departmentId },
+      success: function(response) {
+          console.log(response);
+          if (response.status.code === "200") {
+              $('#deleteDepartmentTextEligible').show();
+              $('#deleteDepartmentTextNotEligible').hide();
+              $('#departmentNameEligible').text(departmentName);
+              $('#deleteDepartmentForm input[name="id"]').val(departmentId);
+              $('#deleteDepartmentModal').modal('show');
+              $('#depYesBtn').show();
+                $('#depNoBtn').show();
+          } else {
+              if (response.status.code === "409") {
+                  $('#deleteDepartmentTextEligible').hide();
+                  $('#deleteDepartmentTextNotEligible').show();
+                  $('#departmentNameNotEligible').text(departmentName);
+                  $('#numEmployees').text(response.data.count);
+                  $('#deleteDepartmentModal').modal('show');
+                  $('#depYesBtn').hide();
+                $('#depNoBtn').hide();
+              } else {
+                  console.log("Error: " + response.status.description);
+              }
+          }
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+          console.log("Error:", textStatus, errorThrown);
+      }
+  });
 });
 
+$('#deleteDepartmentForm').submit(function (event) {
+  event.preventDefault();
+
+  var departmentId = $('#deleteDepartmentForm input[name="id"]').val();
+  $.ajax({
+      url: '/project2/libs/php/getDepartmentByID.php',
+      type: 'POST',
+      dataType: 'json',
+      data: { id: departmentId },
+      success: function (response) {
+        console.log(response);
+          if (response.status.code === "200") {
+              var departmentName = response.data[0].name
+              console.log(departmentName);
+              $.ajax({
+                  url: '/project2/libs/php/deleteDepartment.php',
+                  type: 'POST',
+                  dataType: 'json',
+                  data: { id: departmentId },
+                  success: function(response) {
+                      console.log(response);
+                      if (response.status.code === "200") {
+                          $('#deleteDepartmentSuccess').text('Department: ' + departmentName + ' has been successfully deleted.');
+                          $('#deleteDepartmentSuccess').show();
+                          $('#depYesBtn').hide();
+                          $('#depNoBtn').hide();
+                          refreshTabs();
+                      } else {
+                          // Handle other status codes if needed
+                          if (response.status.code === "409") {
+                              $('#deleteDepartmentTextEligible').hide();
+                              $('#deleteDepartmentTextNotEligible').show();
+                              $('#departmentNameNotEligible').text(response.data.departmentName);
+                              $('#numEmployees').text(response.data.count);
+                          } else {
+                              console.log("Error: " + response.status.description);
+                          }
+                      }
+                  },
+                  error: function(jqXHR, textStatus, errorThrown) {
+                      console.log("Error:", textStatus, errorThrown);
+                  }
+              });
+          }
+      }
+  });
+});
 
   // Function to clear the form fields
   function clearForm() {
@@ -953,6 +1046,7 @@ $(document).ready(function () {
     $('#personnelSuccessMessage').hide();
     $('#personnelDuplicateMessage').hide();
     $('#deletePersonnelSuccess').hide();
+    $('#deleteDepartmentSuccess').hide();
     $('#yesBtn').show();
     $('#noBtn').show();
   }

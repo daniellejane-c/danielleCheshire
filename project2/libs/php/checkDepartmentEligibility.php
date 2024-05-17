@@ -70,49 +70,16 @@ if ($count > 0) {
     $output['status']['name'] = "Conflict";
     $output['status']['description'] = "Cannot delete department. There are $count personnel records associated with it.";
     $output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
-    $output['data'] = [];
+    $output['data'] = [
+        'count' => $count
+    ];
     echo json_encode($output);
     exit;
 }
 
-// Delete personnel record
-$sql = "DELETE FROM department WHERE id = ?";
-$stmt = $conn->prepare($sql);
-if (!$stmt) {
-    $output['status']['code'] = "500";
-    $output['status']['name'] = "Internal Server Error";
-    $output['status']['description'] = "Failed to prepare SQL statement: " . $conn->error;
-    $output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
-    $output['data'] = [];
-    echo json_encode($output);
-    exit;
-}
-
-$stmt->bind_param('i', $id);
-if (!$stmt->execute()) {
-    $output['status']['code'] = "500";
-    $output['status']['name'] = "Internal Server Error";
-    $output['status']['description'] = "Failed to execute SQL statement: " . $stmt->error;
-    $output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
-    $output['data'] = [];
-    echo json_encode($output);
-    exit;
-}
-
-// Check if any row was affected
-if ($stmt->affected_rows === 0) {
-    $output['status']['code'] = "404";
-    $output['status']['name'] = "Not Found";
-    $output['status']['description'] = "No record found with the given ID";
-    $output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
-    $output['data'] = [];
-    echo json_encode($output);
-    exit;
-}
-
-// Success response
+// Department is eligible for deletion
 $output['status']['code'] = "200";
-$output['status']['description'] = "Department deleted successfully";
+$output['status']['description'] = "Department is eligible for deletion";
 $output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
 $output['data'] = [];
 

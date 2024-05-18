@@ -47,6 +47,13 @@ $(document).ready(function () {
   function clearSearchBar() {
     $("#searchInp").val('').trigger('keyup');
   }
+
+  function capitalizeFirstLetter(string) {
+
+      return string.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+  }
+  
+  
   //populate personnel data
   function populatePersonnelData() {
     $.ajax({
@@ -648,9 +655,9 @@ $(document).ready(function () {
   $('#addPersonnelForm').on("submit", function (event) {
     event.preventDefault();
 
-    var firstName = $('#addPersonnelFirstName').val();
-    var lastName = $('#addPersonnelLastName').val();
-    var jobTitle = $('#addPersonnelJobTitle').val();
+    var firstName = capitalizeFirstLetter($('#addPersonnelFirstName').val().trim());
+    var lastName = capitalizeFirstLetter($('#addPersonnelLastName').val().trim());
+    var jobTitle = capitalizeFirstLetter($('#addPersonnelJobTitle').val().trim());
     var email = $('#addPersonnelEmailAddress').val();
     var departmentID = $('#addPersonnelDepartment').val();
 
@@ -771,13 +778,15 @@ $(document).ready(function () {
   $("#editPersonnelForm").on("submit", function (event) {
     event.preventDefault();
 
+
+
     var employeeID = $("#editPersonnelEmployeeID").val(); // Retrieve the employee ID
-    var firstName = $("#editPersonnelFirstName").val(); // Retrieve the first name
-    var lastName = $("#editPersonnelLastName").val(); // Retrieve the last name
-    var jobTitle = $("#editPersonnelJobTitle").val(); // Retrieve the job title
+    var firstName = capitalizeFirstLetter($("#editPersonnelFirstName").val().trim()); // Retrieve the first name
+    var lastName = capitalizeFirstLetter($("#editPersonnelLastName").val().trim()); // Retrieve the last name
+    var jobTitle = capitalizeFirstLetter($("#editPersonnelJobTitle").val().trim()); // Retrieve the job title
     var emailAddress = $("#editPersonnelEmailAddress").val(); // Retrieve the email address
     var department = $("#editPersonnelDepartment").val(); // Retrieve the department
-    var originalEmailAddress = $("#originalPersonnelEmployeeEmail").val();
+    var originalEmailAddress = capitalizeFirstLetter($("#originalPersonnelEmployeeEmail").val().trim());
     var emailToUpdate = (emailAddress !== originalEmailAddress) ? emailAddress : originalEmailAddress;
 
     // AJAX request to edit the personnel
@@ -856,7 +865,7 @@ $(document).ready(function () {
   $('#addDepartmentForm').submit(function (event) {
     event.preventDefault();
 
-    var departmentName = $('#addDepartmentName').val();
+    var departmentName = capitalizeFirstLetter($('#addDepartmentName').val().trim());
     var selectedLocation = $('#addLocationName').val();
 
     // Fetch the location ID first
@@ -998,9 +1007,9 @@ $(document).ready(function () {
   $("#editDepartmentForm").on("submit", function (event) {
     event.preventDefault();
 
-    var newDepName = $("#editDepartmentName").val(); // Retrieve the new department name
+    var newDepName = capitalizeFirstLetter($("#editDepartmentName").val().trim()); // Retrieve the new department name
     var newLocationID = $("#editDepartmentLocation").val(); // Retrieve the new location ID
-    var originalDepName = $("#originalDepartmentName").val(); // Retrieve the original department name
+    var originalDepName = capitalizeFirstLetter($("#originalDepartmentName").val().trim()); // Retrieve the original department name
     var originalDepLocationID = $("#originalDepartmentLocation").val(); // Retrieve the original department location ID
 
     // Variables to store original and new department location names
@@ -1163,8 +1172,8 @@ $(document).ready(function () {
     // Prevent default form submission
     event.preventDefault();
 
-    var newName = $("#editLocation").val(); // Retrieve the new name
-    var originalName = $("#originalLocationName").val(); // Retrieve the original name
+    var newName = capitalizeFirstLetter($("#editLocation").val().trim()); // Retrieve the new name
+    var originalName = capitalizeFirstLetter($("#originalLocationName").val().trim()); // Retrieve the original name
 
     $.ajax({
       url: '/project2/libs/php/editLocation.php',
@@ -1221,7 +1230,7 @@ $(document).ready(function () {
     event.preventDefault();
 
     // Get the location name from the input field
-    var locationName = $('#addLocation').val();
+    var locationName = capitalizeFirstLetter($('#addLocation').val().trim());
 
     // Send an AJAX request to addLocation.php
     $.ajax({

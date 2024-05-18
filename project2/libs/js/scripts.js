@@ -216,15 +216,18 @@ $('#departmentTableBody').empty();
       refreshTable("personnel");
       clearSearchBar();
       populatePersonnelData();
+      hideClearFilterButton();
     } else if ($("#departmentsBtn").hasClass("active")) {
-      populateDepartment();
+      
       refreshTable("department");
-
       clearSearchBar();
+      populateDepartment();
+      hideClearFilterButton();
     } else if ($("#locationsBtn").hasClass("active")) {
       refreshTable("location");
       clearSearchBar();
       populateLocationData();
+      hideClearFilterButton();
 ;    } else {
       console.log("No active button found.");
     }

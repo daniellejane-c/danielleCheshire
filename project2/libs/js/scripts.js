@@ -57,10 +57,6 @@ $(document).ready(function () {
         if (response.status.code === "200") {
           var personnelData = response.data;
 
-          personnelData.sort(function (a, b) {
-            return a.lastName.localeCompare(b.lastName);
-        });
-
           // Clear existing table content
           $('#personnelTableBody').empty();
 
@@ -105,41 +101,46 @@ $(document).ready(function () {
 
                 // Sort departmentData array alphabetically by name
                 departmentData.sort(function (a, b) {
-                  return a.name.localeCompare(b.name);
-              });
+                    var nameA = a.name.toLowerCase();
+                    var nameB = b.name.toLowerCase();
+                    return nameA.localeCompare(nameB);
+                });
 
                 // Clear existing table content
                 $('#departmentTableBody').empty();
 
-                // Loop through sorted department data and populate table rows
-                $.each(departmentData, function (index, department) {
-                    // Fetch location name for the corresponding locationID
-                    $.ajax({
+                // Fetch all location names first
+                var locationPromises = departmentData.map(function(department) {
+                    return $.ajax({
                         url: '/project2/libs/php/getLocationByID.php',
                         type: 'GET',
                         dataType: 'json',
                         data: {
                             id: department.locationID
-                        },
-                        success: function (response) {
-                            var locationName = response.data[0].name;
-                            var row = '<tr class="personnel-row" >' +
-                                '<td class="align-middle text-nowrap" id="departmentName">' + department.name + '</td>' +
-                                '<td class="align-middle text-nowrap d-none d-md-table-cell" id="depLocation">' + locationName + '</td>' +
-                                '<td class="align-middle text-end text-nowrap">' +
-                                '<button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editDepartmentModal" data-id=' + department.id + '>' +
-                                '<i class="fa-solid fa-pencil fa-fw"></i>' +
-                                '</button>' +
-                                '<button type="button" class="btn btn-primary btn-sm deleteDepartmentBtn" data-bs-toggle="modal" data-bs-target="#deleteDepartmentModal" data-id="' + department.id + '">' +
-                                '<i class="fa-solid fa-trash fa-fw"></i>' +
-                                '</button>' +
-                                '</td>' +
-                                '</tr>';
-                            $('#departmentTableBody').append(row);
-                        },
-                        error: function (jqXHR, textStatus, errorThrown) {
-                            console.log("Error:", textStatus, errorThrown);
                         }
+                    });
+                });
+
+                // Wait for all location AJAX requests to finish
+                $.when.apply($, locationPromises).done(function() {
+                    var locationResponses = arguments;
+                    
+                    // Loop through department data and populate table rows
+                    $.each(departmentData, function(index, department) {
+                        var locationName = locationResponses[index][0].data[0].name;
+                        var row = '<tr class="personnel-row" >' +
+                            '<td class="align-middle text-nowrap" id="departmentName">' + department.name + '</td>' +
+                            '<td class="align-middle text-nowrap d-none d-md-table-cell" id="depLocation">' + locationName + '</td>' +
+                            '<td class="align-middle text-end text-nowrap">' +
+                            '<button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editDepartmentModal" data-id=' + department.id + '>' +
+                            '<i class="fa-solid fa-pencil fa-fw"></i>' +
+                            '</button>' +
+                            '<button type="button" class="btn btn-primary btn-sm deleteDepartmentBtn" data-bs-toggle="modal" data-bs-target="#deleteDepartmentModal" data-id="' + department.id + '">' +
+                            '<i class="fa-solid fa-trash fa-fw"></i>' +
+                            '</button>' +
+                            '</td>' +
+                            '</tr>';
+                        $('#departmentTableBody').append(row);
                     });
                 });
             } else {
@@ -154,6 +155,7 @@ $(document).ready(function () {
 }
 
 
+
   function populateLocationData() {
     $.ajax({
       url: '/project2/libs/php/getAllLocations.php',
@@ -163,9 +165,9 @@ $(document).ready(function () {
         if (response.status.code === "200") {
           var locationData = response.data;
 
-          locationData.sort(function (a, b) {
-            return a.name.localeCompare(b.name);
-        });
+                locationData.sort(function (a, b) {
+                  return a.name.localeCompare(b.name);
+              });
           // Clear existing table content
           $('#locationTableBody').empty();
 
@@ -208,6 +210,7 @@ $(document).ready(function () {
       clearSearchBar();
       populatePersonnelData();
     } else if ($("#departmentsBtn").hasClass("active")) {
+      populateDepartment();
       refreshTable("department");
       populateDepartment();
       clearSearchBar();
@@ -876,7 +879,7 @@ $(document).ready(function () {
 
 
                   // Refresh the content of the "Locations" tab
-                  refreshTabs();
+
                   clearSearchBar();
                   populateDepartment();
                   $('.addDepartmentBtns').hide();

@@ -2,6 +2,9 @@ $(document).ready(function () {
   populatePersonnelData();
   populateLocationData();
   populateDepartment();
+  populateDepartmentFilter();
+  populateLocationFilter();
+  
   //search bar
 
   // Function to filter table rows
@@ -113,7 +116,7 @@ $(document).ready(function () {
               },
               success: function (response) {
                 var locationName = response.data[0].name;
-                var row = '<tr>' +
+                var row = '<tr class="personnel-row" >' +
                   '<td class="align-middle text-nowrap" id="departmentName">' + department.name + '</td>' +
                   '<td class="align-middle text-nowrap d-none d-md-table-cell" id="depLocation">' + locationName + '</td>' +
                   '<td class="align-middle text-end text-nowrap">' +
@@ -260,11 +263,247 @@ function hideTick() {
 }
 
 
-  $("#filterBtn").click(function () {
+function showClearFilterButton() {
+  $('#clearFilterButton').show();
+}
 
-    // Open a modal of your own design that allows the user to apply a filter to the personnel table on either department or location
+function hideClearFilterButton() {
+  $('#clearFilterButton').hide();
+}
+ 
 
+  function populateDepartmentFilter() {
+    $.ajax({
+      url: '/project2/libs/php/getAllDepartments.php',
+      type: 'GET',
+      dataType: 'json',
+      success: function (response) {
+
+          var departmentSelect = document.getElementById("departmentSelect");
+
+          // Clear existing options
+          departmentSelect.innerHTML = "";
+
+          // Add default option
+          var defaultOption = document.createElement("option");
+          defaultOption.value = "";
+          defaultOption.text = "Select Department";
+          departmentSelect.appendChild(defaultOption);
+
+          // Add department options
+          response.data.forEach(function (department) { // Accessing data array
+              var option = document.createElement("option");
+              option.value = department.id;
+              option.text = department.name;
+              departmentSelect.appendChild(option);
+          });
+      },
+      error: function (xhr, status, error) {
+          console.error('Error fetching departments:', error);
+      }
   });
+}
+
+// Function to fetch locations data and populate the location dropdown
+// Function to fetch locations data and populate the location dropdown
+function populateLocationFilter() {
+  $.ajax({
+      url: '/project2/libs/php/getAllLocations.php',
+      type: 'GET',
+      dataType: 'json',
+      success: function (response) {
+
+          var locationSelect = document.getElementById("locationSelect");
+
+          // Clear existing options
+          locationSelect.innerHTML = "";
+
+          // Add default option
+          var defaultOption = document.createElement("option");
+          defaultOption.value = "";
+          defaultOption.text = "Select Location";
+          locationSelect.appendChild(defaultOption);
+
+          // Add location options
+          response.data.forEach(function (location) { // Accessing data array
+              var option = document.createElement("option");
+              option.value = location.id;
+              option.text = location.name;
+              locationSelect.appendChild(option);
+          });
+      },
+      error: function (xhr, status, error) {
+          console.error('Error fetching locations:', error);
+      }
+  });
+}
+
+
+
+// Event listener for tab clicks
+$('.nav-link').click(function() {
+    var tabId = $(this).attr('id');
+    if (tabId !== 'personnelBtn') {
+        // Hide the filter button if a tab other than "personnel" is clicked
+        $('#filterBtn').hide();
+    } else {
+        // Show the filter button if the "personnel" tab is clicked
+        $('#filterBtn').show();
+    }
+});
+// Populate dropdowns on modal show
+var activeFilter = null;
+
+$('#filterBoxModal').on('shown.bs.modal', function () {
+    populateDepartmentFilter();
+    populateLocationFilter();
+});
+
+// Function to apply filter based on the active select
+function applyFilter() {
+  var filterValue = "";
+  if (activeFilter === "department") {
+      filterValue = $("#departmentSelect").val();
+      // Hide rows that don't match the selected department
+      $(".personnel-row").each(function() {
+          if ($(this).data("department") !== filterValue && filterValue !== "") {
+              $(this).hide();
+          } else {
+              $(this).show();
+          }
+      });
+  } else if (activeFilter === "location") {
+      filterValue = $("#locationSelect").val();
+      // Hide rows that don't match the selected location
+      $(".personnel-row").each(function() {
+          if ($(this).data("location") !== filterValue && filterValue !== "") {
+              $(this).hide();
+          } else {
+              $(this).show();
+          }
+      });
+  }
+}
+
+$("#filterBtn").click(function () {
+    $('#filterBoxModal').modal('show');
+  // Open a modal of your own design that allows the user to apply a filter to the personnel table on either department or location
+});
+
+// Event handler for department filter
+$("#departmentSelect").change(function() {
+    activeFilter = "department";
+    if ($("#departmentSelect").val() === "") {
+        // Repopulate location filter options when "Select Department" is clicked again
+        populateLocationFilter();
+    } else {
+        // Clear location filter options when department is selected
+        $("#locationSelect").empty().append($('<option>', {
+            value: '',
+            text: 'Select Location'
+        }));
+    }
+    applyFilter();
+    // Re-enable location select
+    $("#locationSelect").prop("disabled", false);
+});
+
+// Event handler for location filter
+$("#locationSelect").change(function() {
+    activeFilter = "location";
+    if ($("#locationSelect").val() === "") {
+        // Repopulate department filter options when "Select Location" is clicked again
+        populateDepartmentFilter();
+    } else {
+        // Clear department filter options when location is selected
+        $("#departmentSelect").empty().append($('<option>', {
+            value: '',
+            text: 'Select Department'
+        }));
+    }
+    applyFilter();
+    // Re-enable department select
+    $("#departmentSelect").prop("disabled", false);
+});
+
+$('#filterForm').on("submit", function(event) {
+  event.preventDefault(); // Prevent form submission
+
+  var departmentSelected = $('#departmentSelect').val();
+  var locationSelected = $('#locationSelect').val();
+
+  if (departmentSelected !== "") {
+      // Filter by department
+      $.ajax({
+          url: '/project2/libs/php/filterDepartment.php',
+          type: 'GET',
+          data: { departmentId: departmentSelected },
+          dataType: 'json',
+          success: function(response) {
+              // Update table rows with filtered data
+              updateTableRows(response.data);
+              showClearFilterButton(); // Show clear filter button
+          },
+          error: function(jqxhr, status, error) {
+              // Handle errors here
+              console.error(jqxhr);
+          }
+      });
+  } else if (locationSelected !== "") {
+      // Filter by location
+      $.ajax({
+          url: '/project2/libs/php/filterLocation.php',
+          type: 'GET',
+          data: { locationID: locationSelected },
+          dataType: 'json',
+          success: function(response) {
+              // Update table rows with filtered data
+              updateTableRows(response.data);
+              showClearFilterButton(); // Show clear filter button
+          },
+          error: function(jqxhr, status, error) {
+              // Handle errors here
+              console.error(jqxhr);
+          }
+      });
+  } else {
+      console.error("Please select a department or a location.");
+  }
+
+  $('#filterBoxModal').modal('hide');
+});
+
+function updateTableRows(data) {
+  var tableBody = $('#personnelTableBody');
+  tableBody.empty(); // Clear existing rows
+  
+  // Loop through the filtered data and create table rows
+  data.forEach(function(item) {
+      var row = '<tr>';
+      row += '<td>' + item.lastName + '</td>';
+      row += '<td>' + item.firstName + '</td>';
+      row += '<td>' + item.jobTitle + '</td>';
+      row += '<td>' + item.email + '</td>';
+      row += '<td>' + item.department + '</td>';
+      row += '<td>' + item.location + '</td>';
+      row += '</tr>';
+      tableBody.append(row); // Append row to table body
+  });
+}
+
+$('#clearFilterButton').on('click', function() {
+  // Clear the filter and show all data
+  $('#filterForm')[0].reset(); // Reset form
+ // Hide tick icon
+  hideClearFilterButton(); // Hide clear filter button
+  populatePersonnelData();
+  populateDepartment();
+  populateLocationData();
+  $('#filterBtn').show();
+  // Optionally, fetch and display all data here
+});
+
+
 
   $("#addBtn").click(function () {
     // Determine which tab is active

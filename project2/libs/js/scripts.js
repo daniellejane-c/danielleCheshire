@@ -599,7 +599,7 @@ $(document).ready(function () {
       type: 'GET',
       dataType: 'json',
       success: function (response) {
-        console.log(response);
+
         if (response.status.code === "200") {
           var dropdownData = response.data;
 
@@ -643,8 +643,7 @@ $(document).ready(function () {
     var jobTitle = $('#addPersonnelJobTitle').val();
     var email = $('#addPersonnelEmailAddress').val();
     var departmentID = $('#addPersonnelDepartment').val();
-    console.log(firstName, lastName, jobTitle, email, departmentID);
-    console.log(departmentID);
+
     // Fetch the department name first
     $.ajax({
       url: '/project2/libs/php/getDepartmentByID.php',
@@ -673,7 +672,7 @@ $(document).ready(function () {
 
           success: function (response) {
 
-            console.log(response);
+
             // Check if the operation was successful
             if (response.status.code == '200') {
               // Show success message within the modal
@@ -685,6 +684,9 @@ $(document).ready(function () {
               clearSearchBar();
               populatePersonnelData();
               $('.addEmployeeBtns').hide();
+              $('.addP').hide();
+              $('#duplicatePersonnel').hide();
+              $('#pAddOkButton').show();
             } else if (response.status.code == '409') {
               $('#duplicatePersonnel').html('Employee with email "' + email + '" already exists.');
               $('#duplicatePersonnel').show();
@@ -806,6 +808,9 @@ $(document).ready(function () {
               refreshTabs();
               clearSearchBar();
               $('.editPersonnelBtns').hide();
+              $('.editP').hide();
+              $('#personnelDuplicateMessage').hide();
+              $('#pEditOkButton').show();
             },
             error: function (xhr, status, error) {
               console.error('Error retrieving department name: ' + error);
@@ -814,6 +819,7 @@ $(document).ready(function () {
         } else if (response.status.code == '409') {
           $('#personnelDuplicateMessage').html('Employee with email "' + emailAddress + '" already exists');
           $('#personnelDuplicateMessage').show();
+
         } else {
           console.error('Error: ' + response.status.description);
         }
@@ -882,7 +888,10 @@ $(document).ready(function () {
 
                   clearSearchBar();
                   populateDepartment();
+                  $('.addD').hide();
                   $('.addDepartmentBtns').hide();
+                  $('#duplicateDepartment').hide();
+                  $('#dAddOkButton').show();
                 } else if (response.status.code == '409') {
                   $('#duplicateDepartment').html('Department "' + departmentName + '" already exists.');
                   $('#duplicateDepartment').show();
@@ -995,6 +1004,9 @@ $(document).ready(function () {
             // No duplicate found, proceed with update
             updateDepartment(newDepName, newLocationID, originalDepName, originalDepLocationID);
             $('.editDepartmentBtns').hide();
+            $('.editD').hide();
+            $('#depDuplicateMessage').hide();
+            $('#dEditOkButton').show();
           }
         },
         error: function (xhr, status, error) {
@@ -1157,8 +1169,10 @@ $(document).ready(function () {
           // Refresh the content of the "Locations" tab
           refreshTabs();
           clearSearchBar();
-
+          $('.editL').hide();
           $('.editLocationButtons').hide();
+          $('#duplicateMessage').hide();
+          $('#lEditOkButton').show();
         } else if (response.status.code == '409') {
           $('#duplicateMessage').html('Location "' + newName + '" already exists.');
           $('#duplicateMessage').show();
@@ -1209,6 +1223,9 @@ $(document).ready(function () {
           clearSearchBar();
           populateLocationData();
           $('.addLocationBtns').hide();
+          $('.addL').hide();
+          $('#duplicateMessage1').hide();
+          $('#lAddOkButton').show();
         } else if (response.status.code == '409') {
           $('#duplicateMessage1').html('Location "' + locationName + '" already exists.');
           $('#duplicateMessage1').show();
@@ -1243,65 +1260,58 @@ $(document).ready(function () {
   $('#deletePersonnelModal').on('show.bs.modal', function (e) {
     clearForm();
     var button = $(e.relatedTarget);
-
     var personnelId = button.data('id');
     var personnelFirstName = button.closest('tr').find('#personnelName').text().split(',')[1].trim();
     var personnelLastName = button.closest('tr').find('#personnelName').text().split(',')[0].trim();
-
+    
     $('#deleteEmployeeName').text(personnelLastName + ', ' + personnelFirstName);
-
-
     $('#delete-form input[name="id"]').val(personnelId);
-  });
+});
 
-  $('#delete-form').submit(function (event) {
-
+$('#delete-form').submit(function (event) {
     event.preventDefault();
-
-
     var personnelId = $('#delete-form input[name="id"]').val();
+    
     $.ajax({
-      url: '/project2/libs/php/getPersonnelByID.php',
-      type: 'POST',
-      dataType: 'json',
-      data: { id: personnelId },
-      success: function (personnelResponse) {
-        if (personnelResponse.status.code === "200") {
-          var personnelName = personnelResponse.data.personnel[0].firstName + ' ' + personnelResponse.data.personnel[0].lastName;
+        url: '/project2/libs/php/getPersonnelByID.php',
+        type: 'POST',
+        dataType: 'json',
+        data: { id: personnelId },
+        success: function (personnelResponse) {
+            if (personnelResponse.status.code === "200") {
+                var personnelName = personnelResponse.data.personnel[0].firstName + ' ' + personnelResponse.data.personnel[0].lastName;
 
-          // Make an AJAX call to the PHP script to delete the personnel
-          $.ajax({
-            url: '/project2/libs/php/deletePersonnel.php',
-            type: 'POST',
-            dataType: 'json',
-            data: { id: personnelId },
-            success: function (response) {
-              if (response.status.code === "200") {
-                $('#deletePersonnelSuccess').text('Employee ' + personnelName + ' has been successfully deleted.');
-                $('#deletePersonnelSuccess').show();
-                $('#yesBtn').hide();
-                $('#noBtn').hide();
-                refreshTabs();
-                clearSearchBar();
-
-              } else {
-                // Handle other status codes if needed
-                console.log("Error: " + response.status.description);
-              }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-              console.log("Error:", textStatus, errorThrown);
+                $.ajax({
+                    url: '/project2/libs/php/deletePersonnel.php',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { id: personnelId },
+                    success: function (response) {
+                        if (response.status.code === "200") {
+                            $('#deletePersonnelSuccess').text('Employee ' + personnelName + ' has been successfully deleted.').show();
+                            $('#yesBtn, #noBtn').hide();
+                            $('#pDeleteBtn').show();
+                            $('.deleteP').hide();
+                            refreshTabs();
+                            clearSearchBar();
+                        } else {
+                            console.log("Error: " + response.status.description);
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log("Error:", textStatus, errorThrown);
+                    }
+                });
+            } else {
+                console.log("Error: " + personnelResponse.status.description);
             }
-          });
-        } else {
-          console.log("Error: " + personnelResponse.status.description);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log("Error:", textStatus, errorThrown);
         }
-      },
-      error: function (jqXHR, textStatus, errorThrown) {
-        console.log("Error:", textStatus, errorThrown);
-      }
     });
-  });
+});
+
 
 
   //deleteDepartment
@@ -1377,6 +1387,8 @@ $(document).ready(function () {
                 $('#depNoBtn').hide();
                 refreshTabs();
                 clearSearchBar();
+                $('#dDeleteBtn').show();
+                $('.deleteD').hide();
               } else {
                 // Handle other status codes if needed
                 if (response.status.code === "409") {
@@ -1488,6 +1500,8 @@ $(document).ready(function () {
                 $('#locNoBtn').hide();
                 refreshTabs();
                 clearSearchBar();
+                $('#lDeleteBtn').show();
+                $('.deleteL').hide();
               } else {
                 // Handle other status codes if needed
                 if (response.status.code === "409") {
@@ -1520,6 +1534,7 @@ $(document).ready(function () {
     $('#duplicateMessage1').hide();
     $('#successMessage1').hide();
     $('#successDepAdd').hide();
+    $('#successAddPersonnel').hide();
     $('#duplicatePersonnel').hide();
     $('#duplicateDepartment').hide();
     $('#depSuccessMessage').hide();
@@ -1537,7 +1552,24 @@ $(document).ready(function () {
     $('.addEmployeeBtns').show();
     $('.addDepartmentBtns').show();
     $('.addLocationBtns').show();
-
+    $('#lAddOkButton').hide();
+    $('#dAddOkButton').hide();
+    $('#pAddOkButton').hide();
+    $('#lEditOkButton').hide();
+    $('#dEditOkButton').hide();
+    $('#pEditOkButton').hide();
+    $('.addP').show();
+    $('.addD').show();
+    $('.addL').show();
+    $('.editP').show();
+    $('.editD').show();
+    $('.editL').show();
+    $('#pDeleteBtn').hide();
+    $('#dDeleteBtn').hide();
+    $('#lDeleteBtn').hide();
+    $('.deleteP').show();
+    $('.deleteD').show();
+    $('.deleteL').show();
   }
 
   // Function to refresh the content of the "Locations" tab

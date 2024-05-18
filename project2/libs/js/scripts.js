@@ -105,7 +105,7 @@ $(document).ready(function () {
         success: function (response) {
             if (response.status.code === "200") {
                 var departmentData = response.data;
-
+$('#departmentTableBody').empty();
                 // Sort departmentData array alphabetically by name
                 departmentData.sort(function (a, b) {
                     var nameA = a.name.toLowerCase();
@@ -114,7 +114,7 @@ $(document).ready(function () {
                 });
 
                 // Clear existing table content
-                $('#departmentTableBody').empty();
+                
 
                 // Fetch all location names first
                 var locationPromises = departmentData.map(function(department) {
@@ -219,7 +219,7 @@ $(document).ready(function () {
     } else if ($("#departmentsBtn").hasClass("active")) {
       populateDepartment();
       refreshTable("department");
-      populateDepartment();
+
       clearSearchBar();
     } else if ($("#locationsBtn").hasClass("active")) {
       refreshTable("location");

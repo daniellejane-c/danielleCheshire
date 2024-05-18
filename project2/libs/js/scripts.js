@@ -57,6 +57,10 @@ $(document).ready(function () {
         if (response.status.code === "200") {
           var personnelData = response.data;
 
+          personnelData.sort(function (a, b) {
+            return a.lastName.localeCompare(b.lastName);
+        });
+
           // Clear existing table content
           $('#personnelTableBody').empty();
 
@@ -92,62 +96,63 @@ $(document).ready(function () {
 
   function populateDepartment() {
     $.ajax({
-      url: '/project2/libs/php/getAllDepartments.php',
-      type: 'GET',
-      dataType: 'json',
-      success: function (response) {
-        if (response.status.code === "200") {
-          var departmentData = response.data;
+        url: '/project2/libs/php/getAllDepartments.php',
+        type: 'GET',
+        dataType: 'json',
+        success: function (response) {
+            if (response.status.code === "200") {
+                var departmentData = response.data;
 
-          // Sort departmentData array alphabetically by name
-          departmentData.sort(function (a, b) {
-            return a.name.localeCompare(b.name);
-          });
+                // Sort departmentData array alphabetically by name
+                departmentData.sort(function (a, b) {
+                  return a.name.localeCompare(b.name);
+              });
 
-          // Clear existing table content
-          $('#departmentTableBody').empty();
+                // Clear existing table content
+                $('#departmentTableBody').empty();
 
-          // Loop through sorted department data and populate table rows
-          $.each(departmentData, function (index, department) {
-            // Fetch location name for the corresponding locationID
-            $.ajax({
-              url: '/project2/libs/php/getLocationByID.php',
-              type: 'GET',
-              dataType: 'json',
-              data: {
-                id: department.locationID
-              },
-              success: function (response) {
-                var locationName = response.data[0].name;
-                var row = '<tr class="personnel-row" >' +
-                  '<td class="align-middle text-nowrap" id="departmentName">' + department.name + '</td>' +
-                  '<td class="align-middle text-nowrap d-none d-md-table-cell" id="depLocation">' + locationName + '</td>' +
-                  '<td class="align-middle text-end text-nowrap">' +
-                  '<button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editDepartmentModal" data-id=' + department.id + '">' +
-                  '<i class="fa-solid fa-pencil fa-fw"></i>' +
-                  '</button>' +
-                  '<button type="button" class="btn btn-primary btn-sm deleteDepartmentBtn" data-bs-toggle="modal" data-bs-target="#deleteDepartmentModal" data-id="' + department.id + '">' +
-                  '<i class="fa-solid fa-trash fa-fw"></i>' +
-                  '</button>' +
-                  '</td>' +
-                  '</tr>';
-                $('#departmentTableBody').append(row);
-              },
-              error: function (jqXHR, textStatus, errorThrown) {
-                console.log("Error:", textStatus, errorThrown);
-              }
-            });
-          });
-        } else {
-          // Handle other status codes if needed
-          console.log("Error: " + response.status.description);
+                // Loop through sorted department data and populate table rows
+                $.each(departmentData, function (index, department) {
+                    // Fetch location name for the corresponding locationID
+                    $.ajax({
+                        url: '/project2/libs/php/getLocationByID.php',
+                        type: 'GET',
+                        dataType: 'json',
+                        data: {
+                            id: department.locationID
+                        },
+                        success: function (response) {
+                            var locationName = response.data[0].name;
+                            var row = '<tr class="personnel-row" >' +
+                                '<td class="align-middle text-nowrap" id="departmentName">' + department.name + '</td>' +
+                                '<td class="align-middle text-nowrap d-none d-md-table-cell" id="depLocation">' + locationName + '</td>' +
+                                '<td class="align-middle text-end text-nowrap">' +
+                                '<button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editDepartmentModal" data-id=' + department.id + '>' +
+                                '<i class="fa-solid fa-pencil fa-fw"></i>' +
+                                '</button>' +
+                                '<button type="button" class="btn btn-primary btn-sm deleteDepartmentBtn" data-bs-toggle="modal" data-bs-target="#deleteDepartmentModal" data-id="' + department.id + '">' +
+                                '<i class="fa-solid fa-trash fa-fw"></i>' +
+                                '</button>' +
+                                '</td>' +
+                                '</tr>';
+                            $('#departmentTableBody').append(row);
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.log("Error:", textStatus, errorThrown);
+                        }
+                    });
+                });
+            } else {
+                // Handle other status codes if needed
+                console.log("Error: " + response.status.description);
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log("Error:", textStatus, errorThrown);
         }
-      },
-      error: function (jqXHR, textStatus, errorThrown) {
-        console.log("Error:", textStatus, errorThrown);
-      }
     });
-  }
+}
+
 
   function populateLocationData() {
     $.ajax({
@@ -158,6 +163,9 @@ $(document).ready(function () {
         if (response.status.code === "200") {
           var locationData = response.data;
 
+          locationData.sort(function (a, b) {
+            return a.name.localeCompare(b.name);
+        });
           // Clear existing table content
           $('#locationTableBody').empty();
 
@@ -198,13 +206,16 @@ $(document).ready(function () {
     if ($("#personnelBtn").hasClass("active")) {
       refreshTable("personnel");
       clearSearchBar();
+      populatePersonnelData();
     } else if ($("#departmentsBtn").hasClass("active")) {
       refreshTable("department");
+      populateDepartment();
       clearSearchBar();
     } else if ($("#locationsBtn").hasClass("active")) {
       refreshTable("location");
       clearSearchBar();
-    } else {
+      populateLocationData();
+;    } else {
       console.log("No active button found.");
     }
   });
@@ -669,6 +680,7 @@ $(document).ready(function () {
               $('#addPersonnelForm')[0].reset();
               refreshTabs();
               clearSearchBar();
+              populatePersonnelData();
               $('.addEmployeeBtns').hide();
             } else if (response.status.code == '409') {
               $('#duplicatePersonnel').html('Employee with email "' + email + '" already exists.');
@@ -866,6 +878,7 @@ $(document).ready(function () {
                   // Refresh the content of the "Locations" tab
                   refreshTabs();
                   clearSearchBar();
+                  populateDepartment();
                   $('.addDepartmentBtns').hide();
                 } else if (response.status.code == '409') {
                   $('#duplicateDepartment').html('Department "' + departmentName + '" already exists.');
@@ -1191,6 +1204,7 @@ $(document).ready(function () {
           // Refresh the content of the "Locations" tab
           refreshTabs();
           clearSearchBar();
+          populateLocationData();
           $('.addLocationBtns').hide();
         } else if (response.status.code == '409') {
           $('#duplicateMessage1').html('Location "' + locationName + '" already exists.');

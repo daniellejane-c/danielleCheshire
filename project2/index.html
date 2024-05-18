@@ -188,8 +188,8 @@
               <input type="hidden" id="editPersonnelEmployeeID">
               <input type="hidden" id="originalPersonnelEmployeeEmail">
 
-              <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="editPersonnelFirstName" placeholder="First name" required>
+              <div class="form-floating mb-3 ">
+                <input type="text" class="form-control editPersonnelFirstName" id="editPersonnelFirstName" placeholder="First name" required>
                 <label for="editPersonnelFirstName">First name</label>
               </div>
 
@@ -224,8 +224,8 @@
           </div>
 
           <div class="modal-footer">
-            <button type="submit" form="editPersonnelForm" class="btn btn-outline-primary btn-sm myBtn">SAVE</button>
-            <button type="button" class="btn btn-outline-primary btn-sm myBtn" data-bs-dismiss="modal">CANCEL</button>
+            <button type="submit" form="editPersonnelForm" class="btn btn-outline-primary btn-sm myBtn editPersonnelBtns">SAVE</button>
+            <button type="button" class="btn btn-outline-primary btn-sm myBtn editPersonnelBtns" data-bs-dismiss="modal">CANCEL</button>
           </div>
 
         </div>
@@ -256,7 +256,7 @@
               <input type="hidden" id="originalDepartmentLocation">
 
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="editDepartmentName" placeholder="Department" required>
+                <input type="text" class="form-control editDepartmentName" id="editDepartmentName" placeholder="Department" required>
                 <label for="editDepartmentName">Department</label>
               </div>
 
@@ -275,8 +275,8 @@
           </div>
 
           <div class="modal-footer">
-            <button type="submit" form="editDepartmentForm" class="btn btn-outline-primary btn-sm myBtn">SAVE</button>
-            <button type="button" class="btn btn-outline-primary btn-sm myBtn" data-bs-dismiss="modal">CANCEL</button>
+            <button type="submit" form="editDepartmentForm" class="btn btn-outline-primary btn-sm myBtn editDepartmentBtns">SAVE</button>
+            <button type="button" class="btn btn-outline-primary btn-sm myBtn editDepartmentBtns" data-bs-dismiss="modal">CANCEL</button>
           </div>
 
         </div>
@@ -305,7 +305,7 @@
               <input type="hidden" id="originalLocationName"> <!-- Add this line -->
 
               <div class="form-floating">
-                <input type="text" class="form-control" id="editLocation" placeholder="Location">
+                <input type="text" class="form-control editLocation" id="editLocation" placeholder="Location">
                 <label for="editLocation">Location</label>
               </div>
               <div id="successMessage" class="alert alert-success mt-3" role="alert" style="display: none;"></div>
@@ -317,8 +317,8 @@
           </div>
 
           <div class="modal-footer">
-            <button type="submit" form="editLocationForm" class="btn btn-outline-primary btn-sm myBtn">SAVE</button>
-            <button type="button" class="btn btn-outline-primary btn-sm myBtn" data-bs-dismiss="modal">CANCEL</button>
+            <button type="submit" form="editLocationForm" class="btn btn-outline-primary btn-sm myBtn editLocationButtons">SAVE</button>
+            <button type="button" class="btn btn-outline-primary btn-sm myBtn editLocationButtons" data-bs-dismiss="modal">CANCEL</button>
           </div>
         </div>
       </div>
@@ -350,8 +350,8 @@
 
             <input type="hidden" id="addPersonnelEmployeeID">
 
-            <div class="form-floating mb-3">
-              <input type="text" class="form-control" id="addPersonnelFirstName" placeholder="First name" required>
+            <div class="form-floating mb-3" >
+              <input type="text" class="form-control" id="addPersonnelFirstName" placeholder="First name" required >
               <label for="addPersonnelFirstName">First name</label>
             </div>
 
@@ -384,8 +384,8 @@
           </div>
 
           <div class="modal-footer">
-            <button type="submit" form="addPersonnelForm" class="btn btn-outline-primary btn-sm myBtn">SAVE</button>
-            <button type="button" class="btn btn-outline-primary btn-sm myBtn" data-bs-dismiss="modal">CANCEL</button>
+            <button type="submit" form="addPersonnelForm" class="btn btn-outline-primary btn-sm myBtn addEmployeeBtns">SAVE</button>
+            <button type="button" class="btn btn-outline-primary btn-sm myBtn addEmployeeBtns" data-bs-dismiss="modal">CANCEL</button>
           </div>
 
         </div>
@@ -414,7 +414,7 @@
             <input type="hidden" id="addDepartmentID">
 
             <div class="form-floating mb-3">
-              <input type="text" class="form-control" id="addDepartmentName" placeholder="Department" required>
+              <input type="text" class="form-control addDepartmentName" id="addDepartmentName" placeholder="Department" required>
               <label for="addDepartmentName">Department</label>
             </div>
 
@@ -432,8 +432,8 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="submit" form="addDepartmentForm" class="btn btn-outline-primary btn-sm myBtn">SAVE</button>
-          <button type="button" class="btn btn-outline-primary btn-sm myBtn" data-bs-dismiss="modal">CANCEL</button>
+          <button type="submit" form="addDepartmentForm" class="btn btn-outline-primary btn-sm myBtn addDepartmentBtns">SAVE</button>
+          <button type="button" class="btn btn-outline-primary btn-sm myBtn addDepartmentBtns" data-bs-dismiss="modal">CANCEL</button>
         </div>
       </div>
     </div>
@@ -459,7 +459,7 @@
             <input type="hidden" id="addDepartmentName">
 
             <div class="form-floating mb-3">
-              <input type="text" class="form-control" id="addLocation" placeholder="Department" required>
+              <input type="text" class="form-control addLocation" id="addLocation" placeholder="Department" required>
               <label for="addDepartmentName">Location</label>
             </div>
           </form>
@@ -468,8 +468,8 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="submit" form="addLocationForm" class="btn btn-outline-primary btn-sm myBtn">SAVE</button>
-          <button type="button" class="btn btn-outline-primary btn-sm myBtn" data-bs-dismiss="modal">CANCEL</button>
+          <button type="submit" form="addLocationForm" class="btn btn-outline-primary btn-sm myBtn addLocationBtns">SAVE</button>
+          <button type="button" class="btn btn-outline-primary btn-sm myBtn addLocationBtns" data-bs-dismiss="modal">CANCEL</button>
         </div>
       </div>
     </div>

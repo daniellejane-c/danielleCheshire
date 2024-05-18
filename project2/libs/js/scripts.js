@@ -311,6 +311,9 @@ $(document).ready(function () {
         defaultOption.text = "Select Department";
         departmentSelect.appendChild(defaultOption);
 
+        response.data.sort(function(a, b) {
+          return a.name.localeCompare(b.name);
+        });
         // Add department options
         response.data.forEach(function (department) { // Accessing data array
           var option = document.createElement("option");
@@ -338,7 +341,9 @@ $(document).ready(function () {
 
         // Clear existing options
         locationSelect.innerHTML = "";
-
+        response.data.sort(function(a, b) {
+          return a.name.localeCompare(b.name);
+        });
         // Add default option
         var defaultOption = document.createElement("option");
         defaultOption.value = "";
@@ -405,6 +410,7 @@ $(document).ready(function () {
       });
     }
   }
+  
 
   $("#filterBtn").click(function () {
     $('#filterBoxModal').modal('show');
@@ -605,7 +611,9 @@ $(document).ready(function () {
 
           // Clear existing options
           $(dropdownId).empty();
-
+          response.data.sort(function(a, b) {
+            return a.name.localeCompare(b.name);
+          });
           // Populate dropdown with data
           $.each(dropdownData, function (index, item) {
             $(dropdownId).append($('<option>', {
@@ -627,6 +635,8 @@ $(document).ready(function () {
 
     $('#addPersonnelModal').on('shown.bs.modal', function () {
       fetchDropdownData('#addPersonnelDepartment');
+
+      
       clearForm();
       setTimeout(function() {
           $('#addPersonnelFirstName').focus();
@@ -921,7 +931,8 @@ $(document).ready(function () {
 
 
   $("#editDepartmentModal").on("show.bs.modal", function (e) {
-    clearForm();
+    clearForm(); // Assuming clearForm() function is defined elsewhere
+  
     $.ajax({
       url: "/project2/libs/php/getDepartmentByID.php",
       type: "get",
@@ -936,7 +947,7 @@ $(document).ready(function () {
           $("#editDepartmentName").val(result.data[0].name);
           $("#originalDepartmentName").val(result.data[0].name);
           $('#originalDepartmentLocation').val(result.data[0].locationID);
-
+  
           // Fetch all locations
           $.ajax({
             url: "/project2/libs/php/getAllLocations.php",
@@ -945,16 +956,26 @@ $(document).ready(function () {
             success: function (locationResult) {
               if (locationResult.status.code == 200) {
                 var currentLocationID = result.data[0].locationID;
-                $("#editDepartmentLocation").empty(); // Clear previous options
-                locationResult.data.forEach(function (location) {
+                var $editDepartmentLocation = $("#editDepartmentLocation");
+                $editDepartmentLocation.empty(); // Clear previous options
+  
+                // Sort locations alphabetically by name
+                locationResult.data.sort(function(a, b) {
+                  return a.name.localeCompare(b.name);
+                });
+  
+                $.each(locationResult.data, function (index, location) {
                   // Append option with location name
-                  $("#editDepartmentLocation").append(
-                    $("<option>", {
-                      value: location.id,
-                      text: location.name,
-                      selected: location.id == currentLocationID ? true : false
-                    })
-                  );
+                  var $option = $("<option>", {
+                    value: location.id,
+                    text: location.name
+                  });
+  
+                  if (location.id == currentLocationID) {
+                    $option.prop("selected", true); // Select the current location
+                  }
+  
+                  $editDepartmentLocation.append($option);
                 });
               }
             },
@@ -963,14 +984,15 @@ $(document).ready(function () {
             }
           });
         } else {
-          $("#editPersonnelModal .modal-title").replaceWith("Error retrieving data");
+          $("#editPersonnelModal .modal-title").text("Error retrieving data");
         }
       },
       error: function (jqXHR, textStatus, errorThrown) {
-        $("#editPersonnelModal .modal-title").replaceWith("Error retrieving data");
+        $("#editPersonnelModal .modal-title").text("Error retrieving data");
       }
     });
   });
+  
 
 
   $("#editDepartmentForm").on("submit", function (event) {

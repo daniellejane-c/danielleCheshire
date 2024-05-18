@@ -443,6 +443,7 @@ $('#filterForm').on("submit", function(event) {
               // Update table rows with filtered data
               updateTableRows(response.data);
               showClearFilterButton(); // Show clear filter button
+              populateDepartment();
           },
           error: function(jqxhr, status, error) {
               // Handle errors here
@@ -460,6 +461,7 @@ $('#filterForm').on("submit", function(event) {
               // Update table rows with filtered data
               updateTableRows(response.data);
               showClearFilterButton(); // Show clear filter button
+              populateDepartment();
           },
           error: function(jqxhr, status, error) {
               // Handle errors here

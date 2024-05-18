@@ -76,7 +76,7 @@ $(document).ready(function () {
               '<td class="align-middle text-nowrap d-none d-md-table-cell" id="personnelLocation">' + personnel.location + '</td>' +
               '<td class="align-middle text-nowrap d-none d-md-table-cell" id="personnelEmail">' + personnel.email + '</td>' +
               '<td class="text-end text-nowrap">' +
-              '<button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editPersonnelModal" data-id="' + personnel.id + '">' +
+              '<button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" id="editPerson" data-bs-target="#editPersonnelModal" data-id="' + personnel.id + '">' +
               '<i class="fa-solid fa-pencil fa-fw"></i>' +
               '</button>' +
               '<button type="button" class="btn btn-primary btn-sm deletePersonnelBtn" data-bs-toggle="modal" data-bs-target="#deletePersonnelModal" data-id="' + personnel.id + '">' +
@@ -430,6 +430,7 @@ $(document).ready(function () {
     if ($("#departmentSelect").val() === "") {
       // Repopulate location filter options when "Select Department" is clicked again
       populateLocationFilter();
+
     } else {
       // Clear location filter options when department is selected
       $("#locationSelect").empty().append($('<option>', {
@@ -478,6 +479,7 @@ $(document).ready(function () {
           updateTableRows(response.data);
           showClearFilterButton(); // Show clear filter button
           populateDepartment();
+          
         },
         error: function (jqxhr, status, error) {
           // Handle errors here
@@ -512,21 +514,29 @@ $(document).ready(function () {
   function updateTableRows(data) {
     var tableBody = $('#personnelTableBody');
     tableBody.empty(); // Clear existing rows
-
+  
     // Loop through the filtered data and create table rows
     data.forEach(function (item) {
-      var row = '<tr>';
+      var row = '<tr class="personnel-row" data-department="' + item.departmentID + '" data-location="' + item.locationID + '">';
       row += '<td>' + item.lastName + '</td>';
       row += '<td>' + item.firstName + '</td>';
       row += '<td>' + item.jobTitle + '</td>';
       row += '<td>' + item.email + '</td>';
       row += '<td>' + item.department + '</td>';
       row += '<td>' + item.location + '</td>';
+      row += '<td class="text-end text-nowrap">' +
+        '<button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" id="editPerson" data-bs-target="#editPersonnelModal" data-id="' + item.id + '">' +
+        '<i class="fa-solid fa-pencil fa-fw"></i>' +
+        '</button>' +
+        '<button type="button" class="btn btn-primary btn-sm deletePersonnelBtn" data-bs-toggle="modal" data-bs-target="#deletePersonnelModal" data-id="' + item.id + '">' +
+        '<i class="fa-solid fa-trash fa-fw"></i>' +
+        '</button>' +
+        '</td>';
       row += '</tr>';
       tableBody.append(row); // Append row to table body
     });
   }
-
+  
   $('#clearFilterButton').on('click', function () {
     // Clear the filter and show all data
     $('#filterForm')[0].reset(); // Reset form
@@ -1088,7 +1098,7 @@ $(document).ready(function () {
                   },
                   dataType: 'json',
                   success: function (response) {
-                    console.log(response);
+
                     if (response.status.code == '200') {
                       $('#depSuccessMessage').html('Department "' + originalDepName + ' in ' + originalDepLocationName + '" has been successfully changed to "' + newDepName + ' in ' + newDepLocationName + '"');
                       $('#depSuccessMessage').show();
@@ -1219,7 +1229,7 @@ $(document).ready(function () {
     });
   });
   $('#addLocationModal').on('shown.bs.modal', function () {
-    console.log('modalopen');
+
 
     setTimeout(function() {
         $('.addLocation').focus();
@@ -1292,12 +1302,29 @@ $(document).ready(function () {
     clearForm();
     var button = $(e.relatedTarget);
     var personnelId = button.data('id');
-    var personnelFirstName = button.closest('tr').find('#personnelName').text().split(',')[1].trim();
-    var personnelLastName = button.closest('tr').find('#personnelName').text().split(',')[0].trim();
-    
-    $('#deleteEmployeeName').text(personnelLastName + ', ' + personnelFirstName);
+    var row = button.closest('tr');
+
+  
+    var name = row.find('td:nth-child(1)').text().trim();
+  
+    var fullName;
+    if (name.includes(',')) {
+      var nameParts = name.split(',');
+      var lastName = nameParts[0].trim();
+      var firstName = nameParts[1].trim();
+      fullName = lastName + ', ' + firstName;
+    } else {
+      var firstName = row.find('td:nth-child(1)').text().trim();
+      var lastName = row.find('td:nth-child(2)').text().trim();
+      fullName = lastName + ', ' + firstName;
+    }
+  
+
+  
+    $('#deleteEmployeeName').text(fullName);
     $('#delete-form input[name="id"]').val(personnelId);
-});
+  });
+  
 
 $('#delete-form').submit(function (event) {
     event.preventDefault();
@@ -1325,6 +1352,7 @@ $('#delete-form').submit(function (event) {
                             $('.deleteP').hide();
                             refreshTabs();
                             clearSearchBar();
+                            hideClearFilterButton();
                         } else {
                             console.log("Error: " + response.status.description);
                         }
@@ -1361,7 +1389,7 @@ $('#delete-form').submit(function (event) {
       dataType: 'json',
       data: { id: departmentId },
       success: function (response) {
-        console.log(response);
+
         if (response.status.code === "200") {
           $('#deleteDepartmentTextEligible').show();
           $('#deleteDepartmentTextNotEligible').hide();
@@ -1400,17 +1428,17 @@ $('#delete-form').submit(function (event) {
       dataType: 'json',
       data: { id: departmentId },
       success: function (response) {
-        console.log(response);
+
         if (response.status.code === "200") {
           var departmentName = response.data[0].name
-          console.log(departmentName);
+
           $.ajax({
             url: '/project2/libs/php/deleteDepartment.php',
             type: 'POST',
             dataType: 'json',
             data: { id: departmentId },
             success: function (response) {
-              console.log(response);
+   
               if (response.status.code === "200") {
                 $('#deleteDepartmentSuccess').text('Department: ' + departmentName + ' has been successfully deleted.');
                 $('#deleteDepartmentSuccess').show();
@@ -1474,7 +1502,7 @@ $('#delete-form').submit(function (event) {
       dataType: 'json',
       data: { id: locationId },
       success: function (response) {
-        console.log(response);
+
         if (response.status.code === "200") {
           $('#deleteLocationTextEligible').show();
           $('#deleteLocationTextNotEligible').hide();
@@ -1513,17 +1541,17 @@ $('#delete-form').submit(function (event) {
       dataType: 'json',
       data: { id: locationId },
       success: function (response) {
-        console.log(response);
+
         if (response.status.code === "200") {
           var locationName = response.data[0].name
-          console.log(locationName);
+
           $.ajax({
             url: '/project2/libs/php/deleteLocation.php',
             type: 'POST',
             dataType: 'json',
             data: { id: locationId },
             success: function (response) {
-              console.log(response);
+       
               if (response.status.code === "200") {
                 $('#deleteLocationSuccess').text('Location: ' + locationName + ' has been successfully deleted.');
                 $('#deleteLocationSuccess').show();

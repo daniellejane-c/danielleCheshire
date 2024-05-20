@@ -157,13 +157,15 @@
             </div>
 
 
-            <button type="submit" id="filterSubmit" class="btn btn-primary btn-sm">
-              Apply Filters
-            </button>
-            <button type="button" class="btn btn-secondary btn-sm float-right" data-bs-dismiss="modal">
-              Close
-            </button>
+
           </form>
+          <div class="modal-footer">
+            <button type="submit" id="filterSubmit" form="filterForm" class="btn btn-outline-primary btn-sm myBtn" >
+              APPLY
+            </button>
+            <button type="button" class="btn btn-outline-primary btn-sm myBtn editPersonnelBtns"
+            data-bs-dismiss="modal">CANCEL</button>
+          </div>
         </div>
       </div>
     </div>
@@ -519,12 +521,7 @@
           <div>Are you sure you want to remove the entry for <strong id="deleteEmployeeName"></strong>?</div>
           <form id="delete-form">
             <input class="form-control" type="hidden" name="id">
-            <button type="submit" id="yesBtn" class="btn btn-primary btn-sm" form="delete-form">
-              YES
-            </button>
-            <button type="button" id="noBtn" class="btn btn-primary btn-sm float-right" data-bs-dismiss="modal">
-              NO
-            </button>
+
 
           </form>
         </div>
@@ -532,6 +529,11 @@
 
 
         <div class="modal-footer">
+          <button type="submit" id="yesBtn" class="btn btn-outline-primary btn-sm myBtn" form="delete-form">
+            YES
+          </button>
+          <button type="button" class="btn btn-outline-primary btn-sm myBtn" id="noBtn"
+          data-bs-dismiss="modal">CANCEL</button>
           <button type="button" class="btn btn-outline-primary btn-sm myBtn" style="display: none;" id="pDeleteBtn"
             data-bs-dismiss="modal">OK</button>
         </div>
@@ -562,19 +564,20 @@
                   id="numEmployees"></strong> employees assigned to it.</p>
             </div>
 
-            <button type="submit" id="depYesBtn" class="btn btn-primary btn-sm" id="btnDeleteSubmit"
-              form="deleteDepartmentForm">
-              YES
-            </button>
-            <button type="button" id="depNoBtn" class="btn btn-primary btn-sm float-right" data-bs-dismiss="modal">
-              NO
-            </button>
+
           </form>
           <div id="deleteDepartmentSuccess" class="alert alert-success mt-3" role="alert" style="display: none;"></div>
         </div>
 
         <!-- Footer -->
         <div class="modal-footer">
+          <button type="submit" id="depYesBtn" class="btn btn-outline-primary btn-sm myBtn" id="btnDeleteSubmit"
+          form="deleteDepartmentForm">
+          YES
+        </button>
+        <button type="button" class="btn btn-outline-primary btn-sm myBtn" id="depNoBtn"
+        data-bs-dismiss="modal">CANCEL</button>
+
           <button type="button" class="btn btn-outline-primary btn-sm myBtn" style="display: none;" id="dDeleteBtn"
             data-bs-dismiss="modal">OK</button>
         </div>
@@ -604,19 +607,19 @@
                   id="numDepartments"></strong> departments assigned to it.</p>
             </div>
 
-            <button type="submit" id="locYesBtn" class="btn btn-primary btn-sm" id="btnDeleteSubmit"
-              form="deleteLocationForm">
-              YES
-            </button>
-            <button type="button" id="locNoBtn" class="btn btn-primary btn-sm float-right" data-bs-dismiss="modal">
-              NO
-            </button>
+
           </form>
           <div id="deleteLocationSuccess" class="alert alert-success mt-3" role="alert" style="display: none;"></div>
         </div>
 
         <!-- Footer -->
         <div class="modal-footer ">
+          <button type="submit" id="locYesBtn" class="btn btn-outline-primary btn-sm myBtn" id="btnDeleteSubmit"
+          form="deleteLocationForm">
+          YES
+        </button>
+        <button type="button" class="btn btn-outline-primary btn-sm myBtn" id="locNoBtn"
+        data-bs-dismiss="modal">CANCEL</button>
           <button type="button" class="btn btn-outline-primary btn-sm myBtn" style="display: none;" id="lDeleteBtn" data-bs-dismiss="modal">OK</button>
         </div>
       </div>

@@ -79,7 +79,7 @@ $(document).ready(function () {
               '<button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" id="editPerson" data-bs-target="#editPersonnelModal" data-id="' + personnel.id + '">' +
               '<i class="fa-solid fa-pencil fa-fw"></i>' +
               '</button>' +
-              '<button type="button" class="btn btn-primary btn-sm deletePersonnelBtn" data-bs-toggle="modal" data-bs-target="#deletePersonnelModal" data-id="' + personnel.id + '">' +
+              '<button type="button" class="btn btn-primary btn-sm ms-2 deletePersonnelBtn" data-bs-toggle="modal" data-bs-target="#deletePersonnelModal" data-id="' + personnel.id + '">' +
               '<i class="fa-solid fa-trash fa-fw"></i>' +
               '</button>' +
               '</td>' +
@@ -142,7 +142,7 @@ $('#departmentTableBody').empty();
                             '<button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editDepartmentModal" data-id=' + department.id + '>' +
                             '<i class="fa-solid fa-pencil fa-fw"></i>' +
                             '</button>' +
-                            '<button type="button" class="btn btn-primary btn-sm deleteDepartmentBtn" data-bs-toggle="modal" data-bs-target="#deleteDepartmentModal" data-id="' + department.id + '">' +
+                            '<button type="button" class="btn btn-primary btn-sm ms-2 deleteDepartmentBtn" data-bs-toggle="modal" data-bs-target="#deleteDepartmentModal" data-id="' + department.id + '">' +
                             '<i class="fa-solid fa-trash fa-fw"></i>' +
                             '</button>' +
                             '</td>' +
@@ -186,7 +186,7 @@ $('#departmentTableBody').empty();
               '<button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editLocationModal" data-id="' + location.id + '">' +
               '<i class="fa-solid fa-pencil fa-fw"></i>' +
               '</button>' +
-              '<button type="button" class="btn btn-primary btn-sm deleteLocationBtn" data-bs-toggle="modal" data-bs-target="#deleteLocationModal" data-id="' + location.id + '">' +
+              '<button type="button" class="btn btn-primary btn-sm ms-2 deleteLocationBtn" data-bs-toggle="modal" data-bs-target="#deleteLocationModal" data-id="' + location.id + '">' +
               '<i class="fa-solid fa-trash fa-fw"></i>' +
               '</button>' +
               '</td>' +
@@ -318,7 +318,7 @@ $('#departmentTableBody').empty();
         // Add default option
         var defaultOption = document.createElement("option");
         defaultOption.value = "";
-        defaultOption.text = "Select Department";
+        defaultOption.text = "All";
         departmentSelect.appendChild(defaultOption);
 
         response.data.sort(function(a, b) {
@@ -357,7 +357,7 @@ $('#departmentTableBody').empty();
         // Add default option
         var defaultOption = document.createElement("option");
         defaultOption.value = "";
-        defaultOption.text = "Select Location";
+        defaultOption.text = "All";
         locationSelect.appendChild(defaultOption);
 
         // Add location options
@@ -380,11 +380,31 @@ $('#departmentTableBody').empty();
   $('.nav-link').click(function () {
     var tabId = $(this).attr('id');
     if (tabId !== 'personnelBtn') {
-      // Hide the filter button if a tab other than "personnel" is clicked
-      $('#filterBtn').hide();
+      // Disable the filter button and change its color to grey if a tab other than "personnel" is clicked
+      $('#filterBtn').prop('disabled', true).addClass('btn-disabled');
     } else {
-      // Show the filter button if the "personnel" tab is clicked
-      $('#filterBtn').show();
+      // Enable the filter button and restore its original color if the "personnel" tab is clicked
+      $('#filterBtn').prop('disabled', false).removeClass('btn-disabled');
+    }
+
+    if ($("#personnelBtn").hasClass("active")) {
+      refreshTable("personnel");
+      clearSearchBar();
+      populatePersonnelData();
+      hideClearFilterButton();
+    } else if ($("#departmentsBtn").hasClass("active")) {
+      
+      refreshTable("department");
+      clearSearchBar();
+      populateDepartment();
+      hideClearFilterButton();
+    } else if ($("#locationsBtn").hasClass("active")) {
+      refreshTable("location");
+      clearSearchBar();
+      populateLocationData();
+      hideClearFilterButton();
+;    } else {
+      console.log("No active button found.");
     }
   });
   // Populate dropdowns on modal show
@@ -436,10 +456,7 @@ $('#departmentTableBody').empty();
 
     } else {
       // Clear location filter options when department is selected
-      $("#locationSelect").empty().append($('<option>', {
-        value: '',
-        text: 'Select Location'
-      }));
+      $("#locationSelect").val('');
     }
     applyFilter();
     // Re-enable location select
@@ -454,12 +471,9 @@ $('#departmentTableBody').empty();
       populateDepartmentFilter();
     } else {
       // Clear department filter options when location is selected
-      $("#departmentSelect").empty().append($('<option>', {
-        value: '',
-        text: 'Select Department'
-      }));
-    }
+      $("#departmentSelect").val('');
     applyFilter();
+    }
     // Re-enable department select
     $("#departmentSelect").prop("disabled", false);
   });
@@ -1326,6 +1340,7 @@ $('#departmentTableBody').empty();
   
     $('#deleteEmployeeName').text(fullName);
     $('#delete-form input[name="id"]').val(personnelId);
+    
   });
   
 
@@ -1410,6 +1425,7 @@ $('#delete-form').submit(function (event) {
             $('#deleteDepartmentModal').modal('show');
             $('#depYesBtn').hide();
             $('#depNoBtn').hide();
+            $('#dDeleteBtn').show();
           } else {
             console.log("Error: " + response.status.description);
           }
@@ -1523,6 +1539,7 @@ $('#delete-form').submit(function (event) {
             $('#deleteLocationModal').modal('show');
             $('#locYesBtn').hide();
             $('#locNoBtn').hide();
+            $('#lDeleteBtn').show();
           } else {
             console.log("Error: " + response.status.description);
           }

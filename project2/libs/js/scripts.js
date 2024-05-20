@@ -17,6 +17,14 @@ $(document).ready(function () {
 
   function filterTable(tableBodyId, searchText) {
     var anyResults = false;
+    $(tableBodyId + " .no-results").remove(); // Remove the no-results message if it exists
+    
+    if (searchText.trim() === '') {
+      // If search text is empty, show all rows
+      $(tableBodyId + " tr").show();
+      return;
+    }
+    
     $(tableBodyId + " tr").each(function () {
       var rowText = $(this).text().toLowerCase();
       var matched = rowText.indexOf(searchText) > -1;
@@ -25,16 +33,13 @@ $(document).ready(function () {
         anyResults = true;
       }
     });
-
+  
     if (!anyResults) {
       // If no results found, display a message
       $(tableBodyId).append('<tr class="no-results"><td colspan="5"><span class="no-results-message">We could not find any data matching your search criteria.</span></td></tr>');
-    } else {
-      // Remove the no-results message if it exists
-      $(tableBodyId + " .no-results").remove();
     }
   }
-
+  
   // Event handler for keyup event on search input
   $("#searchInp").on("keyup", function () {
     var searchText = $(this).val().toLowerCase();
@@ -48,13 +53,14 @@ $(document).ready(function () {
       $(this).css('background-color', originalBgColor);
     }
   });
-
+  
   // Save the original background color
   var originalBgColor = $('#searchInp').css('background-color');
-
+  
   function clearSearchBar() {
-    $("#searchInp").val('').trigger('keyup');
+    $("#searchInp").val('').trigger('keyup'); // Trigger keyup to reset table visibility
   }
+  
 
   function capitalizeFirstLetter(string) {
 

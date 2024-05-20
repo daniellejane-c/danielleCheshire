@@ -1,9 +1,17 @@
+setTimeout(function() {
+  var preloader = document.getElementById('preloader');
+  preloader.style.display = 'none';
+}, 1000);
+
+
 $(document).ready(function () {
+
   populatePersonnelData();
   populateLocationData();
   populateDepartment();
   populateDepartmentFilter();
   populateLocationFilter();
+
 
   //search bar
 

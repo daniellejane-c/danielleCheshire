@@ -49,31 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 	    $mailToRecipient->send(); 
 
-            // Send automated email response to sender
-            $mailToSender = new PHPMailer(true);
-            //Server settings
-            $mailToSender->isSMTP();
-            $mailToSender->Host       = 'smtp.gmail.com'; // SMTP server
-            $mailToSender->SMTPAuth   = true;
-            //hidden for security
-            $mailToSender->Username   = ''; // SMTP username
-            //hidden for security
-            $mailToSender->Password   = '';   // SMTP password
-            $mailToSender->SMTPSecure = 'tls';
-            $mailToSender->Port       = 587; // TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
-
-            //Recipients
-            //hidden for security
-            $mailToSender->setFrom('', ''); // Your email and name
-            $mailToSender->addAddress($email); // Add sender's email as recipient
-
-            // Content
-            $mailToSender->isHTML(true); // Set email format to HTML
-            $mailToSender->Subject = 'Thank you for contacting me'; /*. md5(rand())*/
-            $mailToSender->Body    = "Dear $name,<br><br>Thank you for contacting me. I have received your message and will get back to you as soon as possible.<br><br>Your Message:<br><br>$message";
-
-	    $mailToSender->send();
-
+           
             echo "success";
         } catch (Exception $e) {
             echo "Mailer Error: " . $e->getMessage();

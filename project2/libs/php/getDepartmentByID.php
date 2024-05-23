@@ -3,8 +3,7 @@
 // example use from browser
 // http://localhost/companydirectory/libs/php/getDepartmentByID.php?id=<id>
 
-// remove next two lines for production	
-
+// remove next two lines for production    
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 
@@ -27,7 +26,7 @@ if (!isset($_REQUEST['id'])) {
 
 $conn = new mysqli($cd_host, $cd_user, $cd_password, $cd_dbname, $cd_port, $cd_socket);
 
-if (mysqli_connect_errno()) {
+if ($conn->connect_errno) {
     $output['status']['code'] = "300";
     $output['status']['name'] = "failure";
     $output['status']['description'] = "database unavailable";
@@ -50,14 +49,42 @@ while ($row = $result->fetch_assoc()) {
     $data[] = $row;
 }
 
+$query->close();
+
+// Second query to fetch locations
+$query = 'SELECT id, name FROM location ORDER BY name';
+$result = $conn->query($query);
+
+if (!$result) {
+    $output['status']['code'] = "400";
+    $output['status']['name'] = "executed";
+    $output['status']['description'] = "query failed";
+    $output['data'] = [];
+
+    $conn->close();
+
+    echo json_encode($output);
+
+    exit;
+}
+
+$locations = [];
+
+while ($row = $result->fetch_assoc()) {
+    $locations[] = $row;
+}
+
 $output['status']['code'] = "200";
 $output['status']['name'] = "ok";
 $output['status']['description'] = "success";
 $output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
-$output['data'] = $data;
+$output['data'] = [
+    'department' => $data,
+    'locations' => $locations
+];
 
 echo json_encode($output);
 
-mysqli_close($conn);
+$conn->close();
 
 ?>

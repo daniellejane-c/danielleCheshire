@@ -30,15 +30,7 @@ if (!isset($_POST['lastName'])) {
     exit;
 }
 
-// Check if the 'jobTitle' parameter is provided
-if (!isset($_POST['jobTitle'])) {
-    $output['status']['code'] = "400";
-    $output['status']['name'] = "Bad Request";
-    $output['status']['description'] = "Missing 'jobTitle' parameter";
-    $output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
-    echo json_encode($output);
-    exit;
-}
+
 
 // Check if the 'email' parameter is provided
 if (!isset($_POST['email'])) {
@@ -60,18 +52,13 @@ if (!isset($_POST['departmentID'])) {
     exit;
 }
 
-
-
-
-// Sanitize and validate input data
 // Sanitize and validate input data
 $firstName = filter_var($_POST['firstName'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 $lastName = filter_var($_POST['lastName'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-$jobTitle = filter_var($_POST['jobTitle'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
 $departmentID = intval($_POST['departmentID']); // No need to sanitize as it's already an integer
 
-if (empty($firstName) || empty($lastName) || empty($jobTitle) || empty($email) || $departmentID <= 0) {
+if (empty($firstName) || empty($lastName) || empty($email) || $departmentID <= 0) {
     $output['status']['code'] = "400";
     $output['status']['name'] = "Bad Request";
     $output['status']['description'] = "Invalid input data";
@@ -109,8 +96,8 @@ if ($checkEmailResult->num_rows > 0) {
 }
 
 // Insert personnel into the database
-$insertQuery = $conn->prepare('INSERT INTO personnel (firstName, lastName, jobTitle, email, departmentID) VALUES (?, ?, ?, ?, ?)');
-$insertQuery->bind_param("ssssi", $firstName, $lastName, $jobTitle, $email, $departmentID);
+$insertQuery = $conn->prepare('INSERT INTO personnel (firstName, lastName, email, departmentID) VALUES (?, ?, ?, ?)');
+$insertQuery->bind_param("sssi", $firstName, $lastName, $email, $departmentID);
 $insertQuery->execute();
 $inserted_id = $insertQuery->insert_id;
 

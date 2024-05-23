@@ -20,6 +20,8 @@ if (!isset($_REQUEST['name'])) {
     exit;
 }
 
+$name = $_REQUEST['name'];
+
 // Attempt to establish a database connection
 $conn = new mysqli($cd_host, $cd_user, $cd_password, $cd_dbname, $cd_port, $cd_socket);
 
@@ -35,16 +37,14 @@ if ($conn->connect_errno) {
 }
 
 // Retrieve and sanitize the 'name' parameter
-$name = $_REQUEST['name'];
 $name = $conn->real_escape_string($name);
 
-// Prepare and execute the query to check if the location already exists
+// Check if the location already exists
 $checkQuery = $conn->prepare("SELECT id FROM location WHERE name = ?");
 $checkQuery->bind_param("s", $name);
 $checkQuery->execute();
 $checkResult = $checkQuery->get_result();
 
-// Check if there are any rows returned
 if ($checkResult->num_rows > 0) {
     $output['status']['code'] = "409";
     $output['status']['name'] = "Conflict";
@@ -55,12 +55,21 @@ if ($checkResult->num_rows > 0) {
     exit;
 }
 
-// If 'originalName' parameter is set, retrieve and sanitize it
-$originalName = isset($_REQUEST['originalName']) ? $conn->real_escape_string($_REQUEST['originalName']) : '';
+// Update the location's name where the ID is the one specified (assuming 'id' parameter is passed)
+if (!isset($_REQUEST['id'])) {
+    $output['status']['code'] = "400";
+    $output['status']['name'] = "Bad Request";
+    $output['status']['description'] = "Missing 'id' parameter";
+    $output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
+    $output['data'] = [];
+    echo json_encode($output);
+    exit;
+}
 
-// Prepare and execute the query to update the location
-$updateQuery = $conn->prepare("UPDATE location SET name = ? WHERE name = ?");
-$updateQuery->bind_param("ss", $name, $originalName);
+$id = $conn->real_escape_string($_REQUEST['id']);
+
+$updateQuery = $conn->prepare("UPDATE location SET name = ? WHERE id = ?");
+$updateQuery->bind_param("si", $name, $id);
 $updateQuery->execute();
 
 // Check if the update was successful
@@ -71,7 +80,7 @@ if ($updateQuery->affected_rows > 0) {
 } else {
     $output['status']['code'] = "500";
     $output['status']['name'] = "Internal Server Error";
-    $output['status']['description'] = "Failed to update location";
+    $output['status']['description'] = "Failed to update location or no changes detected";
 }
 
 $output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";

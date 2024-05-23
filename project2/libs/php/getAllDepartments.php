@@ -69,7 +69,7 @@ if ($conn->connect_errno) {
 }
 
 // SQL query to select department data
-$query = 'SELECT id, name, locationID FROM department';
+$query = 'SELECT d.id, d.name, l.name as locationName FROM department d LEFT JOIN location l ON (d.locationID = l.id) ORDER BY d.name;';
 
 // Execute SQL query
 $result = $conn->query($query);

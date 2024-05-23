@@ -33,7 +33,8 @@
             <button id="refreshBtn" type="button" class="btn btn-primary">
               <i class="fa-solid fa-refresh fa-fw"></i>
             </button>
-            <button id="filterBtn" type="button" class="btn btn-primary">
+            <button id="filterBtn" type="button" class="btn btn-primary" data-bs-target="#filterBoxModal"
+              data-bs-toggle="modal">
               <i class="fa-solid fa-filter fa-fw"></i>
             </button>
             <button id="addBtn" type="button" class="btn btn-primary">
@@ -140,11 +141,11 @@
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
 
-        <div class="modal-body shadow">
+        <div class="modal-body">
           <form id="filterForm">
             <div class="form-floating mb-3">
               <select class="form-select" id="departmentSelect" name="department" aria-label="Select Department">
-                <option value="">Select Department</option>
+                <option value="">All</option>
               </select>
               <label for="departmentSelect" class="form-label">Departments</label>
             </div>
@@ -153,22 +154,16 @@
             <div class="mb-3">
               <div class="form-floating">
                 <select class="form-select" id="locationSelect" name="location" aria-label="Select Location">
-                  <option value="">Select Location</option>
+                  <option value="">All</option>
                 </select>
                 <label for="locationSelect" class="form-label">Locations</label>
               </div>
             </div>
-
-
-
           </form>
-          <div class="modal-footer">
-            <button type="submit" id="filterSubmit" form="filterForm" class="btn btn-outline-primary btn-sm myBtn" >
-              APPLY
-            </button>
-            <button type="button" class="btn btn-outline-primary btn-sm myBtn editPersonnelBtns"
-            data-bs-dismiss="modal">CANCEL</button>
-          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-primary btn-sm myBtn editPersonnelBtns"
+            data-bs-dismiss="modal">OK</button>
         </div>
       </div>
     </div>
@@ -205,11 +200,6 @@
             </div>
 
             <div class="form-floating mb-3">
-              <input type="text" class="form-control" id="editPersonnelJobTitle" placeholder="Job title" required>
-              <label for="editPersonnelJobTitle">Job Title</label>
-            </div>
-
-            <div class="form-floating mb-3">
               <input type="email" class="form-control" id="editPersonnelEmailAddress" placeholder="Email address"
                 required>
               <label for="editPersonnelEmailAddress">Email Address</label>
@@ -239,9 +229,7 @@
         </div>
 
       </div>
-
     </div>
-
   </div>
 
   //edit Department
@@ -262,8 +250,7 @@
           <form id="editDepartmentForm" class="editD">
 
             <input type="hidden" id="editDepartmentID">
-            <input type="hidden" id="originalDepartmentName">
-            <input type="hidden" id="originalDepartmentLocation">
+
 
             <div class="form-floating mb-3">
               <input type="text" class="form-control editDepartmentName" id="editDepartmentName"
@@ -294,9 +281,7 @@
         </div>
 
       </div>
-
     </div>
-
   </div>
   //Edit location
   <div id="editLocationModal" class="modal fade" tabindex="-1" data-bs-backdrop="false" data-bs-keyboard="false"
@@ -343,11 +328,6 @@
     </div>
   </div>
 
-  </div>
-
-  </div>
-
-  </div>
 
 
   //addNewEmployee modal
@@ -377,11 +357,6 @@
             <div class="form-floating mb-3">
               <input type="text" class="form-control" id="addPersonnelLastName" placeholder="Last name" required>
               <label for="addPersonnelLastName">Last name</label>
-            </div>
-
-            <div class="form-floating mb-3">
-              <input type="text" class="form-control" id="addPersonnelJobTitle" placeholder="Job title" required>
-              <label for="addPersonnelJobTitle">Job Title</label>
             </div>
 
             <div class="form-floating mb-3">
@@ -522,7 +497,7 @@
 
         <div class="modal-body deleteP">
           <div>Are you sure you want to remove the entry for <strong id="deleteEmployeeName"></strong>?</div>
-          <form id="delete-form">
+          <form id="deletePersonnelForm">
             <input class="form-control" type="hidden" name="id">
 
 
@@ -532,11 +507,11 @@
 
 
         <div class="modal-footer">
-          <button type="submit" id="yesBtn" class="btn btn-outline-primary btn-sm myBtn" form="delete-form">
+          <button type="submit" id="yesBtn" class="btn btn-outline-primary btn-sm myBtn" form="deletePersonnelForm">
             YES
           </button>
           <button type="button" class="btn btn-outline-primary btn-sm myBtn" id="noBtn"
-          data-bs-dismiss="modal">CANCEL</button>
+            data-bs-dismiss="modal">CANCEL</button>
           <button type="button" class="btn btn-outline-primary btn-sm myBtn" style="display: none;" id="pDeleteBtn"
             data-bs-dismiss="modal">OK</button>
         </div>
@@ -558,28 +533,32 @@
 
         <div class="modal-body">
           <form id="deleteDepartmentForm" class="deleteD">
+
             <input class="form-control" type="hidden" name="id">
+
             <div id="deleteDepartmentTextEligible" style="display: none;">
-              <p>Remove Department: <strong id="departmentNameEligible"></strong></p>
+              <p>Remove Department: <strong id="areYouSureDeptName"></strong></p>
             </div>
+
+
             <div id="deleteDepartmentTextNotEligible" style="display: none;">
-              <p><strong id="departmentNameNotEligible"></strong> cannot be deleted as it has <strong
-                  id="numEmployees"></strong> employees assigned to it.</p>
+              <p><strong id="cantDeleteDeptName"></strong> cannot be deleted as it has <strong
+                  id="personnelCount"></strong> employees assigned to it.</p>
             </div>
 
 
           </form>
-          <div id="deleteDepartmentSuccess" class="alert alert-success mt-3" role="alert" style="display: none;"></div>
+          <div id="deleteDepartmentSuccess" class="alert alert-danger mt-3" role="alert" style="display: none;"></div>
         </div>
 
         <!-- Footer -->
         <div class="modal-footer">
           <button type="submit" id="depYesBtn" class="btn btn-outline-primary btn-sm myBtn" id="btnDeleteSubmit"
-          form="deleteDepartmentForm">
-          YES
-        </button>
-        <button type="button" class="btn btn-outline-primary btn-sm myBtn" id="depNoBtn"
-        data-bs-dismiss="modal">CANCEL</button>
+            form="deleteDepartmentForm">
+            YES
+          </button>
+          <button type="button" class="btn btn-outline-primary btn-sm myBtn" id="depNoBtn"
+            data-bs-dismiss="modal">CANCEL</button>
 
           <button type="button" class="btn btn-outline-primary btn-sm myBtn" style="display: none;" id="dDeleteBtn"
             data-bs-dismiss="modal">OK</button>
@@ -590,50 +569,43 @@
 
 
   //deleteLocationModal
-  <div class="modal fade" id="deleteLocationModal" data-bs-backdrop="false" style="display: none;" aria-modal="true"
-    role="dialog">
+  <div class="modal fade" id="deleteLocationModal" data-bs-backdrop="false" style="display: none;" aria-modal="true" role="dialog">
     <div class="modal-dialog modal-dialog-centered modal-sm">
-      <div class="modal-content">
-        <div class="modal-header bg-primary bg-gradient text-white">
-          <h4 class="modal-title">Delete Location</h4>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-        </div>
-
-        <div class="modal-body">
-          <form id="deleteLocationForm" class="deleteL">
-            <input class="form-control" type="hidden" name="id">
-            <div id="deleteLocationTextEligible" style="display: none;">
-              <p>Remove Location: <strong id="locationNameEligible"></strong></p>
-            </div>
-            <div id="deleteLocationTextNotEligible" style="display: none;">
-              <p><strong id="locationNameNotEligible"></strong> cannot be deleted as it has <strong
-                  id="numDepartments"></strong> departments assigned to it.</p>
+        <div class="modal-content">
+            <div class="modal-header bg-primary bg-gradient text-white">
+                <h4 class="modal-title">Delete Location</h4>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
 
+            <div class="modal-body">
+                <form id="deleteLocationForm" class="deleteL">
+                    <input class="form-control" type="hidden" name="id">
+                    
+                    <div id="deleteLocationTextEligible" style="display: none;">
+                        <p>Remove Location: <strong id="locationNameEligible"></strong></p>
+                    </div>
 
-          </form>
-          <div id="deleteLocationSuccess" class="alert alert-success mt-3" role="alert" style="display: none;"></div>
-        </div>
+                    <div id="deleteLocationTextNotEligible" style="display: none;">
+                        <p><strong id="locationNameNotEligible"></strong> cannot be deleted as it has <strong id="numDepartments"></strong> departments assigned to it.</p>
+                    </div>
+                </form>
+                <div id="deleteLocationSuccess" class="alert alert-success mt-3" role="alert" style="display: none;"></div>
+            </div>
 
-        <!-- Footer -->
-        <div class="modal-footer ">
-          <button type="submit" id="locYesBtn" class="btn btn-outline-primary btn-sm myBtn" id="btnDeleteSubmit"
-          form="deleteLocationForm">
-          YES
-        </button>
-        <button type="button" class="btn btn-outline-primary btn-sm myBtn" id="locNoBtn"
-        data-bs-dismiss="modal">CANCEL</button>
-          <button type="button" class="btn btn-outline-primary btn-sm myBtn" style="display: none;" id="lDeleteBtn" data-bs-dismiss="modal">OK</button>
+            <!-- Footer -->
+            <div class="modal-footer">
+                <button type="submit" id="locYesBtn" class="btn btn-outline-primary btn-sm myBtn" form="deleteLocationForm">YES</button>
+                <button type="button" class="btn btn-outline-primary btn-sm myBtn" id="locNoBtn" data-bs-dismiss="modal">CANCEL</button>
+                <button type="button" class="btn btn-outline-primary btn-sm myBtn" style="display: none;" id="lDeleteBtn" data-bs-dismiss="modal">OK</button>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
+</div>
 
 
 
   <script type="text/javascript" src="/project2/libs/vendors/jquery/dist/jquery.min.js"></script>
-  <script type="text/javascript"
-    src="/project2/libs/vendors/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="text/javascript" src="/project2/libs/vendors/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script type="text/javascript" src="/project2/libs/js/scripts.js"></script>
 </body>
 

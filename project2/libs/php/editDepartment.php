@@ -10,10 +10,10 @@ include("config.php");
 header('Content-Type: application/json; charset=UTF-8');
 
 // Check if the required parameters are set
-if (!isset($_REQUEST['departmentName']) || !isset($_REQUEST['locationID'])) {
+if (!isset($_REQUEST['departmentID']) || !isset($_REQUEST['departmentName']) || !isset($_REQUEST['locationID'])) {
     $output['status']['code'] = "400";
     $output['status']['name'] = "Bad Request";
-    $output['status']['description'] = "Missing 'departmentName' or 'locationID' parameter";
+    $output['status']['description'] = "Missing 'departmentID', 'departmentName', or 'locationID' parameter";
     $output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
     $output['data'] = [];
     echo json_encode($output);
@@ -35,33 +35,30 @@ if ($conn->connect_errno) {
 }
 
 // Retrieve and sanitize parameters
+$departmentID = $conn->real_escape_string($_REQUEST['departmentID']);
 $departmentName = $conn->real_escape_string($_REQUEST['departmentName']);
 $locationID = $conn->real_escape_string($_REQUEST['locationID']);
-$originalDepartmentName = isset($_REQUEST['originalDepartmentName']) ? $conn->real_escape_string($_REQUEST['originalDepartmentName']) : '';
 
-// Check if the department name has been modified
-if ($departmentName !== $originalDepartmentName) {
-    // Prepare and execute the query to check if the department already exists
-    $checkQuery = $conn->prepare("SELECT id FROM department WHERE name = ?");
-    $checkQuery->bind_param("s", $departmentName);
-    $checkQuery->execute();
-    $checkResult = $checkQuery->get_result();
+// Prepare and execute the query to check if the department name already exists (excluding the current department)
+$checkQuery = $conn->prepare("SELECT id FROM department WHERE name = ? AND id != ?");
+$checkQuery->bind_param("si", $departmentName, $departmentID);
+$checkQuery->execute();
+$checkResult = $checkQuery->get_result();
 
-    // Check if there are any rows returned
-    if ($checkResult->num_rows > 0) {
-        $output['status']['code'] = "409";
-        $output['status']['name'] = "Conflict";
-        $output['status']['description'] = "Department name already exists";
-        $output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
-        $output['data'] = [];
-        echo json_encode($output);
-        exit;
-    }
+// Check if there are any rows returned
+if ($checkResult->num_rows > 0) {
+    $output['status']['code'] = "409";
+    $output['status']['name'] = "Conflict";
+    $output['status']['description'] = "Department name already exists";
+    $output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
+    $output['data'] = [];
+    echo json_encode($output);
+    exit;
 }
 
 // Prepare and execute the query to update the department
-$updateQuery = $conn->prepare("UPDATE department SET name = ?, locationID = ? WHERE name = ?");
-$updateQuery->bind_param("sss", $departmentName, $locationID, $originalDepartmentName);
+$updateQuery = $conn->prepare("UPDATE department SET name = ?, locationID = ? WHERE id = ?");
+$updateQuery->bind_param("ssi", $departmentName, $locationID, $departmentID);
 $updateQuery->execute();
 
 // Check if the update was successful
@@ -86,3 +83,4 @@ echo json_encode($output);
 mysqli_close($conn);
 
 ?>
+

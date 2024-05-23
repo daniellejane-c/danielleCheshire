@@ -678,6 +678,58 @@ $(document).ready(function () {
   }
 });
 });
+
+$('#deletePersonnelModal').on('show.bs.modal', function (e) {
+  clearForm();    
+
+  var personnelID = $(e.relatedTarget).data('id');
+  $('input[name="id"]').val(personnelID);
+
+  $.ajax({
+    url: '/project2/libs/php/getPersonnelByID.php',
+    type: 'POST',
+    dataType: 'json',
+    data: { id: personnelID },
+    success: function (result) {
+
+      if (result.status.code === "200") {
+        var personnel = result.data.personnel[0];
+        var personnelName = personnel.firstName + ' ' + personnel.lastName;
+
+  $('#deleteEmployeeName').text(personnelName);
+      }
+    }
+});
+})
+
+$('#deletePersonnelForm').submit(function (event) {
+  event.preventDefault();
+
+  var personnelId = $('input[name="id"]').val();
+
+  $.ajax({
+    url: '/project2/libs/php/deletePersonnel.php',
+    type: 'POST',
+    dataType: 'json',
+    data: { id: personnelId },
+    success: function (response) {
+
+      if (response.status.code === "200") {
+        $('#deletePersonnelModal').modal('hide');
+        populatePersonnelData();  
+        clearSearchBar();
+      } else {
+        console.log("Error: " + response.status.description);
+      }
+    },
+    error: function (jqXHR, textStatus, errorThrown) {
+      console.log("Error:", textStatus, errorThrown);
+    }
+  });
+});
+
+
+
   // department add, edit, delete
 
 
@@ -827,6 +879,78 @@ $(document).ready(function () {
     });
   }
   )
+
+  $('#deleteDepartmentModal').on('show.bs.modal', function (e) {
+    clearForm();
+    var departmentID = $(e.relatedTarget).data('id'); // Gets the data-id attribute from the triggering element
+    $('input[name="id"]').val(departmentID); // Set the hidden input field with the departmentID
+
+    $.ajax({
+      url: "/project2/libs/php/checkDepartmentUse.php",
+      type: "POST",
+      dataType: "json",
+      data: { id: departmentID },
+      success: function (result) {
+
+        if (result.status.code === "200") {
+          var department = result.data[0];
+
+          if (department.personnelCount === 0) {
+
+            $("#areYouSureDeptName").text(department.departmentName);
+            $("#deleteDepartmentTextEligible").show();
+            $("#deleteDepartmentTextNotEligible").hide();
+            $("#deleteDepartmentForm").show();
+            $('#depYesBtn').show();
+            $('#depNoBtn').text('Cancel');
+
+          } else {
+
+            $("#deleteDepartmentTextNotEligible").show();
+            $("#cantDeleteDeptName").text(department.departmentName);
+            $("#personnelCount").text(department.personnelCount);
+            $("#deleteDepartmentForm").show();
+            $("#deleteDepartmentTextEligible").hide();
+            $('#depYesBtn').hide();
+            $('#depNoBtn').text('OK');
+
+          }
+        } else {
+          console.log("Error: " + result.status.description);
+          $("#exampleModal .modal-title").text("Error retrieving data");
+          $("#exampleModal").modal("show");
+        }
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+      }
+    });
+  });
+
+  $('#deleteDepartmentForm').submit(function (event) {
+    event.preventDefault();
+
+    var departmentId = $('input[name="id"]').val();
+    $.ajax({
+      url: '/project2/libs/php/deleteDepartment.php',
+      type: 'POST',
+      dataType: 'json',
+      data: { id: departmentId },
+      success: function (response) {
+        if (response.status.code === "200") {
+          $('#deleteDepartmentModal').modal('hide');
+          populateDepartmentData();
+          clearSearchBar();
+        } else {
+          console.log("Error: " + response.status.description);
+        }
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        console.log("Error:", textStatus, errorThrown);
+      }
+    });
+  });
+
   // location add, edit, delete
 
   $('#addLocationModal').on('shown.bs.modal', function () {
@@ -944,136 +1068,6 @@ $(document).ready(function () {
       }
     });
   });
-
-
-  //deletePersonnel
-
-  $('#deletePersonnelModal').on('show.bs.modal', function (e) {
-    clearForm();    
-
-    var personnelID = $(e.relatedTarget).data('id');
-    $('input[name="id"]').val(personnelID);
-
-    $.ajax({
-      url: '/project2/libs/php/getPersonnelByID.php',
-      type: 'POST',
-      dataType: 'json',
-      data: { id: personnelID },
-      success: function (result) {
-
-        if (result.status.code === "200") {
-          var personnel = result.data.personnel[0];
-          var personnelName = personnel.firstName + ' ' + personnel.lastName;
-
-    $('#deleteEmployeeName').text(personnelName);
-        }
-      }
-  });
-  })
-
-  $('#deletePersonnelForm').submit(function (event) {
-    event.preventDefault();
-
-    var personnelId = $('input[name="id"]').val();
-  
-    $.ajax({
-      url: '/project2/libs/php/deletePersonnel.php',
-      type: 'POST',
-      dataType: 'json',
-      data: { id: personnelId },
-      success: function (response) {
-
-        if (response.status.code === "200") {
-          $('#deletePersonnelModal').modal('hide');
-          populatePersonnelData();  
-          clearSearchBar();
-        } else {
-          console.log("Error: " + response.status.description);
-        }
-      },
-      error: function (jqXHR, textStatus, errorThrown) {
-        console.log("Error:", textStatus, errorThrown);
-      }
-    });
-  });
-  
-
-
-  //deleteDepartment
-
-  $('#deleteDepartmentModal').on('show.bs.modal', function (e) {
-    clearForm();
-    var departmentID = $(e.relatedTarget).data('id'); // Gets the data-id attribute from the triggering element
-    $('input[name="id"]').val(departmentID); // Set the hidden input field with the departmentID
-
-    $.ajax({
-      url: "/project2/libs/php/checkDepartmentUse.php",
-      type: "POST",
-      dataType: "json",
-      data: { id: departmentID },
-      success: function (result) {
-
-        if (result.status.code === "200") {
-          var department = result.data[0];
-
-          if (department.personnelCount === 0) {
-
-            $("#areYouSureDeptName").text(department.departmentName);
-            $("#deleteDepartmentTextEligible").show();
-            $("#deleteDepartmentTextNotEligible").hide();
-            $("#deleteDepartmentForm").show();
-            $('#depYesBtn').show();
-            $('#depNoBtn').text('Cancel');
-
-          } else {
-
-            $("#deleteDepartmentTextNotEligible").show();
-            $("#cantDeleteDeptName").text(department.departmentName);
-            $("#personnelCount").text(department.personnelCount);
-            $("#deleteDepartmentForm").show();
-            $("#deleteDepartmentTextEligible").hide();
-            $('#depYesBtn').hide();
-            $('#depNoBtn').text('OK');
-
-          }
-        } else {
-          console.log("Error: " + result.status.description);
-          $("#exampleModal .modal-title").text("Error retrieving data");
-          $("#exampleModal").modal("show");
-        }
-      },
-      error: function (jqXHR, textStatus, errorThrown) {
-        console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
-      }
-    });
-  });
-
-  $('#deleteDepartmentForm').submit(function (event) {
-    event.preventDefault();
-
-    var departmentId = $('input[name="id"]').val();
-    $.ajax({
-      url: '/project2/libs/php/deleteDepartment.php',
-      type: 'POST',
-      dataType: 'json',
-      data: { id: departmentId },
-      success: function (response) {
-        if (response.status.code === "200") {
-          $('#deleteDepartmentModal').modal('hide');
-          populateDepartmentData();
-          clearSearchBar();
-        } else {
-          console.log("Error: " + response.status.description);
-        }
-      },
-      error: function (jqXHR, textStatus, errorThrown) {
-        console.log("Error:", textStatus, errorThrown);
-      }
-    });
-  });
-
-  //delete location
-
 
   $('#deleteLocationModal').on('show.bs.modal', function (e) {
     clearForm();

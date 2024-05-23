@@ -108,7 +108,7 @@ $(document).ready(function () {
 
 
         } else {
-          // Handle other status codes if needed
+
           console.log("Error: " + response.status.description);
         }
       },
@@ -158,7 +158,6 @@ $(document).ready(function () {
             var buttonCell = document.createElement("td");
             buttonCell.classList.add("align-middle", "text-end", "text-nowrap");
 
-            // Create the edit button
             var editButton = document.createElement("button");
             editButton.type = "button";
             editButton.classList.add("btn", "btn-primary", "btn-sm");
@@ -166,12 +165,10 @@ $(document).ready(function () {
             editButton.setAttribute("data-bs-target", "#editDepartmentModal");
             editButton.setAttribute("data-id", item.id);
 
-            // Create the edit icon
             var editIcon = document.createElement("i");
             editIcon.classList.add("fa-solid", "fa-pencil", "fa-fw");
             editButton.appendChild(editIcon);
 
-            // Create the delete button
             var deleteButton = document.createElement("button");
             deleteButton.type = "button";
             deleteButton.classList.add("btn", "btn-primary", "btn-sm", "ms-2", "deleteDepartmentBtn");
@@ -179,16 +176,13 @@ $(document).ready(function () {
             deleteButton.setAttribute("data-bs-target", "#deleteDepartmentModal");
             deleteButton.setAttribute("data-id", item.id);
 
-            // Create the delete icon
             var deleteIcon = document.createElement("i");
             deleteIcon.classList.add("fa-solid", "fa-trash", "fa-fw");
             deleteButton.appendChild(deleteIcon);
 
-            // Append buttons to the button cell
             buttonCell.appendChild(editButton);
             buttonCell.appendChild(deleteButton);
 
-            // Append the button cell to the row
             row.append(buttonCell);
 
             frag.append(row);
@@ -197,7 +191,6 @@ $(document).ready(function () {
           $('#departmentTableBody').append(frag);
 
         } else {
-          // Handle other status codes if needed
           console.log("Error: " + response.status.description);
         }
       },
@@ -235,7 +228,6 @@ $(document).ready(function () {
             var buttonCell = document.createElement("td");
             buttonCell.classList.add("align-middle", "text-end", "text-nowrap");
 
-            // Create the edit button
             var editButton = document.createElement("button");
             editButton.type = "button";
             editButton.classList.add("btn", "btn-primary", "btn-sm");
@@ -243,12 +235,10 @@ $(document).ready(function () {
             editButton.setAttribute("data-bs-target", "#editLocationModal");
             editButton.setAttribute("data-id", item.id);
 
-            // Create the edit icon
             var editIcon = document.createElement("i");
             editIcon.classList.add("fa-solid", "fa-pencil", "fa-fw");
             editButton.appendChild(editIcon);
 
-            // Create the delete button
             var deleteButton = document.createElement("button");
             deleteButton.type = "button";
             deleteButton.classList.add("btn", "btn-primary", "btn-sm", "ms-2", "deleteLocationBtn");
@@ -256,23 +246,19 @@ $(document).ready(function () {
             deleteButton.setAttribute("data-bs-target", "#deleteLocationModal");
             deleteButton.setAttribute("data-id", item.id);
 
-            // Create the delete icon
             var deleteIcon = document.createElement("i");
             deleteIcon.classList.add("fa-solid", "fa-trash", "fa-fw");
             deleteButton.appendChild(deleteIcon);
 
-            // Append buttons to the button cell
             buttonCell.appendChild(editButton);
             buttonCell.appendChild(deleteButton);
 
-            // Append the button cell to the row
             row.append(buttonCell);
 
             frag.append(row);
           })
           $('#locationTableBody').append(frag);
         } else {
-          // Handle other status codes if needed
           console.log("Error: " + response.status.description);
         }
       },
@@ -329,7 +315,6 @@ $(document).ready(function () {
   $("#departmentSelect, #locationSelect").change(function () {
     var selectedValue = $(this).val();
     var otherSelect = $(this).attr('id') === 'departmentSelect' ? '#locationSelect' : '#departmentSelect';
-
     // Clear the value of the other select element
     $(otherSelect).val("");
     var url = '';
@@ -443,7 +428,7 @@ $(document).ready(function () {
   });
 
   function clearSearchBar() {
-    $("#searchInp").val('').trigger('keyup'); // Trigger keyup to reset table visibility
+    $("#searchInp").val('').trigger('keyup');
   }
 
 
@@ -506,7 +491,6 @@ $(document).ready(function () {
       case 'locationsBtn':
         modalTarget = '#addLocationModal';
         break;
-      // Add more cases as needed for additional tabs
     }
     // If a modal target is found, open the modal
     if (modalTarget) {
@@ -518,7 +502,6 @@ $(document).ready(function () {
   });
 
   // personnel add, edit, delete
-
 
   $('#addPersonnelModal').on('shown.bs.modal', function () {
     clearForm();
@@ -577,12 +560,10 @@ $(document).ready(function () {
           $('#duplicatePersonnel').html('Employee with email "' + email + '" already exists.');
           $('#duplicatePersonnel').show();
         } else {
-          // Handle error (optional)
           console.error('Error: ' + response.status.description);
         }
       },
       error: function (jqXHR, status, error) {
-        // Handle AJAX errors (optional)
         console.error('AJAX Error: ', jqXHR, status, error);
       }
     });
@@ -640,14 +621,13 @@ $(document).ready(function () {
   $("#editPersonnelForm").on("submit", function (event) {
     event.preventDefault();
 
-    var employeeID = $("#editPersonnelEmployeeID").val(); // Retrieve the employee ID
-    var firstName = capitalizeFirstLetter($("#editPersonnelFirstName").val().trim()); // Retrieve the first name
-    var lastName = capitalizeFirstLetter($("#editPersonnelLastName").val().trim()); // Retrieve the last name
-    var emailAddress = $("#editPersonnelEmailAddress").val(); // Retrieve the email address
-    var departmentID = $("#editPersonnelDepartment").val(); // Retrieve the department ID
+    var employeeID = $("#editPersonnelEmployeeID").val(); 
+    var firstName = capitalizeFirstLetter($("#editPersonnelFirstName").val().trim()); 
+    var lastName = capitalizeFirstLetter($("#editPersonnelLastName").val().trim()); 
+    var emailAddress = $("#editPersonnelEmailAddress").val(); 
+    var departmentID = $("#editPersonnelDepartment").val(); 
 
 
-    // AJAX request to edit the personnel
     $.ajax({
       url: '/project2/libs/php/editPersonnel.php',
       type: 'POST',
@@ -768,7 +748,6 @@ $('#deletePersonnelForm').submit(function (event) {
       data: { name: departmentName, locationID: selectedLocation }, // Include locationID here
       dataType: 'json',
       success: function (response) {
-        // Check if the operation was successful
         if (response.status.code == '200') {
 
           $('#addDepartmentForm')[0].reset();
@@ -783,12 +762,10 @@ $('#deletePersonnelForm').submit(function (event) {
           $('#duplicateDepartment').show();
 
         } else {
-          // Handle error (optional)
           console.error('Error: ' + response.status.description);
         }
       },
       error: function (xhr, status, error) {
-        // Handle AJAX errors (optional)
         console.error('AJAX Error: ' + error);
       }
     });
@@ -798,7 +775,6 @@ $('#deletePersonnelForm').submit(function (event) {
   $("#editDepartmentModal").on("show.bs.modal", function (e) {
     clearForm();
 
-    // Retrieve the new department name
     $.ajax({
       url: "/project2/libs/php/getDepartmentByID.php",
       type: "get",
@@ -811,7 +787,6 @@ $('#deletePersonnelForm').submit(function (event) {
         var resultCode = result.status.code;
 
         if (resultCode == 200) {
-          // Set the department name
           $("#editDepartmentName").val(result.data.department[0].name);
           $("#editDepartmentID").val(result.data.department[0].id);
           // Clear existing options in the dropdown
@@ -848,13 +823,12 @@ $('#deletePersonnelForm').submit(function (event) {
     var location = $("#editDepartmentLocation").val(); // Retrieve the new location ID
     var departmentID = $("#editDepartmentID").val();
 
-    // AJAX request to check for duplicate department name
     $.ajax({
       url: '/project2/libs/php/editDepartment.php',
       type: 'POST',
       data: {
         departmentName: departmentName,
-        departmentID: departmentID, // Pass the new location ID
+        departmentID: departmentID, 
         locationID: location
       },
       dataType: 'json',
@@ -882,8 +856,8 @@ $('#deletePersonnelForm').submit(function (event) {
 
   $('#deleteDepartmentModal').on('show.bs.modal', function (e) {
     clearForm();
-    var departmentID = $(e.relatedTarget).data('id'); // Gets the data-id attribute from the triggering element
-    $('input[name="id"]').val(departmentID); // Set the hidden input field with the departmentID
+    var departmentID = $(e.relatedTarget).data('id'); 
+    $('input[name="id"]').val(departmentID); 
 
     $.ajax({
       url: "/project2/libs/php/checkDepartmentUse.php",
@@ -960,17 +934,14 @@ $('#deletePersonnelForm').submit(function (event) {
     // Prevent default form submission
     event.preventDefault();
 
-    // Get the location name from the input field
     var locationName = capitalizeFirstLetter($('#addLocation').val().trim());
 
-    // Send an AJAX request to addLocation.php
     $.ajax({
       url: '/project2/libs/php/addLocation.php',
       type: 'POST',
       data: { name: locationName },
       dataType: 'json',
       success: function (response) {
-        // Check if the operation was successful
 
         if (response.status.code == '200') {
 
@@ -984,19 +955,17 @@ $('#deletePersonnelForm').submit(function (event) {
           $('#duplicateMessage1').html('Location "' + locationName + '" already exists.');
           $('#duplicateMessage1').show();
         } else {
-          // Handle other status codes if needed
           console.error('Error: ' + response.status.description);
         }
       },
       error: function (xhr, status, error) {
-        // Handle AJAX errors
         console.error('AJAX Error: ' + error);
       }
     });
   });
 
 
-  //edit location
+
   $("#editLocationModal").on("show.bs.modal", function (e) {
     clearForm();
 
@@ -1005,7 +974,7 @@ $('#deletePersonnelForm').submit(function (event) {
       type: "get",
       dataType: "json",
       data: {
-        id: $(e.relatedTarget).data("id"), // Assuming data-id is used to store the location ID
+        id: $(e.relatedTarget).data("id"), 
       },
 
       success: function (result) {
@@ -1013,24 +982,20 @@ $('#deletePersonnelForm').submit(function (event) {
         var resultCode = result.status.code;
 
         if (resultCode == 200) {
-          // Populate form fields with location details
           $("#editLocationID").val(result.data[0].id);
           $("#editLocation").val(result.data[0].name);
 
         } else {
-          // Display error message if data retrieval fails
           $("#editLocationModal .modal-title").text("Error retrieving data");
         }
       },
       error: function (jqXHR, textStatus, errorThrown) {
-        // Display error message if AJAX request fails
         $("#editLocationModal .modal-title").text("Error retrieving data");
       }
     });
   });
 
   $('#editLocationForm').on("submit", function (event) {
-    // Prevent default form submission
     event.preventDefault();
 
     var name = capitalizeFirstLetter($("#editLocation").val().trim()); // Retrieve the new name
@@ -1058,12 +1023,10 @@ $('#deletePersonnelForm').submit(function (event) {
           $('#duplicateMessage').html('Location "' + name + '" already exists.');
           $('#duplicateMessage').show();
         } else {
-          // Handle other errors here
           console.error('Error: ' + response.status.description);
         }
       },
       error: function (xhr, status, error) {
-        // Handle AJAX errors here
         console.error('AJAX Error: ' + error);
       }
     });
@@ -1071,8 +1034,8 @@ $('#deletePersonnelForm').submit(function (event) {
 
   $('#deleteLocationModal').on('show.bs.modal', function (e) {
     clearForm();
-    var locationID = $(e.relatedTarget).data('id'); // Gets the data-id attribute from the triggering element
-    $('input[name="id"]').val(locationID); // Set the hidden input field with the departmentID
+    var locationID = $(e.relatedTarget).data('id'); 
+    $('input[name="id"]').val(locationID); 
 
     $.ajax({
       url: "/project2/libs/php/checkLocationUse.php",
@@ -1182,8 +1145,6 @@ $('#deletePersonnelForm').submit(function (event) {
     $('.deleteD').show();
     $('.deleteL').show();
   }
-
-  // Function to refresh the content of the "Locations" tab
 
 });
 

@@ -49,7 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 	    $mailToRecipient->send(); 
 
-           
+             
             echo "success";
         } catch (Exception $e) {
             echo "Mailer Error: " . $e->getMessage();

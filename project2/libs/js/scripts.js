@@ -26,7 +26,7 @@ $(document).ready(function () {
 
 
             var personnelName = document.createElement("td");
-            personnelName.classList = "align-middle text-nowrap d-none d-md-table-cell";
+            personnelName.classList = "align-middle text-nowrap";
             personnelName.setAttribute("id", 'personnelName');
             personnelName.setAttribute("data-id", item.id);
 
@@ -621,11 +621,11 @@ $(document).ready(function () {
   $("#editPersonnelForm").on("submit", function (event) {
     event.preventDefault();
 
-    var employeeID = $("#editPersonnelEmployeeID").val(); 
-    var firstName = capitalizeFirstLetter($("#editPersonnelFirstName").val().trim()); 
-    var lastName = capitalizeFirstLetter($("#editPersonnelLastName").val().trim()); 
-    var emailAddress = $("#editPersonnelEmailAddress").val(); 
-    var departmentID = $("#editPersonnelDepartment").val(); 
+    var employeeID = $("#editPersonnelEmployeeID").val();
+    var firstName = capitalizeFirstLetter($("#editPersonnelFirstName").val().trim());
+    var lastName = capitalizeFirstLetter($("#editPersonnelLastName").val().trim());
+    var emailAddress = $("#editPersonnelEmailAddress").val();
+    var departmentID = $("#editPersonnelDepartment").val();
 
 
     $.ajax({
@@ -644,69 +644,69 @@ $(document).ready(function () {
         if (response.status.code == '200') {
           populatePersonnelData();
           $("#editPersonnelModal").modal('hide');
-      } else if (response.status.code == '409') {
+        } else if (response.status.code == '409') {
           $('#personnelDuplicateMessage').html('Employee with email "' + emailAddress + '" already exists');
           $('#personnelDuplicateMessage').show();
-      } else {
+        } else {
           console.error('Error: ' + response.status.description);
+        }
+      },
+      error: function (xhr, status, error) {
+        $('#personnelErrorMessage').html('AJAX Error: ' + error);
+        $('#personnelErrorMessage').show();
+        console.error('AJAX Error: ' + error);
       }
-  },
-  error: function (xhr, status, error) {
-      $('#personnelErrorMessage').html('AJAX Error: ' + error);
-      $('#personnelErrorMessage').show();
-      console.error('AJAX Error: ' + error);
-  }
-});
-});
-
-$('#deletePersonnelModal').on('show.bs.modal', function (e) {
-  clearForm();    
-
-  var personnelID = $(e.relatedTarget).data('id');
-  $('input[name="id"]').val(personnelID);
-
-  $.ajax({
-    url: '/project2/libs/php/getPersonnelByID.php',
-    type: 'POST',
-    dataType: 'json',
-    data: { id: personnelID },
-    success: function (result) {
-
-      if (result.status.code === "200") {
-        var personnel = result.data.personnel[0];
-        var personnelName = personnel.firstName + ' ' + personnel.lastName;
-
-  $('#deleteEmployeeName').text(personnelName);
-      }
-    }
-});
-})
-
-$('#deletePersonnelForm').submit(function (event) {
-  event.preventDefault();
-
-  var personnelId = $('input[name="id"]').val();
-
-  $.ajax({
-    url: '/project2/libs/php/deletePersonnel.php',
-    type: 'POST',
-    dataType: 'json',
-    data: { id: personnelId },
-    success: function (response) {
-
-      if (response.status.code === "200") {
-        $('#deletePersonnelModal').modal('hide');
-        populatePersonnelData();  
-        clearSearchBar();
-      } else {
-        console.log("Error: " + response.status.description);
-      }
-    },
-    error: function (jqXHR, textStatus, errorThrown) {
-      console.log("Error:", textStatus, errorThrown);
-    }
+    });
   });
-});
+
+  $('#deletePersonnelModal').on('show.bs.modal', function (e) {
+    clearForm();
+
+    var personnelID = $(e.relatedTarget).data('id');
+    $('input[name="id"]').val(personnelID);
+
+    $.ajax({
+      url: '/project2/libs/php/getPersonnelByID.php',
+      type: 'POST',
+      dataType: 'json',
+      data: { id: personnelID },
+      success: function (result) {
+
+        if (result.status.code === "200") {
+          var personnel = result.data.personnel[0];
+          var personnelName = personnel.firstName + ' ' + personnel.lastName;
+
+          $('#deleteEmployeeName').text(personnelName);
+        }
+      }
+    });
+  })
+
+  $('#deletePersonnelForm').submit(function (event) {
+    event.preventDefault();
+
+    var personnelId = $('input[name="id"]').val();
+
+    $.ajax({
+      url: '/project2/libs/php/deletePersonnel.php',
+      type: 'POST',
+      dataType: 'json',
+      data: { id: personnelId },
+      success: function (response) {
+
+        if (response.status.code === "200") {
+          $('#deletePersonnelModal').modal('hide');
+          populatePersonnelData();
+          clearSearchBar();
+        } else {
+          console.log("Error: " + response.status.description);
+        }
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        console.log("Error:", textStatus, errorThrown);
+      }
+    });
+  });
 
 
 
@@ -828,7 +828,7 @@ $('#deletePersonnelForm').submit(function (event) {
       type: 'POST',
       data: {
         departmentName: departmentName,
-        departmentID: departmentID, 
+        departmentID: departmentID,
         locationID: location
       },
       dataType: 'json',
@@ -856,8 +856,8 @@ $('#deletePersonnelForm').submit(function (event) {
 
   $('#deleteDepartmentModal').on('show.bs.modal', function (e) {
     clearForm();
-    var departmentID = $(e.relatedTarget).data('id'); 
-    $('input[name="id"]').val(departmentID); 
+    var departmentID = $(e.relatedTarget).data('id');
+    $('input[name="id"]').val(departmentID);
 
     $.ajax({
       url: "/project2/libs/php/checkDepartmentUse.php",
@@ -974,7 +974,7 @@ $('#deletePersonnelForm').submit(function (event) {
       type: "get",
       dataType: "json",
       data: {
-        id: $(e.relatedTarget).data("id"), 
+        id: $(e.relatedTarget).data("id"),
       },
 
       success: function (result) {
@@ -1034,8 +1034,8 @@ $('#deletePersonnelForm').submit(function (event) {
 
   $('#deleteLocationModal').on('show.bs.modal', function (e) {
     clearForm();
-    var locationID = $(e.relatedTarget).data('id'); 
-    $('input[name="id"]').val(locationID); 
+    var locationID = $(e.relatedTarget).data('id');
+    $('input[name="id"]').val(locationID);
 
     $.ajax({
       url: "/project2/libs/php/checkLocationUse.php",

@@ -185,13 +185,14 @@
               <label for="editDepartmentName">Department Name</label>
             </div>
 
-            <div class="form-floating mb-3">
-              <input type="text" class="form-control" id="editDepartmentLocation" placeholder="Location" required>
+            <div class="form-floating">
+              <select class="form-select" id="editDepartmentLocation" placeholder="Location">
+              </select>
               <label for="editDepartmentLocation">Location</label>
             </div>
           </form>
           <div id="departmentSuccessMessage" class="alert alert-success mt-3" role="alert" style="display: none;"></div>
-          <div id="departmentDuplicateMessage" class="alert alert-success mt-3 bg-warning" role="alert" style="display: none;"></div>
+          <div id="depDuplicateMessage" class="alert alert-success mt-3 bg-warning" role="alert" style="display: none;"></div>
         </div>
 
         <div class="modal-footer">
@@ -216,17 +217,13 @@
             <input type="hidden" id="editLocationID">
 
             <div class="form-floating mb-3">
-              <input type="text" class="form-control" id="editLocationName" placeholder="Location" required>
-              <label for="editLocationName">Location</label>
+              <input type="text" class="form-control" id="editLocation" placeholder="Location" required>
+              <label for="editLocation">Location</label>
             </div>
 
-            <div class="form-floating mb-3">
-              <input type="text" class="form-control" id="editLocationAddress" placeholder="Address" required>
-              <label for="editLocationAddress">Address</label>
-            </div>
           </form>
           <div id="locationSuccessMessage" class="alert alert-success mt-3" role="alert" style="display: none;"></div>
-          <div id="locationDuplicateMessage" class="alert alert-success mt-3 bg-warning" role="alert" style="display: none;"></div>
+          <div id="duplicateMessage" class="alert alert-success mt-3 bg-warning" role="alert" style="display: none;"></div>
         </div>
 
         <div class="modal-footer">

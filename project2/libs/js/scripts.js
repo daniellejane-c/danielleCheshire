@@ -269,7 +269,122 @@ $(document).ready(function () {
   }
 
 
+  
+
+
+  //search bar
+  $("#searchInp").on("keyup", function () {
+    var searchText = $(this).val().toLowerCase();
+    var tableBodyIds = ["#personnelTableBody", "#departmentTableBody", "#locationTableBody"];
+
+    tableBodyIds.forEach(function (tableBodyId) {
+      var anyResults = false;
+      $(tableBodyId + " .no-results").remove(); // Remove the no-results message if it exists
+
+      if (searchText.trim() === '') {
+        // If search text is empty, show all rows
+        $(tableBodyId + " tr").show();
+        return;
+      }
+
+      $(tableBodyId + " tr").each(function () {
+        var rowText = $(this).text().toLowerCase();
+        var matched = rowText.indexOf(searchText) > -1;
+        $(this).toggle(matched);
+        if (matched) {
+          anyResults = true;
+        }
+      });
+
+      if (!anyResults) {
+        // If no results found, display a message
+        $(tableBodyId).append('<tr class="no-results"><td colspan="5"><span class="no-results-message">We could not find any data matching your search criteria.</span></td></tr>');
+      }
+    });
+  });
+
+  function clearSearchBar() {
+    $("#searchInp").val('').trigger('keyup');
+  }
+
+
+  function capitalizeFirstLetter(string) {
+    return string.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+  }
+
+
+
+  function handleTabClick() {
+    var tabId = $(this).attr('id');
+    if (tabId !== 'personnelBtn') {
+      $('#filterBtn').prop('disabled', true).addClass('btn-disabled');
+    } else {
+      $('#filterBtn').prop('disabled', false).removeClass('btn-disabled');
+    }
+
+    if ($("#personnelBtn").hasClass("active")) {
+      populatePersonnelData();
+      clearSearchBar();
+      $('#filterBtn').show();
+      $('#filterBtn').prop('disabled', false).removeClass('btn-disabled');
+    } else if ($("#departmentsBtn").hasClass("active")) {
+      populateDepartmentData();
+      clearSearchBar();
+    } else if ($("#locationsBtn").hasClass("active")) {
+      clearSearchBar();
+      populateLocationData();
+    } else {
+      console.log("No active button found.");
+    }
+  }
+
+  $("#refreshBtn").click(function () {
+    handleTabClick();
+
+  });
+
+  $('.nav-link').click(handleTabClick);
+
+
+
+
+  $("#addBtn").click(function () {
+    // Determine which tab is active
+    var activeTab = $('.nav-tabs .nav-link.active').attr('id');
+    var modalTarget;
+
+    // Set the appropriate modal target based on the active tab
+    switch (activeTab) {
+      case 'personnelBtn':
+        modalTarget = '#addPersonnelModal';
+        break;
+      case 'departmentsBtn':
+        modalTarget = '#addDepartmentModal';
+        break;
+      case 'locationsBtn':
+        modalTarget = '#addLocationModal';
+        break;
+    }
+    // If a modal target is found, open the modal
+    if (modalTarget) {
+      $(modalTarget).modal('show');
+    }
+
+    clearForm();
+
+  });
+
+  //filter modal
   $('#filterBoxModal').on('shown.bs.modal', function () {
+    // Store the current values of the selects
+    var currentDepartmentSelect = $('#departmentSelect').val();
+    var currentLocationSelect = $('#locationSelect').val();
+
+    // Clear the existing options
+    $('#departmentSelect').empty().append('<option value="">All</option>');
+    $('#locationSelect').empty().append('<option value="">All</option>');
+
+    // Retrieve and rebuild the department select
     $.ajax({
       url: '/project2/libs/php/getAllDepartments.php',
       type: 'GET',
@@ -284,19 +399,19 @@ $(document).ready(function () {
               })
             );
           });
-
+          // Restore the department select to the stored value
+          $('#departmentSelect').val(currentDepartmentSelect);
         }
       }
     });
+
+    // Retrieve and rebuild the location select
     $.ajax({
       url: '/project2/libs/php/getAllLocations.php',
       type: 'GET',
       dataType: 'json',
       success: function (response) {
-
-
         if (response.status.code === "200") {
-
           $.each(response.data, function () {
             $("#locationSelect").append(
               $("<option>", {
@@ -305,7 +420,8 @@ $(document).ready(function () {
               })
             );
           });
-
+          // Restore the location select to the stored value
+          $('#locationSelect').val(currentLocationSelect);
         }
       }
     });
@@ -384,120 +500,6 @@ $(document).ready(function () {
     } else {
       console.error("Please select a department or a location.");
     }
-
-  });
-
-  $('#clearFilterButton').on('click', function () {
-    $('#filterForm')[0].reset();
-    $('#personnelTableBody').empty();
-    populatePersonnelData();
-    $('#filterBtn').show();
-    $(this).hide(); // Hide the clearFilterButton
-  });
-
-
-  //search bar
-  $("#searchInp").on("keyup", function () {
-    var searchText = $(this).val().toLowerCase();
-    var tableBodyIds = ["#personnelTableBody", "#departmentTableBody", "#locationTableBody"];
-
-    tableBodyIds.forEach(function (tableBodyId) {
-      var anyResults = false;
-      $(tableBodyId + " .no-results").remove(); // Remove the no-results message if it exists
-
-      if (searchText.trim() === '') {
-        // If search text is empty, show all rows
-        $(tableBodyId + " tr").show();
-        return;
-      }
-
-      $(tableBodyId + " tr").each(function () {
-        var rowText = $(this).text().toLowerCase();
-        var matched = rowText.indexOf(searchText) > -1;
-        $(this).toggle(matched);
-        if (matched) {
-          anyResults = true;
-        }
-      });
-
-      if (!anyResults) {
-        // If no results found, display a message
-        $(tableBodyId).append('<tr class="no-results"><td colspan="5"><span class="no-results-message">We could not find any data matching your search criteria.</span></td></tr>');
-      }
-    });
-  });
-
-  function clearSearchBar() {
-    $("#searchInp").val('').trigger('keyup');
-  }
-
-
-  function capitalizeFirstLetter(string) {
-    return string.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
-  }
-
-
-
-  function handleTabClick() {
-    var tabId = $(this).attr('id');
-    if (tabId !== 'personnelBtn') {
-      $('#filterBtn').prop('disabled', true).addClass('btn-disabled');
-    } else {
-      $('#filterBtn').prop('disabled', false).removeClass('btn-disabled');
-    }
-
-    if ($("#personnelBtn").hasClass("active")) {
-      populatePersonnelData();
-      clearSearchBar();
-      $('#filterForm')[0].reset();
-      $('#filterBtn').show();
-      $('#filterBtn').prop('disabled', false).removeClass('btn-disabled');
-    } else if ($("#departmentsBtn").hasClass("active")) {
-      populateDepartmentData();
-      clearSearchBar();
-      $('#filterForm')[0].reset();
-    } else if ($("#locationsBtn").hasClass("active")) {
-      clearSearchBar();
-      populateLocationData();
-      $('#filterForm')[0].reset();
-    } else {
-      console.log("No active button found.");
-    }
-  }
-
-  $("#refreshBtn").click(function () {
-    handleTabClick();
-
-  });
-
-  $('.nav-link').click(handleTabClick);
-
-
-
-
-  $("#addBtn").click(function () {
-    // Determine which tab is active
-    var activeTab = $('.nav-tabs .nav-link.active').attr('id');
-    var modalTarget;
-
-    // Set the appropriate modal target based on the active tab
-    switch (activeTab) {
-      case 'personnelBtn':
-        modalTarget = '#addPersonnelModal';
-        break;
-      case 'departmentsBtn':
-        modalTarget = '#addDepartmentModal';
-        break;
-      case 'locationsBtn':
-        modalTarget = '#addLocationModal';
-        break;
-    }
-    // If a modal target is found, open the modal
-    if (modalTarget) {
-      $(modalTarget).modal('show');
-    }
-
-    clearForm();
 
   });
 

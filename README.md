@@ -49,4 +49,13 @@ Company Directory is a web application that enables for creation, retrieval and 
 An inductory task of a very simple HTML application with a table of 3 API’s from [https://www.geonames.org/](https://www.geonames.org/export/ws-overview.html).
 
 It was explained that the appearance of the app was not important but it was to get a demonstrate comfortability of the workflow before the main 2 projects.
+
+
+## Tech Stack:
+
+    HTML5
+    CSS3
+    JavaScript
+    PHP
+    jQuery
 ![Screenshot 2024-09-05 at 22-05-37 Geonames Application](https://github.com/user-attachments/assets/623684be-2f1f-4486-bd34-97a10dad3674)
